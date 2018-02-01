@@ -1,8 +1,6 @@
 package Sigurd;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,7 +25,7 @@ public class Board {
     private static final String BOARD_PATH = "Assets/Layout.txt"; // Path to the board layout.
     private boolean[][] boardArray; // Grid array, true if grid square is in the hallway.
     private List<BoardObject> boardObjectList; // List of objects on the board.
-    private BoardPanel panel; // 
+    private BoardPanel panel; // Panel where the board is dispayed.
 
     /**
      * Testing the board display
@@ -45,12 +43,19 @@ public class Board {
         frame.setVisible(true);
     }
 
+    /**
+     * Constructor to create the initial board.
+     */
     private Board() {
         boardObjectList = new LinkedList<>();
         panel = new BoardPanel();
         LoadBoard();
     }
 
+    /**
+     * Gets the reference to the board object.
+     * @return A reference to the board singleton instance.
+     */
     public static Board GetBoard() {
         return Instance;
     }
@@ -78,6 +83,12 @@ public class Board {
         }
     }
 
+    /**
+     * Check if a position can be moved to.
+     * @param x - an x coordinate on the grid
+     * @param y - a y coordinate on the grid
+     * @return true if the x, y grid position can be moved to.
+     */
     public boolean IsPositionMovable(int x, int y) {
         boolean validX = x >= 0 && x < boardArray.length;
         boolean validY = y >= 0 && y < boardArray[0].length;
@@ -98,26 +109,62 @@ public class Board {
         System.out.println(str.toString());
     }
 
+    /**
+     * Adds a BoardObject to the board.
+     * @param boardObject - Board Object to add.
+     */
     public void AddMovable(BoardObject boardObject) {
         boardObjectList.add(boardObject);
     }
 
-    public JPanel GetBoardView() {
+    /**
+     * Gets the panel where the board is displayed.
+     * @return The panel where the board is displayed
+     */
+    public JPanel GetBoardPanel() {
         return panel;
     }
 
+    /**
+     * A JPanel that displays the game board.
+     * @author Adrian Wennberg
+     */
     @SuppressWarnings("serial")
     private class BoardPanel extends JPanel {
 
+        /**
+         * File path to the board image.
+         */
         private static final String BOARD_PATH = "Assets/cluedo board.jpg";
-        private static final int CORNER_X = 42;
-        private static final int CORNER_Y = 23;
-        private static final int SQUARE_WIDTH = 23;
+        /**
+         * Grid corner x coordinate.
+         */
+        private static final int CORNER_X = 42; 
+        /**
+         * Grid corner y coordinate
+         */
+        private static final int CORNER_Y = 23; 
+        /**
+         * Grid cell size.
+         */
+        private static final int CELL_SIZE = 23; 
 
+        /**
+         *  Image of the game board.
+         */
         private BufferedImage boardImage;
+        /**
+         * Preferred height of the board panel;
+         */
         private int prefH;
+        /**
+         * Preferred width of the board panel;
+         */
         private int prefW;
 
+        /**
+         * Constructor
+         */
         public BoardPanel() {
             try {
                 boardImage = ImageIO.read(new File(BOARD_PATH));
@@ -127,11 +174,19 @@ public class Board {
                 e.printStackTrace();
             }
         }
-
+        /**
+         * Used by the swing system.
+         * Gets the preferred size of the panel.
+         */
         public Dimension getPreferredSize() {
             return new Dimension(prefW, prefH);
         }
 
+        /**
+         * Used by the swing system.
+         * Decides how the panel is drawn.
+         * @param g - Graphics object.
+         */
         public void paintComponent(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
             g2d.drawImage(boardImage, 0, 0, this);
@@ -139,10 +194,15 @@ public class Board {
             DrawBoardObjects(g2d);
         }
 
+        /**
+         * Draws BoardObjects added to the board.
+         * @param g2d - Graphics2D object to draw on
+         */
         private void DrawBoardObjects(Graphics2D g2d) {
             g2d.translate(CORNER_X, CORNER_Y);
             for (BoardObject m : boardObjectList) {
-                g2d.drawImage(m.GetImage(), m.GetX() * SQUARE_WIDTH, m.GetY() * SQUARE_WIDTH, this);
+                if(m.GetImage() != null)
+                    g2d.drawImage(m.GetImage(), m.GetX() * CELL_SIZE, m.GetY() * CELL_SIZE, this);
             }
         }
     }
