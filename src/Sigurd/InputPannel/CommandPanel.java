@@ -6,79 +6,68 @@ import javax.swing.event.DocumentListener;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
 
+/**
+ * 
+ * @author Peter Major
+ *	
+ * @Summary contains a JPanel named panel that contains the command line
+ * 
+ */
 public class CommandPanel {
 
-	public JPanel panel;
+	public JPanel panel;//main panel that will be extracted
 	JTextField commandLine;
 	JButton enterButton;
-	Commands commands;
-	
+
+	/**
+	 * @Summary Constructor 
+	 */
 	public CommandPanel() {
 		panel = new JPanel();
-		commands = new Commands();
 		
 		AddCommandLine();
 		AddEnterButton();
 	}
 	
+	/**
+	 * @Summary adds the command line to the main panel
+	 */
 	void AddCommandLine() {
 		commandLine = new JTextField(20);
 		
 		//action listener for when user presses return key
 		commandLine.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				ExicuteCommand(commandLine.getText());
+				Command.Exicute(commandLine.getText());
+				commandLine.setText("");
 			}
 		});
 		
 		//adding listener for when someone types something into the text box
 		commandLine.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-			}
-			
-			public void removeUpdate(DocumentEvent e) {
-				FindPartialMatch(commandLine.getText());
-			}
-			
-			public void insertUpdate(DocumentEvent e) {
-				FindPartialMatch(commandLine.getText());
-			}
+			public void changedUpdate(DocumentEvent e) {}
+			public void removeUpdate(DocumentEvent e) {}
+			public void insertUpdate(DocumentEvent e) {}
 		});
 		
 		panel.add(commandLine);
 	}
 	
+	/**
+	 * @Summary adds the enter button to the main panel
+	 */
 	void AddEnterButton() {
 		enterButton = new JButton("Enter");
 		
 		enterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ExicuteCommand(commandLine.getText());
+				Command.Exicute(commandLine.getText());
+				commandLine.setText("");
 			}
 		});
 		
 		panel.add(enterButton);
-	}
-	
-	void FindPartialMatch(String part) {
-		//check for enmpty string as this would return the full commmand list
-		if(part.length() == 0) return;
-		
-		LinkedList<String> list = commands.FindCommands(part);
-		for(String s : list){
-			System.out.println(s);//for debug reasons
-			//TODO : put this on screen 
-		}
-	}
-	
-	public void ExicuteCommand(String command) {
-		switch (command) {
-		default :
-			System.out.println("Command Not Recodnised");
-		} 
-		commandLine.setText("");
 	}
 	
 	public static void main(String[] args) {
