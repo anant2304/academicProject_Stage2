@@ -19,12 +19,14 @@ public class CommandPanel {
 	public JPanel panel;//main panel that will be extracted
 	JTextField commandLine;
 	JButton enterButton;
+	Command command;//object that holds all the commands
 
 	/**
 	 * @Summary Constructor 
 	 */
 	public CommandPanel() {
 		panel = new JPanel();
+		command = new Command();
 		
 		AddCommandLine();
 		AddEnterButton();
@@ -39,7 +41,7 @@ public class CommandPanel {
 		//action listener for when user presses return key
 		commandLine.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				Command.Exicute(commandLine.getText());
+				command.Exicute(commandLine.getText());
 				commandLine.setText("");
 			}
 		});
@@ -62,7 +64,7 @@ public class CommandPanel {
 		
 		enterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Command.Exicute(commandLine.getText());
+				command.Exicute(commandLine.getText());
 				commandLine.setText("");
 			}
 		});
@@ -70,6 +72,10 @@ public class CommandPanel {
 		panel.add(enterButton);
 	}
 	
+	/**
+	 * testing main
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		CommandPanel cpannel = new CommandPanel();
 		
