@@ -44,6 +44,7 @@ public class DisplayPanel
         {
             text1.append(a+System.getProperty("line.separator"));
         }
+        text1.append(System.getProperty("line.separator"));
         text1.setSize(200,200);
         panel.add(text1,BorderLayout.LINE_START);
         frame.setContentPane(panel);      
