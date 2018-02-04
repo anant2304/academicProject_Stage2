@@ -39,16 +39,16 @@ public class DisplayPanel
         JPanel panel=new JPanel();
         panel.setLayout(new BorderLayout(50,50));
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10));
-        JTextArea text=new JTextArea();
-        for(String s:list2)
+        JTextArea text1=new JTextArea();
+        for(String a:list2)
         {
-            text.append(s + System.getProperty("line.separator"));
+            text1.append(a+System.getProperty("line.separator"));
         }
-        text.setSize(200,200);
-        panel.add(text,BorderLayout.LINE_START);
+        text1.setSize(200,200);
+        panel.add(text1,BorderLayout.LINE_START);
         frame.setContentPane(panel);      
-        frame.pack();
         frame.setLocationByPlatform(true);
+        frame.pack();
         frame.setVisible(true);
     }
 }
