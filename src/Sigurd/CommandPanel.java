@@ -1,9 +1,9 @@
-package Sigurd.InputPannel;
+package Sigurd;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
+import javax.swing.Icon.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -14,19 +14,18 @@ import java.awt.event.ActionListener;
  * @Summary contains a JPanel named panel that contains the command line
  * 
  */
-public class CommandPanel {
+public class CommandPanel extends JPanel {
 
-	public JPanel panel;//main panel that will be extracted
+	private static final long serialVersionUID = 1L;
 	JTextField commandLine;
 	JButton enterButton;
-	Command command;//object that holds all the commands
+	Controler controler;
 
 	/**
 	 * @Summary Constructor 
 	 */
 	public CommandPanel() {
-		panel = new JPanel();
-		command = new Command();
+		controler = Game.GetControlerInstance();
 		
 		AddCommandLine();
 		AddEnterButton();
@@ -41,7 +40,7 @@ public class CommandPanel {
 		//action listener for when user presses return key
 		commandLine.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				command.Exicute(commandLine.getText());
+				controler.ExicuteCommand(commandLine.getText());
 				commandLine.setText("");
 			}
 		});
@@ -53,7 +52,7 @@ public class CommandPanel {
 			public void insertUpdate(DocumentEvent e) {}
 		});
 		
-		panel.add(commandLine);
+		add(commandLine);
 	}
 	
 	/**
@@ -62,14 +61,22 @@ public class CommandPanel {
 	void AddEnterButton() {
 		enterButton = new JButton("Enter");
 		
+		//when button is pressed
 		enterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				command.Exicute(commandLine.getText());
+				controler.ExicuteCommand(commandLine.getText());
 				commandLine.setText("");
 			}
 		});
 		
-		panel.add(enterButton);
+		add(enterButton);
+	}
+	
+	/**
+	 * @Summary adds a box under the text feild when there are autocomplete options
+	 */
+	void AddAutoCompleatBox() {
+		
 	}
 	
 	/**
@@ -80,7 +87,7 @@ public class CommandPanel {
 		CommandPanel cpannel = new CommandPanel();
 		
 		JFrame frame = new JFrame();
-		frame.add(cpannel.panel);
+		frame.add(cpannel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);

@@ -1,4 +1,4 @@
-package Sigurd.InputPannel;
+package Sigurd;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,17 +10,17 @@ import java.util.Map;
  * @Summary The set of commands a player
  *
  */
-public class Command {
+public class Controler {
 	
-	enum moveDirection {up, down, left, right};
+	public enum moveDirection {up, down, left, right};
 	
 	Map<String,Runnable> coms = new HashMap<String,Runnable>();//Runnable being java's representation for a method with no return or arguments
 	
-	public Command() {
+	public Controler() {
 		//set all the commands here
 		
 		//pleb commands
-		coms.put("u",() -> Move(moveDirection.up));
+		coms.put("u", () -> Move(moveDirection.up));
 		coms.put("d", () -> Move(moveDirection.down));
 		coms.put("l", () -> Move(moveDirection.left));
 		coms.put("r", () -> Move(moveDirection.right));
@@ -37,7 +37,7 @@ public class Command {
 	 * 
 	 * @param command
 	 */
-	public  void Exicute(String command) {
+	public  void ExicuteCommand(String command) {
 		command = command.toLowerCase();
 		
 		if(coms.containsKey(command)) {
@@ -55,20 +55,10 @@ public class Command {
 	 * @param direction
 	 */
 	void Move(moveDirection d){
-		switch(d) {
-		case up:
-			System.out.println("up");
-			break;
-		case down:
-			System.out.println("down");
-			break;
-		case left:
-			System.out.println("left");
-			break;
-		case right:
-			System.out.println("right");
-			break;
+		if(Game.currObject != null) {
+			Game.currObject.Move(d);
 		}
+		else System.out.println("Current object is null");
 	}
 
 	/**
@@ -76,7 +66,13 @@ public class Command {
 	 * @param player
 	 */
 	void SetPlayer(int player) {
-		System.out.println("palyer " + player);
+		if(Game.ObjectExistes(player-1, true)) {
+			Game.SetCurrentObject(player-1, true);
+			System.out.println("palyer " + player);
+		}
+		else {
+			System.out.println("Player not found");
+		}
 	}
 	
 }

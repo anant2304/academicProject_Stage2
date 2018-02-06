@@ -35,7 +35,7 @@ public class Board {
         Board b = GetBoard();
         b.display();
         JFrame frame = new JFrame();
-        frame.add(b.GetBoardView());
+        //frame.add(b.GetBoardView()); this line was giving me an error
 
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -203,6 +203,9 @@ public class Board {
             for (BoardObject m : boardObjectList) {
                 if(m.GetImage() != null)
                     g2d.drawImage(m.GetImage(), m.GetX() * CELL_SIZE, m.GetY() * CELL_SIZE, this);
+                else {
+                	System.out.println("WARNNING : No image found for : " + m.GetName());
+                }
             }
         }
     }
