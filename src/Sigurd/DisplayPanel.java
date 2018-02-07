@@ -10,19 +10,21 @@ public class DisplayPanel extends JPanel
 {
     static DisplayPanel panel=new DisplayPanel();
     static JTextArea text1=new JTextArea();
+    static JPanel panel2=new JPanel();
+    static JScrollPane pane=new JScrollPane();
     public static void main(String args[]) throws IOException
     {
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        panel.setLayout(new BorderLayout(50,50));
-        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK,10));
+        panel.setLayout(new BorderLayout(10,10));
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
         DisplayPanel obj=new DisplayPanel();
         String st=br.readLine();
         obj.add(st);
-       JFrame frame = new JFrame();
-       frame.add(panel);
-       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       frame.pack();
-       frame.setVisible(true);
+        JFrame frame = new JFrame();
+        frame.add(pane);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
     }
     public static void add(String str) //this function takes the string input and adds it to a file, and then creates and ArrayList,and then passes it to the function disp.
     {
@@ -55,9 +57,7 @@ public class DisplayPanel extends JPanel
         text1.append(System.getProperty("line.separator"));
         text1.setSize(200,200);
         panel.add(text1,BorderLayout.LINE_START);
-        JScrollPane pane=new JScrollPane(panel);
-        JPanel panel2=new JPanel();
-        panel2.add(pane);    
+        pane=new JScrollPane(panel);
     }
 }
 
