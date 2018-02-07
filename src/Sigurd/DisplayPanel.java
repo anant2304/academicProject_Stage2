@@ -6,40 +6,38 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-public class DisplayPanel extends JPanel
+public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itself
 {
-    static DisplayPanel panel=new DisplayPanel();
-    static JTextArea text1=new JTextArea();
-    static JPanel panel2=new JPanel();
-    static JScrollPane pane=new JScrollPane();
-    public static void main(String args[]) throws IOException
+    
+    JTextArea text1=new JTextArea(); //using JTextArea for the inputs to be scrollable
+    JScrollPane pane=new JScrollPane();
+    ArrayList<String> list=new ArrayList<String>();
+    public static void main(String args[]) throws IOException //the user calls the main function it calls the add function, which stores the input and in return calls the disp function which sends the output to the display panel
     {
-        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        panel.setLayout(new BorderLayout(10,10));
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in)); //for taking console input as a test
+        String st=br.readLine(); //for testing
+        DisplayPanel panel=new DisplayPanel();
+        panel.setLayout(new BorderLayout(10,10)); //specifications of the panel
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
-        DisplayPanel obj=new DisplayPanel();
-        String st=br.readLine();
-        obj.add(st);
-        JFrame frame = new JFrame();
-        frame.add(pane);
+        panel.add(st);
+        JFrame frame=new JFrame();
+        frame.add(panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
     }
-    public static void add(String str) //this function takes the string input and adds it to a file, and then creates and ArrayList,and then passes it to the function disp.
+    public void add(String str) //this function takes the string input and adds it to a file, and then creates and ArrayList,and then passes it to the function disp.
     {
         try
         {
             String move="moveList.txt"; 
-            FileWriter fileWriter=new FileWriter(move, true);
-            fileWriter.write(str+"\n");
+            FileWriter fileWriter=new FileWriter(move, true); //to write to the file, while not deleting the contents of the file
+            fileWriter.write(str+"\n"); //adding the string to the file
             fileWriter.close();
             Scanner file=new Scanner(new File("moveList.txt"));
-            ArrayList<String> list=new ArrayList<String>();
-        
             while (file.hasNext()) 
             {
-                list.add(new String(file.next())); //adds the text to the list
+                list.add(new String(file.next())); //adds the file contents to the list
             }
             disp(list);
         }
@@ -48,16 +46,15 @@ public class DisplayPanel extends JPanel
             ex.printStackTrace();
         }
     }
-    public static void disp(ArrayList<String> list2) //this function displays the contents of the Arraylist onto the panel
+    public void disp(ArrayList<String> list2) //this function displays the contents of the Arraylist onto the panel
     {
-        for(String a:list2)
+        for(String a:list2) 
         {
-            text1.append(a+System.getProperty("line.separator"));
+            text1.append(a+System.getProperty("line.separator")); // adding the list contents to the JTextArea
         }
         text1.append(System.getProperty("line.separator"));
         text1.setSize(200,200);
-        panel.add(text1,BorderLayout.LINE_START);
-        pane=new JScrollPane(panel);
+        pane=new JScrollPane(text1); //to make the panel scrollable
+        add(pane); //adding the Scroolpane to the frame
     }
 }
-
