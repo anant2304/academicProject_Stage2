@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-public class DisplayPanel
+public class DisplayPanel extends JPanel
 {
     public static void main(String args[])
     {
@@ -33,12 +33,11 @@ public class DisplayPanel
             ex.printStackTrace();
         }
     }
-    public static void disp(ArrayList<String> list2) //this function displays the contents of the arraylist onto the panel
+    public static void disp(ArrayList<String> list2) //this function displays the contents of the Arraylist onto the panel
     {
-        JFrame frame=new JFrame("Moves");
-        frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
-        frame.setSize(1000,1000);
-        JPanel panel=new JPanel();
+        
+        
+        DisplayPanel panel=new DisplayPanel();
         panel.setLayout(new BorderLayout(50,50));
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10));
         JTextArea text1=new JTextArea();
@@ -50,10 +49,10 @@ public class DisplayPanel
         text1.setSize(200,200);
         panel.add(text1,BorderLayout.LINE_START);
         JScrollPane pane=new JScrollPane(panel);
-        panel.add(pane);
-        frame.setContentPane(panel);      
-        frame.setLocationByPlatform(true);
-        frame.pack();
-        frame.setVisible(true);
+        JPanel panel2=new JPanel();
+        panel2.add(pane);
+        //peter.setContentPane(panel2);      
+        
     }
 }
+
