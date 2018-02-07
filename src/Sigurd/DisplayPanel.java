@@ -8,8 +8,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class DisplayPanel extends JPanel
 {
-    public static void main(String args[])
+    static DisplayPanel panel=new DisplayPanel();
+    static JTextArea text1=new JTextArea();
+    public static void main(String args[]) throws IOException
     {
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+        panel.setLayout(new BorderLayout(50,50));
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK,10));
+        DisplayPanel obj=new DisplayPanel();
+        String st=br.readLine();
+        obj.add(st);
+       JFrame frame = new JFrame();
+       frame.add(panel);
+       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       frame.pack();
+       frame.setVisible(true);
     }
     public static void add(String str) //this function takes the string input and adds it to a file, and then creates and ArrayList,and then passes it to the function disp.
     {
@@ -35,12 +48,6 @@ public class DisplayPanel extends JPanel
     }
     public static void disp(ArrayList<String> list2) //this function displays the contents of the Arraylist onto the panel
     {
-        
-        
-        DisplayPanel panel=new DisplayPanel();
-        panel.setLayout(new BorderLayout(50,50));
-        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10));
-        JTextArea text1=new JTextArea();
         for(String a:list2)
         {
             text1.append(a+System.getProperty("line.separator"));
@@ -50,9 +57,7 @@ public class DisplayPanel extends JPanel
         panel.add(text1,BorderLayout.LINE_START);
         JScrollPane pane=new JScrollPane(panel);
         JPanel panel2=new JPanel();
-        panel2.add(pane);
-        //peter.setContentPane(panel2);      
-        
+        panel2.add(pane);    
     }
 }
 
