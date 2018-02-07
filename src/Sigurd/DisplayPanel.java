@@ -31,15 +31,35 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         try
         {
             String move="moveList.txt"; 
-            FileWriter fileWriter=new FileWriter(move, true); //to write to the file, while not deleting the contents of the file
-            fileWriter.write(str+"\n"); //adding the string to the file
-            fileWriter.close();
-            Scanner file=new Scanner(new File("moveList.txt"));
-            while (file.hasNext()) 
+            
+            if(str.equals("E")||str.equals("e"))
             {
-                list.add(new String(file.next())); //adds the file contents to the list
+                FileWriter fileWriter=new FileWriter(move); //to write to the file, while deleting the contents of the file
+                fileWriter.write("End of game"+"\n"); //adding the string to the file
+                fileWriter.close();
+                Scanner file=new Scanner(new File("moveList.txt"));
+                while (file.hasNext()) 
+                {
+                    list.add(new String(file.next())); //adds the file contents to the list
+                }
+                disp(list);
+                FileWriter fileWriter2=new FileWriter(move); //to write to the file, while deleting the contents of the file
+                fileWriter2.write(""); //emptying the file
+                fileWriter.close();
+                
             }
-            disp(list);
+            else
+            {
+                FileWriter fileWriter=new FileWriter(move, true); //to write to the file, while not deleting the contents of the file
+                fileWriter.write(str+"\n"); //adding the string to the file
+                fileWriter.close();
+                Scanner file=new Scanner(new File("moveList.txt"));
+                while (file.hasNext()) 
+                {
+                    list.add(new String(file.next())); //adds the file contents to the list
+                }
+                disp(list);
+            }
         }
         catch (IOException ex)
         {
@@ -55,6 +75,6 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         text1.append(System.getProperty("line.separator"));
         text1.setSize(200,200);
         pane=new JScrollPane(text1); //to make the panel scrollable
-        add(pane); //adding the Scroolpane to the frame
+        add(pane); //adding the Scrollpane to the frame
     }
 }
