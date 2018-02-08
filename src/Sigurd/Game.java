@@ -1,6 +1,9 @@
 package Sigurd;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 import javax.swing.*;
 import java.util.*;
@@ -67,13 +70,25 @@ public class Game {
 	/**
 	 * creates and places all the players onto the board
 	 */
-	static void PlacePlayers() {}
+	static void PlacePlayers() {
+		playerList.add(new PlayerObject(9, 0, Color.decode("#ffffff"), "White"));
+		playerList.add(new PlayerObject(14, 0, Color.decode("#00ff00"), "Green"));
+		playerList.add(new PlayerObject(23, 6, Color.decode("#326872"), "Peacock"));
+		playerList.add(new PlayerObject(23, 19, Color.decode("#8E4585"), "Plum"));
+		playerList.add(new PlayerObject(7, 24, Color.decode("#ff2400"), "Scarlet"));
+		playerList.add(new PlayerObject(0, 17, Color.decode("#ffdb58"), "Mustard"));
+	}
 	
 	/**
 	 * creates and places all weapons onto the board
 	 */
 	static void PlaceWeapons() {
-		weaponList.add(new WeaponObject(7,7,new Character('H'),"Hammer"));
+		weaponList.add(new WeaponObject(3,4,new Character('R'),"Rope"));
+		weaponList.add(new WeaponObject(4,12,new Character('D'),"Dagger"));
+		weaponList.add(new WeaponObject(3,21,new Character('W'),"Wrench"));
+		weaponList.add(new WeaponObject(10,3,new Character('P'),"Pistol"));
+		weaponList.add(new WeaponObject(10,21,new Character('C'),"CandleStick"));
+		weaponList.add(new WeaponObject(20,22,new Character('L'),"LeadPipe"));
 	}
 	
 	/**

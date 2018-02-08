@@ -15,7 +15,7 @@ public class WeaponObject extends BoardObject {
     	BufferedImage ima = new BufferedImage(22,22,BufferedImage.TYPE_INT_ARGB);
          
     	Graphics2D g2d = ima.createGraphics();
-        g2d.setFont(new Font("Arial", 0,23));
+        g2d.setFont(new Font("Arial", 0,20));
         g2d.drawString(testChar.toString(), 3, 20);
         
         image = ima;

@@ -27,14 +27,18 @@ public class Controler {
 		coms.put("exit", () -> System.exit(0));
 
 		//dev commands
-		coms.put("setplayer1", () -> SetPlayer(1));
-		coms.put("setplayer2", () -> SetPlayer(2));
-		coms.put("setplayer3", () -> SetPlayer(3));
-		coms.put("setplayer4", () -> SetPlayer(4));
-		coms.put("setweapon1", () -> SetWeapon(1));
-		coms.put("setweapon2", () -> SetWeapon(2));
-		coms.put("setweapon3", () -> SetWeapon(3));
-		coms.put("setweapon4", () -> SetWeapon(4));
+		coms.put("setplayerwhite", () -> SetPlayer(1));
+		coms.put("setplayergreen", () -> SetPlayer(2));
+		coms.put("setplayerpeacock", () -> SetPlayer(3));
+		coms.put("setplayerplum", () -> SetPlayer(4));
+		coms.put("setplayerscarlet", () -> SetPlayer(5));
+		coms.put("setplayermustard", () -> SetPlayer(6));
+		coms.put("setweaponrope", () -> SetWeapon(1));
+		coms.put("setweapondagger", () -> SetWeapon(2));
+		coms.put("setweaponwrench", () -> SetWeapon(3));
+		coms.put("setweaponpistol", () -> SetWeapon(4));
+		coms.put("setweaponcandlestick", () -> SetWeapon(5));
+		coms.put("setweaponleadpipe", () -> SetWeapon(6));
 	}
 	
 	/**
