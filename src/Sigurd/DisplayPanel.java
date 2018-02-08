@@ -12,6 +12,10 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     JTextArea text1=new JTextArea(); //using JTextArea for the inputs to be scrollable
     JScrollPane pane=new JScrollPane();
     ArrayList<String> list=new ArrayList<String>();
+    
+    public DisplayPanel(){
+    }
+    
     public static void main(String args[]) throws IOException //the user calls the main function it calls the add function, which stores the input and in return calls the disp function which sends the output to the display panel
     {
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in)); //for taking console input as a test
@@ -19,6 +23,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         DisplayPanel panel=new DisplayPanel();
         panel.setLayout(new BorderLayout(10,10)); //specifications of the panel
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
+        panel.add(st);
         panel.add(st);
         JFrame frame=new JFrame();
         frame.add(panel);

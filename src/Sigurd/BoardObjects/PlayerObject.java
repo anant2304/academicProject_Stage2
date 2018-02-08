@@ -8,17 +8,52 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import Sigurd.Board;
+import Sigurd.Controler;
+
 public class PlayerObject extends BoardObject {
 
-	public PlayerObject(int _x, int _y, Character testChar, String _name) {
-		super(_x, _y, testChar, _name);
-	}
-	public PlayerObject(int _x, int _y, Image _image, String _name) {
-		super( _x,  _y,  _image, _name);
-    }
-    public PlayerObject (int _x, int _y, String imagePath, String _name) {
-        super( _x,  _y,  imagePath, _name);
+    public PlayerObject(int _x, int _y, String imagePath, String _name)
+    {
+        super(_x,_y,(Image)null,_name);
+        BufferedImage ima = null;
+       
+        try{
+        ima = ImageIO.read(new File(imagePath));
+        }
+        catch(IOException e) {}
+        
+        image = ima;
     }
     
+    @Override
+    public void Move(Controler.moveDirection d) {
+    	int tempX = x;
+    	int tempY = y;
+    	switch(d) {
+    	case up :
+    		tempY--;
+    		break;
+    	case down:
+    		tempY++;
+    		break;
+    	case left:
+    		tempX--;
+    		break;
+    	case right:
+    		tempX++;
+    		break;
+    	}
+    	if(Board.GetBoard().IsPositionMovable(tempX, tempY)) {
+    		x = tempX; 
+    		y = tempY;
+    	
+    	Board.GetBoard().GetBoardPanel().repaint();
+    	System.out.println(name + " moved in direction : " + d);
+    	}
+    	else {
+    		System.out.println("Space is not walkable");
+    	}
+    }
 
 }

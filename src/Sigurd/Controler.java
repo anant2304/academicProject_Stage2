@@ -24,12 +24,17 @@ public class Controler {
 		coms.put("d", () -> Move(moveDirection.down));
 		coms.put("l", () -> Move(moveDirection.left));
 		coms.put("r", () -> Move(moveDirection.right));
+		coms.put("exit", () -> System.exit(0));
 
 		//dev commands
 		coms.put("setplayer1", () -> SetPlayer(1));
 		coms.put("setplayer2", () -> SetPlayer(2));
 		coms.put("setplayer3", () -> SetPlayer(3));
 		coms.put("setplayer4", () -> SetPlayer(4));
+		coms.put("setweapon1", () -> SetWeapon(1));
+		coms.put("setweapon2", () -> SetWeapon(2));
+		coms.put("setweapon3", () -> SetWeapon(3));
+		coms.put("setweapon4", () -> SetWeapon(4));
 	}
 	
 	/**
@@ -75,4 +80,16 @@ public class Controler {
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	void SetWeapon(int weapon) {
+		if(Game.ObjectExistes(weapon-1, false)) {
+			Game.SetCurrentObject(weapon-1, false);
+			System.out.println("weapon " + weapon);
+		}
+		else {
+			System.out.println("weapon not found");
+		}
+	}
 }

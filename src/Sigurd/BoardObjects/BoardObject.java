@@ -14,12 +14,12 @@ import Sigurd.Controler;
 
 
 public abstract class BoardObject {
-	private String name;
-    private int x;
-    private int y;
-    private Image image;
+	protected String name;
+	protected int x;
+    protected int y;
+    protected Image image;
     
-    public BoardObject(int _x, int _y, Image _image, String _name)
+    protected BoardObject(int _x, int _y, Image _image, String _name)
     {
     	name = _name;
         x = _x;
@@ -28,27 +28,7 @@ public abstract class BoardObject {
         Board board = Board.GetBoard();
         board.AddMovable(this);
     }
-    public BoardObject(int _x, int _y, String imagePath, String _name)
-    {
-        this(_x,_y,(Image)null,_name);
-        BufferedImage ima = null;
-        try{
-        ima = ImageIO.read(new File(imagePath));
-        }
-        catch(IOException e) {}
-        image = ima;
-        Board.GetBoard().GetBoardPanel().repaint();
-    }
-    public BoardObject(int _x, int _y, Character testChar, String _name) {
-    	this(_x,_y,(Image)null,_name);
-         BufferedImage ima = new BufferedImage(22,22,BufferedImage.TYPE_INT_ARGB);
-         Graphics2D g2d = ima.createGraphics();
-         g2d.setFont(new Font("Arial", 0,23));
-         g2d.drawString(testChar.toString(), 3, 20);
-         image = ima;
-         Board.GetBoard().GetBoardPanel().repaint();
-    }
-    
+
     public int GetX()
     {
         return x;
