@@ -1,5 +1,6 @@
 package Sigurd.BoardObjects;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -13,16 +14,13 @@ import Sigurd.Controler;
 
 public class PlayerObject extends BoardObject {
 
-    public PlayerObject(int _x, int _y, String imagePath, String _name)
+    public PlayerObject(int _x, int _y, Color c, String _name)
     {
         super(_x,_y,(Image)null,_name);
-        BufferedImage ima = null;
-       
-        try{
-        ima = ImageIO.read(new File(imagePath));
-        }
-        catch(IOException e) {}
-        
+        BufferedImage ima = new BufferedImage(23, 23, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = (Graphics2D) ima.getGraphics();
+        g2d.setColor(c);
+        g2d.fillOval(0, 0, 23, 23);
         image = ima;
     }
     
