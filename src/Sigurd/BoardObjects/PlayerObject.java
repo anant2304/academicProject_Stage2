@@ -4,16 +4,20 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 
 import Sigurd.Board;
 import Sigurd.Controler;
 
 public class PlayerObject extends BoardObject {
 
+	/**
+	 * @Summary represents the player on the board with a colored circle 
+	 * @param _x
+	 * @param _y
+	 * @param c
+	 * @param _name
+	 */
     public PlayerObject(int _x, int _y, Color c, String _name)
     {
         super(_x,_y,(Image)null,_name);

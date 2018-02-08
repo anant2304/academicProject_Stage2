@@ -85,7 +85,7 @@ public class Controler {
 	}
 	
 	/**
-	 * 
+	 * @Summary sets the current controlled object to the weapon corresponding to the index given
 	 */
 	void SetWeapon(int weapon) {
 		if(Game.ObjectExistes(weapon-1, false)) {

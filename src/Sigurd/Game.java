@@ -1,9 +1,6 @@
 package Sigurd;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 
 import javax.swing.*;
 import java.util.*;
@@ -51,15 +48,15 @@ public class Game {
 	}
 	
 	/**
-	 * creates a dummy player for testing purposes
+	 * @Summary creates a dummy player for testing purposes
 	 * @param number assigned to it to tell them apart in logs
 	 */
-	static void CreateDumbyPalyer(int num) {// TODO : change player constructor
-		//PlayerObject p = new PlayerObject(6,7,new Character('H'), "player:"+num);
-		//playerList.add(p);
+	static void CreateDumbyPalyer(int num) {
+		PlayerObject p = new PlayerObject(6,7,Color.BLUE, "player:"+num);
+		playerList.add(p);
 	}
 	/**
-	 * creates a dummy weapon for testing purposes
+	 * @Summary creates a dummy weapon for testing purposes
 	 * @param number assigned to it to tell them apart in logs
 	 */
 	static void CreateDumbyWeapon(int num) {
@@ -68,7 +65,7 @@ public class Game {
 	}
 	
 	/**
-	 * creates and places all the players onto the board
+	 * @Summary creates and places all the players onto the board
 	 */
 	static void PlacePlayers() {
 		playerList.add(new PlayerObject(9, 0, Color.decode("#ffffff"), "White"));
@@ -80,7 +77,7 @@ public class Game {
 	}
 	
 	/**
-	 * creates and places all weapons onto the board
+	 * @Summary creates and places all weapons onto the board
 	 */
 	static void PlaceWeapons() {
 		weaponList.add(new WeaponObject(3,4,new Character('R'),"Rope"));
@@ -92,7 +89,7 @@ public class Game {
 	}
 	
 	/**
-	 * Sets the current object to a given one
+	 * @ Summary Sets the current object to a given one
 	 * @param index
 	 * @param isPlayer
 	 */
@@ -104,7 +101,7 @@ public class Game {
 	}
 	
 	/**
-	 * returns bool of if there is an object at the given index in list. checks player list if isPlayer is true, weapon list otherwise.
+	 * @Summary returns bool of if there is an object at the given index in list. checks player list if isPlayer is true, weapon list otherwise.
 	 * @param index
 	 * @param isPlayer
 	 * @return
@@ -123,7 +120,7 @@ public class Game {
 	}
 	
 	/**
-	 * returns the working instance of the controler
+	 * @Summary returns the working instance of the controler
 	 * @return
 	 */
 	public static Controler GetControlerInstance() {
@@ -131,7 +128,7 @@ public class Game {
 	}
 	
 	/**
-	 * returns the object that is currently being controled by commands
+	 * @Summary returns the object that is currently being controled by commands
 	 * @return
 	 */
 	public static BoardObject GetCurrObject() {
@@ -139,7 +136,7 @@ public class Game {
 	}
 	
 	/**
-	 * sets the object that is currently reciving commands from the command line
+	 * @Summary sets the object that is currently reciving commands from the command line
 	 * @param b
 	 */
 	public static void SetCurrObject(BoardObject b) {

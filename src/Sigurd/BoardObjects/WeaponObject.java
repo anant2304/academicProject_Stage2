@@ -9,6 +9,13 @@ import Sigurd.Board;
 
 public class WeaponObject extends BoardObject {
 
+	/**
+	 * @Summary represents the weapon on the map by a letter
+	 * @param _x
+	 * @param _y
+	 * @param testChar
+	 * @param _name
+	 */
     public WeaponObject(int _x, int _y, Character testChar, String _name) {
     	super(_x,_y,(Image)null,_name);
         
