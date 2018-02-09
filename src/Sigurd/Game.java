@@ -13,8 +13,8 @@ public class Game {
 	
 	static JFrame window;
 	
-	static LinkedList<PlayerObject> playerList = new LinkedList<PlayerObject>();
-	static LinkedList<WeaponObject> weaponList = new LinkedList<WeaponObject>();
+	static ArrayList<PlayerObject> playerList = new ArrayList<PlayerObject>();
+	static ArrayList<WeaponObject> weaponList = new ArrayList<WeaponObject>();
 	
 	private Game() {}
 	
