@@ -11,22 +11,19 @@ import java.util.Map;
  *
  */
 public class Controler {
-	
 	public enum moveDirection {up, down, left, right};
 	
 	Map<String,Runnable> coms = new HashMap<String,Runnable>();//Runnable being java's representation for a method with no return or arguments
 	
 	String argument = "";
 	
-	public Controler() {
-		//set all the commands here
-		
+	public Controler() {//define all commands here		
 		//pleb commands
-		coms.put("u", () -> Move(moveDirection.up));
-		coms.put("d", () -> Move(moveDirection.down));
-		coms.put("l", () -> Move(moveDirection.left));
-		coms.put("r", () -> Move(moveDirection.right));
-		coms.put("exit", () -> System.exit(0));
+		coms.put( "u", 		() -> Move(moveDirection.up));
+		coms.put( "d", 		() -> Move(moveDirection.down));
+		coms.put( "l", 		() -> Move(moveDirection.left));
+		coms.put( "r", 		() -> Move(moveDirection.right));
+		coms.put("exit",	() -> System.exit(0));
 
 		//dev commands
 		coms.put("control", () -> Control(argument));
@@ -42,10 +39,11 @@ public class Controler {
 		
 		String[] splitCom = command.split(" ");
 				
-		if(splitCom.length > 1 )
-			argument = splitCom[1];
+		if(splitCom.length > 1 )//if has second word
+			argument = splitCom[1];//put second word in argument
 		
-		if(coms.containsKey(splitCom[0])) {
+		if(coms.containsKey(splitCom[0])) {//if first word is a command
+			System.out.println("    " + command);
 			coms.get(splitCom[0]).run();
 		}
 		else{
@@ -62,34 +60,24 @@ public class Controler {
 	 * @param direction
 	 */
 	void Move(moveDirection d){
-		if(Game.currObject != null) {
+		if(Game.currObject != null) 
 			Game.currObject.Move(d);
-		}
-		else System.out.println("Current object is null");
+		
+		else 
+			System.out.println("Current object is null");
 	}
 
 	/*
-	 * sets the current controlled object based on the name passed to it
+	 * @Summary sets the current controlled object based on the name passed to it
+	 * @param the name of the object you want to control
 	 */
 	void Control(String Object) {
-		switch(Object){
-		case  "white" : Game.SetCurrentObject(0, true); ; break;
-		case  "green" : Game.SetCurrentObject(1, true); ; break;
-		case  "peacock" : Game.SetCurrentObject(2, true); ; break;
-		case  "plum" : Game.SetCurrentObject(3, true); ; break;
-		case  "scarlet" : Game.SetCurrentObject(4, true); ; break;
-		case  "mustard" : Game.SetCurrentObject(5, true); ; break;
-		
-		case "rope" : Game.SetCurrentObject(0, false);break;
-		case "dagger" : Game.SetCurrentObject(1, false);break;
-		case "wrench" : Game.SetCurrentObject(2, false);break;
-		case "pistol" : Game.SetCurrentObject(3, false);break;
-		case "candlestick" : Game.SetCurrentObject(4, false);break;
-		case "leadpipe" : Game.SetCurrentObject(5, false);break;
-		default :
-			System.out.println("Incorect argument, must be a player or weapon name");return;
+		if(Game.ObjectExistes(Object)) {
+			Game.SetCurrentObject(Object);
+			System.out.println("controling " + Object);
 		}
-		System.out.println("controling " + Object);
+		
+		else
+			System.out.println("Object not found");
 	}
-	
 }
