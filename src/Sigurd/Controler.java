@@ -43,7 +43,7 @@ public class Controler {
 			argument = splitCom[1];//put second word in argument
 		
 		if(coms.containsKey(splitCom[0])) {//if first word is a command
-			System.out.println("    " + command);
+			Game.display.sendMessage("    " + command);
 			coms.get(splitCom[0]).run();
 		}
 		else{
@@ -64,7 +64,7 @@ public class Controler {
 			Game.currObject.Move(d);
 		
 		else 
-			System.out.println("Current object is null");
+			Game.display.sendMessage("Current object is null");
 	}
 
 	/*
@@ -74,10 +74,10 @@ public class Controler {
 	void Control(String Object) {
 		if(Game.ObjectExistes(Object)) {
 			Game.SetCurrentObject(Object);
-			System.out.println("controling " + Object);
+			Game.display.sendMessage("controling " + Object);
 		}
 		
 		else
-			System.out.println("Object not found");
+			Game.display.sendMessage("Object not found");
 	}
 }
