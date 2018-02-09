@@ -106,7 +106,7 @@ public class Board {
             }
             str.append('\n');
         }
-        System.out.println(str.toString());
+        Game.display.sendMessage(str.toString());
     }
 
     /**
@@ -204,7 +204,7 @@ public class Board {
                 if(m.GetImage() != null)
                     g2d.drawImage(m.GetImage(), m.GetX() * CELL_SIZE, m.GetY() * CELL_SIZE, this);
                 else {
-                	System.out.println("WARNNING : No image found for : " + m.GetName());
+                	Game.display.sendMessage("WARNNING : No image found for : " + m.GetName());
                 }
             }
         }
