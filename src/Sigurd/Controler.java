@@ -11,34 +11,22 @@ import java.util.Map;
  *
  */
 public class Controler {
-	
 	public enum moveDirection {up, down, left, right};
 	
 	Map<String,Runnable> coms = new HashMap<String,Runnable>();//Runnable being java's representation for a method with no return or arguments
 	
-	public Controler() {
-		//set all the commands here
-		
+	String argument = "";
+	
+	public Controler() {//define all commands here		
 		//pleb commands
-		coms.put("u", () -> Move(moveDirection.up));
-		coms.put("d", () -> Move(moveDirection.down));
-		coms.put("l", () -> Move(moveDirection.left));
-		coms.put("r", () -> Move(moveDirection.right));
-		coms.put("exit", () -> System.exit(0));
+		coms.put( "u", 		() -> Move(moveDirection.up));
+		coms.put( "d", 		() -> Move(moveDirection.down));
+		coms.put( "l", 		() -> Move(moveDirection.left));
+		coms.put( "r", 		() -> Move(moveDirection.right));
+		coms.put("exit",	() -> System.exit(0));
 
 		//dev commands
-		coms.put("setplayerwhite", () -> SetPlayer(1));
-		coms.put("setplayergreen", () -> SetPlayer(2));
-		coms.put("setplayerpeacock", () -> SetPlayer(3));
-		coms.put("setplayerplum", () -> SetPlayer(4));
-		coms.put("setplayerscarlet", () -> SetPlayer(5));
-		coms.put("setplayermustard", () -> SetPlayer(6));
-		coms.put("setweaponrope", () -> SetWeapon(1));
-		coms.put("setweapondagger", () -> SetWeapon(2));
-		coms.put("setweaponwrench", () -> SetWeapon(3));
-		coms.put("setweaponpistol", () -> SetWeapon(4));
-		coms.put("setweaponcandlestick", () -> SetWeapon(5));
-		coms.put("setweaponleadpipe", () -> SetWeapon(6));
+		coms.put("control", () -> Control(argument));
 	}
 	
 	/**
@@ -49,12 +37,20 @@ public class Controler {
 	public  void ExicuteCommand(String command) {
 		command = command.toLowerCase();
 		
-		if(coms.containsKey(command)) {
-			coms.get(command).run();
+		String[] splitCom = command.split(" ");
+				
+		if(splitCom.length > 1 )//if has second word
+			argument = splitCom[1];//put second word in argument
+		
+		if(coms.containsKey(splitCom[0])) {//if first word is a command
+			System.out.println("    " + command);
+			coms.get(splitCom[0]).run();
 		}
 		else{
 			System.out.println("Command dose not exist");
 		}
+		
+		argument = "";
 	}
 		
 	//set of command actions a user can call
@@ -64,36 +60,24 @@ public class Controler {
 	 * @param direction
 	 */
 	void Move(moveDirection d){
-		if(Game.currObject != null) {
+		if(Game.currObject != null) 
 			Game.currObject.Move(d);
-		}
-		else System.out.println("Current object is null");
+		
+		else 
+			System.out.println("Current object is null");
 	}
 
-	/**
-	 * @Summary sets the current player to the number given
-	 * @param player
+	/*
+	 * @Summary sets the current controlled object based on the name passed to it
+	 * @param the name of the object you want to control
 	 */
-	void SetPlayer(int player) {
-		if(Game.ObjectExistes(player-1, true)) {
-			Game.SetCurrentObject(player-1, true);
-			System.out.println("palyer " + player);
+	void Control(String Object) {
+		if(Game.ObjectExistes(Object)) {
+			Game.SetCurrentObject(Object);
+			System.out.println("controling " + Object);
 		}
-		else {
-			System.out.println("Player not found");
-		}
-	}
-	
-	/**
-	 * @Summary sets the current controlled object to the weapon corresponding to the index given
-	 */
-	void SetWeapon(int weapon) {
-		if(Game.ObjectExistes(weapon-1, false)) {
-			Game.SetCurrentObject(weapon-1, false);
-			System.out.println("weapon " + weapon);
-		}
-		else {
-			System.out.println("weapon not found");
-		}
+		
+		else
+			System.out.println("Object not found");
 	}
 }

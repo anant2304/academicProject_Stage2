@@ -21,9 +21,6 @@ public class CommandPanel extends JPanel {
 	JButton enterButton;
 	Controler controler;
 
-	/**
-	 * @Summary Constructor 
-	 */
 	public CommandPanel() {
 		controler = Game.GetControlerInstance();
 		
@@ -38,19 +35,14 @@ public class CommandPanel extends JPanel {
 		commandLine = new JTextField(20);
 		
 		//action listener for when user presses return key
-		commandLine.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				controler.ExicuteCommand(commandLine.getText());
-				commandLine.setText("");
-			}
-		});
-		
-		//adding listener for when someone types something into the text box
-		commandLine.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {}
-			public void removeUpdate(DocumentEvent e) {}
-			public void insertUpdate(DocumentEvent e) {}
-		});
+		commandLine.addActionListener(
+				new ActionListener(){
+						public void actionPerformed(ActionEvent e) {
+							controler.ExicuteCommand(commandLine.getText());
+							commandLine.setText("");
+							}
+				}
+		);
 		
 		add(commandLine);
 	}
@@ -62,21 +54,16 @@ public class CommandPanel extends JPanel {
 		enterButton = new JButton("Enter");
 		
 		//when button is pressed
-		enterButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				controler.ExicuteCommand(commandLine.getText());
-				commandLine.setText("");
-			}
-		});
+		enterButton.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						controler.ExicuteCommand(commandLine.getText());
+						commandLine.setText("");
+					}
+				}
+		);
 		
 		add(enterButton);
-	}
-	
-	/**
-	 * @Summary adds a box under the text feild when there are autocomplete options
-	 */
-	void AddAutoCompleatBox() {
-		
 	}
 	
 	/**

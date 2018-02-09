@@ -13,10 +13,10 @@ public class Game {
 	
 	static JFrame window;
 	
-	static LinkedList<PlayerObject> playerList = new LinkedList<PlayerObject>();
-	static LinkedList<WeaponObject> weaponList = new LinkedList<WeaponObject>();
+	static Map<String,PlayerObject> playerMap = new HashMap<String,PlayerObject>();
+	static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
 	
-	private Game() {}
+	private Game() {}//makeing the constructor private
 	
 	/**
 	 * @Summary the main that runs the game
@@ -28,7 +28,7 @@ public class Game {
 		CreateWindow();
 		PlacePlayers();
 		PlaceWeapons();
-		SetCurrentObject(0, false);
+		SetCurrentObject("white");
 	}
 	
 	/**
@@ -38,54 +38,37 @@ public class Game {
 	static void CreateWindow() {
 		window = new JFrame();
 		window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
-		window.setLayout(new FlowLayout());
+		window.setLayout(new BorderLayout());
 		
-		window.add(Board.GetBoard().GetBoardPanel());
-		window.add(new CommandPanel());
+		window.add(Board.GetBoard().GetBoardPanel(), BorderLayout.EAST);
+		window.add(new CommandPanel(), BorderLayout.SOUTH);
 		
 		window.pack();
 		window.setVisible(true);
 	}
 	
 	/**
-	 * @Summary creates a dummy player for testing purposes
-	 * @param number assigned to it to tell them apart in logs
-	 */
-	static void CreateDumbyPalyer(int num) {
-		PlayerObject p = new PlayerObject(6,7,Color.BLUE, "player:"+num);
-		playerList.add(p);
-	}
-	/**
-	 * @Summary creates a dummy weapon for testing purposes
-	 * @param number assigned to it to tell them apart in logs
-	 */
-	static void CreateDumbyWeapon(int num) {
-		WeaponObject w = new WeaponObject(6,7,new Character('H'), "weapon:"+num);
-		weaponList.add(w);
-	}
-	
-	/**
 	 * @Summary creates and places all the players onto the board
 	 */
 	static void PlacePlayers() {
-		playerList.add(new PlayerObject(9, 0, Color.decode("#ffffff"), "White"));
-		playerList.add(new PlayerObject(14, 0, Color.decode("#00ff00"), "Green"));
-		playerList.add(new PlayerObject(23, 6, Color.decode("#326872"), "Peacock"));
-		playerList.add(new PlayerObject(23, 19, Color.decode("#8E4585"), "Plum"));
-		playerList.add(new PlayerObject(7, 24, Color.decode("#ff2400"), "Scarlet"));
-		playerList.add(new PlayerObject(0, 17, Color.decode("#ffdb58"), "Mustard"));
+		playerMap.put("white",new PlayerObject(9, 0, Color.decode("#ffffff"), "White"));
+		playerMap.put("green",new PlayerObject(14, 0, Color.decode("#00ff00"), "Green"));
+		playerMap.put("peacock",new PlayerObject(23, 6, Color.decode("#326872"), "Peacock"));
+		playerMap.put("plum",new PlayerObject(23, 19, Color.decode("#8E4585"), "Plum"));
+		playerMap.put("scarlet",new PlayerObject(7, 24, Color.decode("#ff2400"), "Scarlet"));
+		playerMap.put("mustard",new PlayerObject(0, 17, Color.decode("#ffdb58"), "Mustard"));
 	}
 	
 	/**
 	 * @Summary creates and places all weapons onto the board
 	 */
 	static void PlaceWeapons() {
-		weaponList.add(new WeaponObject(3,4,new Character('R'),"Rope"));
-		weaponList.add(new WeaponObject(4,12,new Character('D'),"Dagger"));
-		weaponList.add(new WeaponObject(3,21,new Character('W'),"Wrench"));
-		weaponList.add(new WeaponObject(10,3,new Character('P'),"Pistol"));
-		weaponList.add(new WeaponObject(10,21,new Character('C'),"CandleStick"));
-		weaponList.add(new WeaponObject(20,22,new Character('L'),"LeadPipe"));
+		weaponMap.put("Rope",new WeaponObject(3,4,new Character('R'),"Rope"));
+		weaponMap.put("dagger",new WeaponObject(4,12,new Character('D'),"Dagger"));
+		weaponMap.put("wrench",new WeaponObject(3,21,new Character('W'),"Wrench"));
+		weaponMap.put("pistol",new WeaponObject(10,3,new Character('P'),"Pistol"));
+		weaponMap.put("candlestick",new WeaponObject(10,21,new Character('C'),"CandleStick"));
+		weaponMap.put("leadpipe",new WeaponObject(20,22,new Character('L'),"LeadPipe"));
 	}
 	
 	/**
@@ -93,34 +76,33 @@ public class Game {
 	 * @param index
 	 * @param isPlayer
 	 */
-	public static void SetCurrentObject(int index, boolean isPlayer) {
-		if(isPlayer)
-			currObject = playerList.get(index);
+	public static void SetCurrentObject(String name) {
+		if(playerMap.containsKey(name))
+			currObject = playerMap.get(name);
+		
+		else if(weaponMap.containsKey(name))
+			currObject = weaponMap.get(name);
+		
 		else
-			currObject = weaponList.get(index);
+			throw new RuntimeException("tryed to set the current controled object to something that dose not exist");
 	}
 	
 	/**
-	 * @Summary returns bool of if there is an object at the given index in list. checks player list if isPlayer is true, weapon list otherwise.
-	 * @param index
+	 * returns if they there is an item in the system with the name given
+	 * @param name
 	 * @param isPlayer
 	 * @return
 	 */
-	public static boolean ObjectExistes(int index, boolean isPlayer) {
-		if(isPlayer) {
-			if(index < playerList.size())
-				return (playerList.get(index) != null);
-		}
-		else {
-			if(index < weaponList.size())
-				return (weaponList.get(index) != null);
-		}
-		return false;
+	public static boolean ObjectExistes(String name) {
+		if(playerMap.containsKey(name)) 
+			return true;
+		else
+			return weaponMap.containsKey(name);
 		
 	}
 	
 	/**
-	 * @Summary returns the working instance of the controler
+	 * @Summary returns the working instance of the controller
 	 * @return
 	 */
 	public static Controler GetControlerInstance() {
