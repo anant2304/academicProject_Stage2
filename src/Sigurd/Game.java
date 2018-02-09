@@ -38,10 +38,10 @@ public class Game {
 	static void CreateWindow() {
 		window = new JFrame();
 		window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
-		window.setLayout(new FlowLayout());
+		window.setLayout(new BorderLayout());
 		
-		window.add(Board.GetBoard().GetBoardPanel());
-		window.add(new CommandPanel());
+		window.add(Board.GetBoard().GetBoardPanel(), BorderLayout.EAST);
+		window.add(new CommandPanel(), BorderLayout.SOUTH);
 		
 		window.pack();
 		window.setVisible(true);

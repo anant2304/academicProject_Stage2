@@ -29,8 +29,7 @@ public class Controler {
 		coms.put("exit", () -> System.exit(0));
 
 		//dev commands
-		coms.put("setplayer", () -> SetPlayer(argument));
-		coms.put("setweapon", () -> SetWeapon(argument));
+		coms.put("control", () -> Control(argument));
 	}
 	
 	/**
@@ -70,35 +69,27 @@ public class Controler {
 	}
 
 	/*
-	 * sets the current player based on the name passed to it
+	 * sets the current controlled object based on the name passed to it
 	 */
-	void SetPlayer(String player) {
-		switch(player){
+	void Control(String Object) {
+		switch(Object){
 		case  "white" : Game.SetCurrentObject(0, true); ; break;
 		case  "green" : Game.SetCurrentObject(1, true); ; break;
 		case  "peacock" : Game.SetCurrentObject(2, true); ; break;
 		case  "plum" : Game.SetCurrentObject(3, true); ; break;
 		case  "scarlet" : Game.SetCurrentObject(4, true); ; break;
 		case  "mustard" : Game.SetCurrentObject(5, true); ; break;
+		
+		case "rope" : Game.SetCurrentObject(0, false);break;
+		case "dagger" : Game.SetCurrentObject(1, false);break;
+		case "wrench" : Game.SetCurrentObject(2, false);break;
+		case "pistol" : Game.SetCurrentObject(3, false);break;
+		case "candlestick" : Game.SetCurrentObject(4, false);break;
+		case "leadpipe" : Game.SetCurrentObject(5, false);break;
 		default :
-			System.out.println("Incorect argument, must be a player name");return;
+			System.out.println("Incorect argument, must be a player or weapon name");return;
 		}
-		System.out.println("controling " + player);
+		System.out.println("controling " + Object);
 	}
 	
-	/**
-	 * @Summary sets the current controlled object to the weapon corresponding to the name given
-	 */
-	void SetWeapon(String weapon) {
-		switch(weapon) {
-		case "Rope" : Game.SetCurrentObject(0, false);break;
-		case "Dagger" : Game.SetCurrentObject(1, false);break;
-		case "Wrench" : Game.SetCurrentObject(2, false);break;
-		case "Pistol" : Game.SetCurrentObject(3, false);break;
-		case "CandleStick" : Game.SetCurrentObject(4, false);break;
-		case "LeadPipe" : Game.SetCurrentObject(5, false);break;
-		default : System.out.println("incorrect argument, must be a weapon name");return;
-		}
-		System.out.println("controling" + weapon);
-	}
 }
