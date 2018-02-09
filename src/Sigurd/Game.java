@@ -10,7 +10,8 @@ import Sigurd.BoardObjects.*;
 public class Game {
 	static Controler controler;
 	static BoardObject currObject;
-	static DisplayPanel display;
+	static CommandPanel command;
+	public static DisplayPanel display;
 	
 	static JFrame window;
 	
@@ -25,7 +26,9 @@ public class Game {
 	 */
 	public static void main(String[] args) {
 		controler = new Controler();
+		command = new CommandPanel();
 		display = new DisplayPanel();
+	
 		
 		CreateWindow();
 		PlacePlayers();
@@ -43,7 +46,7 @@ public class Game {
 		window.setLayout(new BorderLayout());
 		
 		window.add(Board.GetBoard().GetBoardPanel(), BorderLayout.WEST);
-		window.add(new CommandPanel(), BorderLayout.SOUTH);
+		window.add(command, BorderLayout.SOUTH);
 		window.add(display, BorderLayout.EAST);
 		
 		window.pack();
@@ -66,7 +69,7 @@ public class Game {
 	 * @Summary creates and places all weapons onto the board
 	 */
 	static void PlaceWeapons() {
-		weaponMap.put("Rope",new WeaponObject(3,4,new Character('R'),"Rope"));
+		weaponMap.put("rope",new WeaponObject(3,4,new Character('R'),"Rope"));
 		weaponMap.put("dagger",new WeaponObject(4,12,new Character('D'),"Dagger"));
 		weaponMap.put("wrench",new WeaponObject(3,21,new Character('W'),"Wrench"));
 		weaponMap.put("pistol",new WeaponObject(10,3,new Character('P'),"Pistol"));

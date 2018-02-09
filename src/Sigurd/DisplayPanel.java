@@ -15,6 +15,8 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     {
         this.setLayout(new BorderLayout(10,10)); 
         this.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
+        text1.setEditable(false);
+        text1.setColumns(30);
         pane=new JScrollPane(text1); //to make the panel scrollable
         add(pane); //adding the Scrollpane to the frame
         sendMessage("   HELLO!   ");
@@ -38,7 +40,6 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     {
         text1.append(str+System.getProperty("line.separator")); // adding the list contents to the JTextArea
         text1.append(System.getProperty("line.separator")); //creating space 
-        text1.setSize(200,200);
         
                 
     }

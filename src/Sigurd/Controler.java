@@ -43,11 +43,10 @@ public class Controler {
 			argument = splitCom[1];//put second word in argument
 		
 		if(coms.containsKey(splitCom[0])) {//if first word is a command
-			Game.display.sendMessage("    " + command);
 			coms.get(splitCom[0]).run();
 		}
 		else{
-			System.out.println("Command dose not exist");
+			Game.display.sendMessage("Command dose not exist");
 		}
 		
 		argument = "";

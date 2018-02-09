@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import Sigurd.Board;
 import Sigurd.Controler;
+import Sigurd.Game;
 
 
 public abstract class BoardObject {
@@ -66,6 +67,6 @@ public abstract class BoardObject {
     		break;
     	}
     	Board.GetBoard().GetBoardPanel().repaint();
-    	System.out.println(name + " moved in direction : " + d);
+    	Game.display.sendMessage(name + " moved in direction : " + d);
     }
 }

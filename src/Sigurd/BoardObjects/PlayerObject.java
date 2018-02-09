@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 
 import Sigurd.Board;
 import Sigurd.Controler;
+import Sigurd.Game;
 
 public class PlayerObject extends BoardObject {
 
@@ -50,10 +51,10 @@ public class PlayerObject extends BoardObject {
     		y = tempY;
     	
 	    	Board.GetBoard().GetBoardPanel().repaint();
-	    	System.out.println(name + " moved in direction : " + d);
+	    	Game.display.sendMessage(name + " moved in direction : " + d);
     	}
     	else {
-    		System.out.println("Space is not walkable");
+    		Game.display.sendMessage("Space is not walkable");
     	}
     }
 
