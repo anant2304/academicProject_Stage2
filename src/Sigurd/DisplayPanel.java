@@ -17,6 +17,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         this.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
         pane=new JScrollPane(text1); //to make the panel scrollable
         add(pane); //adding the Scrollpane to the frame
+        sendMessage("   HELLO!   ");
     }
     public static void main(String args[]) throws IOException //main function which takes the input string and sends it to the sendMessage function to be displayed in the panel, for testing
     {

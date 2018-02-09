@@ -10,6 +10,7 @@ import Sigurd.BoardObjects.*;
 public class Game {
 	static Controler controler;
 	static BoardObject currObject;
+	static DisplayPanel display;
 	
 	static JFrame window;
 	
@@ -24,6 +25,7 @@ public class Game {
 	 */
 	public static void main(String[] args) {
 		controler = new Controler();
+		display = new DisplayPanel();
 		
 		CreateWindow();
 		PlacePlayers();
@@ -40,8 +42,9 @@ public class Game {
 		window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
 		window.setLayout(new BorderLayout());
 		
-		window.add(Board.GetBoard().GetBoardPanel(), BorderLayout.EAST);
+		window.add(Board.GetBoard().GetBoardPanel(), BorderLayout.WEST);
 		window.add(new CommandPanel(), BorderLayout.SOUTH);
+		window.add(display, BorderLayout.EAST);
 		
 		window.pack();
 		window.setVisible(true);
