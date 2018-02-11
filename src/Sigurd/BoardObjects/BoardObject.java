@@ -1,49 +1,70 @@
 package Sigurd.BoardObjects;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
-import Sigurd.Board;
 import Sigurd.Controler;
-import Sigurd.Game;
 
-
+/**
+ * Abstract superclass for objects that will be displayed on the board.
+ * @author Adrian Wennberg, Peter Major
+ * Team: Sigurd
+ */
 public abstract class BoardObject {
-	protected String name;
-	protected int x;
-    protected int y;
-    protected Image image;
+	private String name;
+	private int x;
+	private int y;
+	private Image image;
     
-    protected BoardObject(int _x, int _y, Image _image, String _name)
+	/**
+	 * 
+	 * @param x        Start X position on the board grid.
+	 * @param y        Start Y position on the board grid.
+	 * @param image    Image to display on the board.
+	 * @param name     Name that the board object is identified by.
+	 */
+    protected BoardObject(int x, int y, Image image, String name)
     {
-    	name = _name;
-        x = _x;
-        y = _y;
-        image = _image;
-        Board board = Board.GetBoard();
-        board.AddMovable(this);
+    	this.name = name;
+        this.x = x;
+        this.y = y;
+        this.image = image;
+    }
+    
+    /**
+     * Sets the Image to be displayed.
+     * @param image
+     */
+    protected void SetImage(Image image)
+    {
+        this.image = image;
     }
 
+    /**
+     * @return The current X position on the grid.
+     */
     public int GetX()
     {
         return x;
     }
     
+    /**
+     * @return The current Y position on the grid.
+     */
     public int GetY()
     {
         return y;
     }
 
+    /**
+     * @return The Image that will be displayed on the board.
+     */
     public Image GetImage() {
         return image;
     }
     
+    /**
+     * @return The name of this object.
+     */
     public String GetName() {
     	return name;
     }
@@ -66,7 +87,5 @@ public abstract class BoardObject {
     		x++;
     		break;
     	}
-    	Board.GetBoard().GetBoardPanel().repaint();
-    	Game.display.sendMessage(name + " moved in direction : " + d);
     }
 }

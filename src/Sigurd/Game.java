@@ -7,18 +7,25 @@ import java.util.*;
 
 import Sigurd.BoardObjects.*;
 
+/**
+ * Servers an an entry point and ties the different classes together.
+ * @author Peter Major
+ * Team: Sigurd
+ */
 public class Game {
 	static Controler controler;
-	static BoardObject currObject;
+	static BoardObject currentObject;
 	static CommandPanel command;
 	public static DisplayPanel display;
 	
-	static JFrame window;
 	
 	static Map<String,PlayerObject> playerMap = new HashMap<String,PlayerObject>();
 	static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
 	
-	private Game() {}//makeing the constructor private
+	/**
+	 *  Private Constructor
+	 */
+	private Game() {} 
 	
 	/**
 	 * @Summary the main that runs the game
@@ -30,22 +37,22 @@ public class Game {
 		display = new DisplayPanel();
 	
 		
-		CreateWindow();
 		PlacePlayers();
 		PlaceWeapons();
+        CreateWindow();
 		SetCurrentObject("white");
 	}
 	
 	/**
 	 * @Summary creates the window that holds all the panels
 	 */
-	@SuppressWarnings("static-access")
+    @SuppressWarnings("static-access")
 	static void CreateWindow() {
-		window = new JFrame();
+        JFrame window = new JFrame();
 		window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
 		window.setLayout(new BorderLayout());
 		
-		window.add(Board.GetBoard().GetBoardPanel(), BorderLayout.WEST);
+		window.add(Board.GetBoard().GetBoardPanel(), BorderLayout.CENTER);
 		window.add(command, BorderLayout.SOUTH);
 		window.add(display, BorderLayout.EAST);
 		
@@ -63,6 +70,10 @@ public class Game {
 		playerMap.put("plum",new PlayerObject(23, 19, Color.decode("#8E4585"), "Plum"));
 		playerMap.put("scarlet",new PlayerObject(7, 24, Color.decode("#ff2400"), "Scarlet"));
 		playerMap.put("mustard",new PlayerObject(0, 17, Color.decode("#ffdb58"), "Mustard"));
+
+        Board board = Board.GetBoard();
+		for(PlayerObject p : playerMap.values())
+		    board.AddMovable(p);
 	}
 	
 	/**
@@ -75,6 +86,10 @@ public class Game {
 		weaponMap.put("pistol",new WeaponObject(10,3,new Character('P'),"Pistol"));
 		weaponMap.put("candlestick",new WeaponObject(10,21,new Character('C'),"CandleStick"));
 		weaponMap.put("leadpipe",new WeaponObject(20,22,new Character('L'),"LeadPipe"));
+		
+		Board board = Board.GetBoard();
+        for(WeaponObject p : weaponMap.values())
+            board.AddMovable(p);
 	}
 	
 	/**
@@ -84,17 +99,15 @@ public class Game {
 	 */
 	public static void SetCurrentObject(String name) {
 		if(playerMap.containsKey(name))
-			currObject = playerMap.get(name);
-		
+			currentObject = playerMap.get(name);
 		else if(weaponMap.containsKey(name))
-			currObject = weaponMap.get(name);
-		
+			currentObject = weaponMap.get(name);
 		else
-			throw new RuntimeException("tryed to set the current controled object to something that dose not exist");
+			throw new RuntimeException("tried to set the current controled object to something that dose not exist");
 	}
 	
 	/**
-	 * returns if they there is an item in the system with the name given
+	 * returns true if they is an item in the system with the name given
 	 * @param name
 	 * @param isPlayer
 	 * @return
@@ -116,18 +129,10 @@ public class Game {
 	}
 	
 	/**
-	 * @Summary returns the object that is currently being controled by commands
+	 * @Summary returns the object that is currently being controlled by commands
 	 * @return
 	 */
-	public static BoardObject GetCurrObject() {
-		return currObject;
-	}
-	
-	/**
-	 * @Summary sets the object that is currently reciving commands from the command line
-	 * @param b
-	 */
-	public static void SetCurrObject(BoardObject b) {
-		currObject = b;
+	public static BoardObject GetCurrentObject() {
+		return currentObject;
 	}
 }

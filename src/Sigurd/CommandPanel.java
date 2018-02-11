@@ -1,9 +1,6 @@
 package Sigurd;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.Icon.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -11,8 +8,8 @@ import java.awt.event.ActionListener;
  * 
  * @author Peter Major
  *	
- * @Summary contains a JPanel named panel that contains the command line
- * 
+ * @Summary contains a JPanel that contains the command line
+ * Team: Sigurd
  */
 public class CommandPanel extends JPanel {
 

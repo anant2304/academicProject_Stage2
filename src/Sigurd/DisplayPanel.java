@@ -1,11 +1,15 @@
 package Sigurd;
 
-import java.util.*;
 import java.io.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+/**
+ * Panel that displays inputs back to the user.
+ * @author Anant Shaw
+ * Team: Sigurd
+ */
+@SuppressWarnings("serial")
 public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itself
 {
     
@@ -38,10 +42,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     }
     public void sendMessage(String str) //function adds the string to the panel
     {
-        text1.append(str+System.getProperty("line.separator")); // adding the list contents to the JTextArea
-        text1.append(System.getProperty("line.separator")); //creating space 
-        
-                
+        text1.append("  " + str + System.getProperty("line.separator")); // adding the list contents to the JTextArea
     }
     
 }

@@ -18,14 +18,14 @@ import Sigurd.BoardObjects.BoardObject;
 /**
  * 
  * @author Adrian Wennberg
- *
+ * Team: Sigurd
  */
 public class Board {
     private static Board Instance = new Board(); // Singleton instance of the board class.
     private static final String BOARD_PATH = "Assets/Layout.txt"; // Path to the board layout.
     private boolean[][] boardArray; // Grid array, true if grid square is in the hallway.
     private List<BoardObject> boardObjectList; // List of objects on the board.
-    private BoardPanel panel; // Panel where the board is dispayed.
+    private BoardPanel panel; // Panel where the board is displayed.
 
     /**
      * Testing the board display
@@ -35,7 +35,7 @@ public class Board {
         Board b = GetBoard();
         b.display();
         JFrame frame = new JFrame();
-        //frame.add(b.GetBoardView()); this line was giving me an error
+        frame.add(b.GetBoardPanel());
 
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

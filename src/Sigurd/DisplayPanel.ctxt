@@ -1,9 +1,0 @@
-#BlueJ class context
-comment0.target=DisplayPanel
-comment1.params=args
-comment1.target=void\ main(java.lang.String[])
-comment2.params=str
-comment2.target=void\ add(java.lang.String)
-comment3.params=list2
-comment3.target=void\ disp(java.util.ArrayList)
-numComments=4

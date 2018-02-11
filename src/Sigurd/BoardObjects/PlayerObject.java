@@ -10,10 +10,15 @@ import Sigurd.Board;
 import Sigurd.Controler;
 import Sigurd.Game;
 
+/**
+ * Players that are displayed to the screen.
+ * @author Peter Major
+ * Team: Sigurd
+ */
 public class PlayerObject extends BoardObject {
 
 	/**
-	 * @Summary represents the player on the board with a colored circle 
+	 * @Summary Creates a player represented on the board with a colored circle 
 	 * @param _x
 	 * @param _y
 	 * @param c
@@ -22,22 +27,22 @@ public class PlayerObject extends BoardObject {
     public PlayerObject(int _x, int _y, Color c, String _name) {
         super(_x,_y,(Image)null,_name);
         
-        BufferedImage ima = new BufferedImage(23, 23, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(23, 23, BufferedImage.TYPE_INT_ARGB);
         
-        Graphics2D g2d = (Graphics2D) ima.getGraphics();
+        Graphics2D g2d = (Graphics2D) image.getGraphics();
         g2d.setColor(c);
         g2d.fillOval(0, 0, 23, 23);
         
-        image = ima;
+        SetImage(image);
     }
     
     /**
-     * moves the currently controlled object in the given direction
+     * moves the currently controlled player in the given direction
      */
     @Override
     public void Move(Controler.moveDirection d) {
-    	int tempX = x;
-    	int tempY = y;
+    	int tempX = GetX();
+    	int tempY = GetY();
     	
     	switch(d) {
 	    	case up   : tempY--; break;
@@ -47,15 +52,10 @@ public class PlayerObject extends BoardObject {
 	    	}
     	
     	if(Board.GetBoard().IsPositionMovable(tempX, tempY)) {
-    		x = tempX; 
-    		y = tempY;
-    	
-	    	Board.GetBoard().GetBoardPanel().repaint();
-	    	Game.display.sendMessage(name + " moved in direction : " + d);
+    		super.Move(d);
     	}
     	else {
     		Game.display.sendMessage("Space is not walkable");
     	}
     }
-
 }

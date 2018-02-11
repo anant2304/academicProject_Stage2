@@ -5,27 +5,24 @@ import java.util.Map;
 
 /**
  * 
- * @author PM
- * 
- * @Summary The set of commands a player
- *
+ * @author Peter Major
+ * @Summary Takes in commands from the Command Panel and does actions based on them.
+ * Team: Sigurd
  */
 public class Controler {
 	public enum moveDirection {up, down, left, right};
 	
-	Map<String,Runnable> coms = new HashMap<String,Runnable>();//Runnable being java's representation for a method with no return or arguments
+	//Runnable being java's representation for a method with no return or arguments
+	Map<String,Runnable> coms = new HashMap<String,Runnable>();
 	
 	String argument = "";
 	
-	public Controler() {//define all commands here		
-		//pleb commands
+	public Controler() {//define all commands here	
 		coms.put( "u", 		() -> Move(moveDirection.up));
 		coms.put( "d", 		() -> Move(moveDirection.down));
 		coms.put( "l", 		() -> Move(moveDirection.left));
 		coms.put( "r", 		() -> Move(moveDirection.right));
 		coms.put("exit",	() -> System.exit(0));
-
-		//dev commands
 		coms.put("control", () -> Control(argument));
 	}
 	
@@ -34,7 +31,9 @@ public class Controler {
 	 * 
 	 * @param command
 	 */
-	public  void ExicuteCommand(String command) {
+	public void ExicuteCommand(String command) {
+
+        Game.display.sendMessage(command);
 		command = command.toLowerCase();
 		
 		String[] splitCom = command.split(" ");
@@ -46,7 +45,7 @@ public class Controler {
 			coms.get(splitCom[0]).run();
 		}
 		else{
-			Game.display.sendMessage("Command dose not exist");
+			Game.display.sendMessage("    Command does not exist\n");
 		}
 		
 		argument = "";
@@ -59,24 +58,27 @@ public class Controler {
 	 * @param direction
 	 */
 	void Move(moveDirection d){
-		if(Game.currObject != null) 
-			Game.currObject.Move(d);
-		
+		if(Game.currentObject != null) {
+			Game.currentObject.Move(d);
+	        Board.GetBoard().GetBoardPanel().repaint();
+	        Game.display.sendMessage("    " + Game.currentObject.GetName() +
+	                                 " moved in direction : " + d + "\n");
+		}
 		else 
-			Game.display.sendMessage("Current object is null");
+			Game.display.sendMessage("    Current object is null\n");
 	}
 
-	/*
+	/**
 	 * @Summary sets the current controlled object based on the name passed to it
 	 * @param the name of the object you want to control
 	 */
 	void Control(String Object) {
 		if(Game.ObjectExistes(Object)) {
 			Game.SetCurrentObject(Object);
-			Game.display.sendMessage("controling " + Object);
+			Game.display.sendMessage("    Controling " + Object + "\n");
 		}
 		
 		else
-			Game.display.sendMessage("Object not found");
+			Game.display.sendMessage("    Object not found\n");
 	}
 }
