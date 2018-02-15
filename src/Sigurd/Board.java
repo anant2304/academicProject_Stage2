@@ -2,7 +2,6 @@ package Sigurd;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -16,13 +15,14 @@ import javax.swing.JPanel;
 import Sigurd.BoardObjects.BoardObject;
 
 /**
- * 
  * @author Adrian Wennberg
  * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
  */
 public class Board {
     private static Board Instance = new Board(); // Singleton instance of the board class.
-    private static final String BOARD_PATH = "Assets/Layout.txt"; // Path to the board layout.
+    private static final String BOARD_PATH = "/Layout.txt"; // Path to the board layout.
     private boolean[][] boardArray; // Grid array, true if grid square is in the hallway.
     private List<BoardObject> boardObjectList; // List of objects on the board.
     private BoardPanel panel; // Panel where the board is displayed.
@@ -66,7 +66,7 @@ public class Board {
     private void LoadBoard() {
         boardArray = new boolean[24][25];
         
-        try(Scanner layoutReader = new Scanner(new File(BOARD_PATH), "UTF-8"))
+        try(Scanner layoutReader = new Scanner(Board.class.getResource(BOARD_PATH).openStream(), "UTF-8"))
         {
             int row = 0;
             while(layoutReader.hasNext())
@@ -79,6 +79,8 @@ public class Board {
                 row++;
             }
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -106,7 +108,7 @@ public class Board {
             }
             str.append('\n');
         }
-        Game.display.sendMessage(str.toString());
+        System.out.println(str.toString());
     }
 
     /**
@@ -128,6 +130,7 @@ public class Board {
     /**
      * A JPanel that displays the game board.
      * @author Adrian Wennberg
+     * 
      */
     @SuppressWarnings("serial")
     private class BoardPanel extends JPanel {
@@ -135,7 +138,7 @@ public class Board {
         /**
          * File path to the board image.
          */
-        private static final String BOARD_PATH = "Assets/cluedo board.jpg";
+        private static final String BOARD_PATH = "/cluedo board.jpg";
         /**
          * Grid corner x coordinate.
          */
@@ -167,7 +170,7 @@ public class Board {
          */
         public BoardPanel() {
             try {
-                boardImage = ImageIO.read(new File(BOARD_PATH));
+                boardImage = ImageIO.read(BoardPanel.class.getResource(BOARD_PATH));
                 prefW = boardImage.getWidth();
                 prefH = boardImage.getHeight();
             } catch (IOException e) {

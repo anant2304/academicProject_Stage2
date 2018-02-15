@@ -8,6 +8,8 @@ import java.util.Map;
  * @author Peter Major
  * @Summary Takes in commands from the Command Panel and does actions based on them.
  * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
  */
 public class Controler {
 	public enum moveDirection {up, down, left, right};
@@ -35,8 +37,9 @@ public class Controler {
 
         Game.display.sendMessage(command);
 		command = command.toLowerCase();
+		command = command.trim();
 		
-		String[] splitCom = command.split(" ");
+		String[] splitCom = command.split("\\s+");
 				
 		if(splitCom.length > 1 )//if has second word
 			argument = splitCom[1];//put second word in argument
@@ -61,8 +64,6 @@ public class Controler {
 		if(Game.currentObject != null) {
 			Game.currentObject.Move(d);
 	        Board.GetBoard().GetBoardPanel().repaint();
-	        Game.display.sendMessage("    " + Game.currentObject.GetName() +
-	                                 " moved in direction : " + d + "\n");
 		}
 		else 
 			Game.display.sendMessage("    Current object is null\n");

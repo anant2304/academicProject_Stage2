@@ -14,6 +14,8 @@ import Sigurd.Game;
  * Players that are displayed to the screen.
  * @author Peter Major
  * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
  */
 public class PlayerObject extends BoardObject {
 
@@ -53,9 +55,11 @@ public class PlayerObject extends BoardObject {
     	
     	if(Board.GetBoard().IsPositionMovable(tempX, tempY)) {
     		super.Move(d);
+            Game.display.sendMessage("    " + GetName() +
+                    " moved in direction : " + d + "\n");
     	}
     	else {
-    		Game.display.sendMessage("Space is not walkable");
+    		Game.display.sendMessage("    Space is not walkable\n");
     	}
     }
 }

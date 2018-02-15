@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
  * Weapons that are displayed to the screen.
  * @author PeterMajor
  * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
  */
 public class WeaponObject extends BoardObject {
 

@@ -11,6 +11,8 @@ import Sigurd.BoardObjects.*;
  * Servers an an entry point and ties the different classes together.
  * @author Peter Major
  * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
  */
 public class Game {
 	static Controler controler;

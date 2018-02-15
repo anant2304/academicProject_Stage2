@@ -8,6 +8,8 @@ import Sigurd.Controler;
  * Abstract superclass for objects that will be displayed on the board.
  * @author Adrian Wennberg, Peter Major
  * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
  */
 public abstract class BoardObject {
 	private String name;

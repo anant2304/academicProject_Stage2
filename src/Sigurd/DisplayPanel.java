@@ -8,6 +8,8 @@ import java.awt.*;
  * Panel that displays inputs back to the user.
  * @author Anant Shaw
  * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
  */
 @SuppressWarnings("serial")
 public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itself
