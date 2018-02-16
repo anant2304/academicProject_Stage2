@@ -20,7 +20,8 @@ public class CommandPanel extends JPanel {
 
 	public CommandPanel() {
 		controler = Game.GetControlerInstance();
-		
+		commandLine.setBackground(Color.gray); //adding color to command panel
+        	commandLine.setOpaque(true);
 		AddCommandLine();
 		AddEnterButton();
 	}
