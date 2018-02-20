@@ -3,6 +3,8 @@ package Sigurd;
 import java.util.HashMap;
 import java.util.Map;
 
+import Sigurd.BoardObjects.BoardObject;
+
 /**
  * 
  * @author Peter Major
@@ -20,10 +22,10 @@ public class Controler {
 	String argument = "";
 	
 	public Controler() {//define all commands here	
-		coms.put( "u", 		() -> Move(moveDirection.up));
-		coms.put( "d", 		() -> Move(moveDirection.down));
-		coms.put( "l", 		() -> Move(moveDirection.left));
-		coms.put( "r", 		() -> Move(moveDirection.right));
+		coms.put( "u", 		() -> Move(Coordinates.UP));
+		coms.put( "d", 		() -> Move(Coordinates.DOWN));
+		coms.put( "l", 		() -> Move(Coordinates.LEFT));
+		coms.put( "r", 		() -> Move(Coordinates.RIGHT));
 		coms.put("exit",	() -> System.exit(0));
 		coms.put("control", () -> Control(argument));
 	}
@@ -60,8 +62,10 @@ public class Controler {
 	 * @Summary moves the current player in the given direction
 	 * @param direction
 	 */
-	void Move(moveDirection d){
-		if(Game.currentObject != null) {
+	void Move(Coordinates co){
+		BoardObject currObj = Game.currentObject;
+		if(currObj != null) {
+			currObj.MoveTo(currObj.GetCoordinates().add(co));
 	        Board.GetBoard().GetBoardPanel().repaint();
 		}
 		else 

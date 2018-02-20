@@ -4,6 +4,11 @@ import java.util.zip.DataFormatException;
 
 public class Coordinates {
 
+	public final static Coordinates UP 	= 	new	Coordinates	(0, -1);
+	public final static Coordinates DOWN = 	new	Coordinates	(0, 1);
+	public final static Coordinates RIGHT = new Coordinates	(1, 0);
+	public final static Coordinates LEFT = 	new Coordinates	(-1, 0);
+	
     private int row, col;
 
     Coordinates(int col, int row) {
