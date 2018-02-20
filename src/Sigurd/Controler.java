@@ -66,7 +66,7 @@ public class Controler {
 		BoardObject currObj = Game.currentObject;
 		if(currObj != null) {
 			currObj.MoveTo(currObj.GetCoordinates().add(co));
-	        Board.GetBoard().GetBoardPanel().repaint();
+	        Game.getBoard().GetBoardPanel().repaint();
 		}
 		else 
 			Game.display.sendMessage("    Current object is null\n");

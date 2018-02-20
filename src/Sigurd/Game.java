@@ -18,6 +18,7 @@ public class Game {
 	static Controler controler;
 	static BoardObject currentObject;
 	static CommandPanel command;
+	static Board board;
 	public static DisplayPanel display;
 	
 	
@@ -37,6 +38,7 @@ public class Game {
 		controler = new Controler();
 		command = new CommandPanel();
 		display = new DisplayPanel();
+		board = new Board();
 	
 		
 		PlacePlayers();
@@ -54,7 +56,7 @@ public class Game {
 		window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
 		window.setLayout(new BorderLayout());
 		
-		window.add(Board.GetBoard().GetBoardPanel(), BorderLayout.CENTER);
+		window.add(board.GetBoardPanel(), BorderLayout.CENTER);
 		window.add(command, BorderLayout.SOUTH);
 		window.add(display, BorderLayout.EAST);
 		
@@ -73,7 +75,6 @@ public class Game {
 		playerMap.put("scarlet",new PlayerObject(new Coordinates(7, 24), Color.decode("#ff2400"), "Scarlet"));
 		playerMap.put("mustard",new PlayerObject(new Coordinates(0, 17), Color.decode("#ffdb58"), "Mustard"));
 
-        Board board = Board.GetBoard();
 		for(PlayerObject p : playerMap.values())
 		    board.AddMovable(p);
 	}
@@ -89,7 +90,6 @@ public class Game {
 		weaponMap.put("candlestick",new WeaponObject(new Coordinates(10,21),new Character('C'),"CandleStick"));
 		weaponMap.put("leadpipe",new WeaponObject(new Coordinates(20,22),new Character('L'),"LeadPipe"));
 		
-		Board board = Board.GetBoard();
         for(WeaponObject p : weaponMap.values())
             board.AddMovable(p);
 	}
@@ -136,5 +136,9 @@ public class Game {
 	 */
 	public static BoardObject GetCurrentObject() {
 		return currentObject;
+	}
+	
+	public static Board getBoard() {
+		return board;
 	}
 }

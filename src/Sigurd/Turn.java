@@ -84,7 +84,7 @@ public class Turn {
             throw new IllegalArgumentException("Move dir must be a string in the set {u, d, l, r}.");
         }
         
-        if (Board.GetBoard().IsPositionMovable(turnPlayer.GetCoordinates().add(positionChange))) {
+        if (Game.getBoard().IsPositionMovable(turnPlayer.GetCoordinates().add(positionChange))) {
             turnPlayer.Move(positionChange);
             DisplayMessage(turnPlayer.GetName() + " moved in direction: " + dir);
         }

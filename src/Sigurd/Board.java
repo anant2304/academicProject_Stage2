@@ -21,7 +21,6 @@ import Sigurd.BoardObjects.BoardObject;
  * 16751195, 16202907, 16375246
  */
 public class Board {
-    private static Board Instance; // Singleton instance of the board class.
     private static final String BOARD_PATH = "/Layout.txt"; // Path to the board layout.
     private boolean[][] boardArray; // Grid array, true if grid square is in the hallway.
     private List<BoardObject> boardObjectList; // List of objects on the board.
@@ -32,7 +31,7 @@ public class Board {
      * @param args
      */
     public static void main(String[] args) {
-        Board b = GetBoard();
+        Board b = new Board();
         b.display();
         JFrame frame = new JFrame();
         frame.add(b.GetBoardPanel());
@@ -46,20 +45,10 @@ public class Board {
     /**
      * Constructor to create the initial board.
      */
-    private Board() {
+    Board() {
         boardObjectList = new LinkedList<>();
         panel = new BoardPanel();
         LoadBoard();
-    }
-
-    /**
-     * Gets the reference to the board object.
-     * @return A reference to the board singleton instance.
-     */
-    public static Board GetBoard() {
-        if(Instance == null)
-            Instance = new Board();
-        return Instance;
     }
 
     /**
