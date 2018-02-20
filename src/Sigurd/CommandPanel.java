@@ -20,8 +20,7 @@ public class CommandPanel extends JPanel {
 
 	public CommandPanel() {
 		controler = Game.GetControlerInstance();
-		//commandLine.setBackground(Color.gray); //adding color to command panel
-        //commandLine.setOpaque(true);
+		this.setBackground(Color.BLACK);
 		AddCommandLine();
 		AddEnterButton();
 	}
@@ -30,7 +29,7 @@ public class CommandPanel extends JPanel {
 	 * @Summary adds the command line to the main panel
 	 */
 	void AddCommandLine() {
-		commandLine = new JTextField(20);
+		commandLine = new JTextField(50);
 		
 		//action listener for when user presses return key
 		commandLine.addActionListener(
@@ -49,7 +48,7 @@ public class CommandPanel extends JPanel {
 	 * @Summary adds the enter button to the main panel
 	 */
 	void AddEnterButton() {
-		enterButton = new JButton("Enter");
+		enterButton = new JButton("PLAY");
 		
 		//when button is pressed
 		enterButton.addActionListener(
