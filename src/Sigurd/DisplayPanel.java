@@ -45,7 +45,6 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         style = text1.addStyle("defualt", null);        
         
         sendMessage("GAME BEGINS");
-        SendError("this is a test");
     }
     public static void main(String args[]) throws IOException //main function which takes the input string and sends it to the sendMessage function to be displayed in the panel, for testing
     {

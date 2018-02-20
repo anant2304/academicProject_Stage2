@@ -129,7 +129,7 @@ public class Turn {
      * the Game class.
      */
     private void DisplayError(String string) {
-        // TODO Auto-generated method stub
+        Game.GetDisplay().SendError(string);
 
     }
 

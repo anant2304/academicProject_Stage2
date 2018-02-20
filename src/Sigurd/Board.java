@@ -193,7 +193,7 @@ public class Board {
                 if(m.GetImage() != null)
                     g2d.drawImage(m.GetImage(), m.GetCoordinates().getCol() * CELL_SIZE, m.GetCoordinates().getRow() * CELL_SIZE, this);
                 else {
-                	Game.GetDisplay().sendMessage("WARNNING : No image found for : " + m.GetName());
+                	Game.GetDisplay().SendError("WARNNING : No image found for : " + m.GetName());
                 }
             }
         }
