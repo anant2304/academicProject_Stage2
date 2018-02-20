@@ -29,12 +29,13 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     {
         this.setLayout(new BorderLayout(10,10)); 
         this.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
-        this.setBackground(Color.RED);
         tpane.setEditable(false);
         StyleConstants.setAlignment(set, StyleConstants.ALIGN_CENTER);
         tpane.setParagraphAttributes(set, true);
         tpane.setOpaque(true);
         tpane.setBackground(Color.gray);
+        DefaultCaret c=(DefaultCaret)tpane.getCaret();
+        c.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         pane=new JScrollPane(tpane); 
         pane.setPreferredSize( new Dimension(363,632));
         add(pane);

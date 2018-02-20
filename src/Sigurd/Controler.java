@@ -50,7 +50,7 @@ public class Controler {
 			coms.get(splitCom[0]).run();
 		}
 		else{
-			Game.GetDisplay().sendMessage("    Command does not exist\n");
+			Game.GetDisplay().sendMessage("Command does not exist\n");
 		}
 		
 		argument = "";
@@ -69,7 +69,7 @@ public class Controler {
 	        Game.GetBoard().GetBoardPanel().repaint();
 		}
 		else 
-			Game.GetDisplay().sendMessage("    Current object is null\n");
+			Game.GetDisplay().sendMessage("Current object is null\n");
 	}
 
 	/**
@@ -79,10 +79,11 @@ public class Controler {
 	void Control(String Object) {
 		if(Game.ObjectExistes(Object)) {
 			Game.SetCurrentObject(Object);
-			Game.GetDisplay().sendMessage("    Controling " + Object + "\n");
+			Game.GetDisplay().sendMessage("Controling " + Object + "\n");
 		}
 		
 		else
-			Game.GetDisplay().sendMessage("    Object not found\n");
+			Game.GetDisplay().sendMessage("Object not found\n");
+
 	}
 }
