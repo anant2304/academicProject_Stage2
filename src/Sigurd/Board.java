@@ -205,7 +205,7 @@ public class Board {
             g2d.translate(CORNER_X, CORNER_Y);
             for (BoardObject m : boardObjectList) {
                 if(m.GetImage() != null)
-                    g2d.drawImage(m.GetImage(), m.GetX() * CELL_SIZE, m.GetY() * CELL_SIZE, this);
+                    g2d.drawImage(m.GetImage(), m.GetCoordinates().getCol() * CELL_SIZE, m.GetCoordinates().getRow() * CELL_SIZE, this);
                 else {
                 	Game.display.sendMessage("WARNNING : No image found for : " + m.GetName());
                 }

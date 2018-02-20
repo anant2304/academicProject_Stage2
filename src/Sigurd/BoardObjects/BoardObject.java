@@ -3,6 +3,7 @@ package Sigurd.BoardObjects;
 import java.awt.Image;
 
 import Sigurd.Controler;
+import Sigurd.Coordinates;
 
 /**
  * Abstract superclass for objects that will be displayed on the board.
@@ -13,8 +14,7 @@ import Sigurd.Controler;
  */
 public abstract class BoardObject {
 	private String name;
-	private int x;
-	private int y;
+	private Coordinates obectCoordanates;
 	private Image image;
     
 	/**
@@ -24,11 +24,10 @@ public abstract class BoardObject {
 	 * @param image    Image to display on the board.
 	 * @param name     Name that the board object is identified by.
 	 */
-    protected BoardObject(int x, int y, Image image, String name)
+    protected BoardObject(Coordinates co, Image image, String name)
     {
     	this.name = name;
-        this.x = x;
-        this.y = y;
+    	obectCoordanates = co;
         this.image = image;
     }
     
@@ -44,17 +43,9 @@ public abstract class BoardObject {
     /**
      * @return The current X position on the grid.
      */
-    public int GetX()
+    public Coordinates GetCoordinates() 
     {
-        return x;
-    }
-    
-    /**
-     * @return The current Y position on the grid.
-     */
-    public int GetY()
-    {
-        return y;
+        return obectCoordanates;
     }
 
     /**
@@ -74,20 +65,7 @@ public abstract class BoardObject {
     /**
      * @Summay moves the object in the specified direction, 0=up,1=right,2=down,3=left
      */
-    public void Move(Controler.moveDirection d){
-    	switch(d) {
-    	case up :
-    		y--;
-    		break;
-    	case down:
-    		y++;
-    		break;
-    	case left:
-    		x--;
-    		break;
-    	case right:
-    		x++;
-    		break;
-    	}
+    public void MoveTo(Coordinates co){
+    	obectCoordanates = co;
     }
 }

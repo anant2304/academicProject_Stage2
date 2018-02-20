@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 
 import Sigurd.Board;
 import Sigurd.Controler;
+import Sigurd.Coordinates;
 import Sigurd.Game;
 
 /**
@@ -26,8 +27,8 @@ public class PlayerObject extends BoardObject {
 	 * @param c
 	 * @param _name
 	 */
-    public PlayerObject(int _x, int _y, Color c, String _name) {
-        super(_x,_y,(Image)null,_name);
+    public PlayerObject(Coordinates co, Color c, String _name) {
+        super(co,(Image)null,_name);
         
         BufferedImage image = new BufferedImage(23, 23, BufferedImage.TYPE_INT_ARGB);
         
@@ -41,25 +42,7 @@ public class PlayerObject extends BoardObject {
     /**
      * moves the currently controlled player in the given direction
      */
-    @Override
-    public void Move(Controler.moveDirection d) {
-    	int tempX = GetX();
-    	int tempY = GetY();
-    	
-    	switch(d) {
-	    	case up   : tempY--; break;
-	    	case down : tempY++; break;
-	    	case left : tempX--; break;
-	    	case right: tempX++; break;
-	    	}
-    	
-    	if(Board.GetBoard().IsPositionMovable(tempX, tempY)) {
-    		super.Move(d);
-            Game.display.sendMessage("    " + GetName() +
-                    " moved in direction : " + d + "\n");
-    	}
-    	else {
-    		Game.display.sendMessage("    Space is not walkable\n");
-    	}
+    public void Move(Coordinates c) {
+    	GetCoordinates().add(c);
     }
 }

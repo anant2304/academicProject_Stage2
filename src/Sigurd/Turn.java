@@ -11,22 +11,15 @@ import Sigurd.BoardObjects.*;
  */
 public class Turn {
     private PlayerObject turnPlayer;
-    private static final String[] SET_VALUES = new String[] { "u", "d", "l", "r" };
-    private static final Set<String> moveDirections = new HashSet<String>(Arrays.asList(SET_VALUES));
+    private static final String[] MOVE_DIRECTION_VALUES = new String[] { "u", "d", "l", "r" };
+    private static final Set<String> MOVE_DIRECTIONS = new HashSet<String>(Arrays.asList(MOVE_DIRECTION_VALUES));
 
-    /**
-     * Create a turn with a specified player.
-     * 
-     * @param The
-     *            player who's turn it is.
-     */
     public Turn(PlayerObject player) {
         turnPlayer = player;
     }
 
     /**
      * Do an action based on a sting input.
-     * 
      * @param input
      */
     public void TurnAction(String input) {
@@ -34,11 +27,11 @@ public class Turn {
         // Check if the input was a number in case
         // the player is trying to leave a room.
         if (input.length() == 1 && Character.isDigit(input.toCharArray()[0]))
-            LeaveRoom(Integer.parseInt(input));
+            MoveOutOfRoom(Integer.parseInt(input));
 
         // Check if the input is a movable direction.
-        else if (moveDirections.contains(input))
-            Move(input);
+        else if (MOVE_DIRECTIONS.contains(input))
+            MoveInDirection(input);
 
         else {
 
@@ -49,13 +42,13 @@ public class Turn {
             case "done": // Done with the round.
                 // TODO Should we allow done as initial input? Without
                 // moving or rolling?
-                TurnDone();
+                EndTurn();
                 break;
             case "roll":
-                Roll();
+                RollDice();
                 break;
             case "passage":
-                TakePassage();
+                MoveThroughPassage();
                 break;
             default:
                 DisplayError(input + " is not a valid command.");
@@ -65,58 +58,36 @@ public class Turn {
         }
     }
 
-    /**
-     * Player moves through a secret passage.
-     */
-    private void TakePassage() {
+    private void MoveThroughPassage() {
         // TODO If player not in room, error.
         // TODO Auto-generated method stub
 
     }
 
-    /**
-     * Moves the player in the specified direction.
-     * 
-     * @param dir
-     *            direction to move;
-     */
-    private void Move(String dir) {
+    private void MoveInDirection(String dir) {
         // TODO Auto-generated method stub
 
     }
 
-    /**
-     * Player leaves the room they are currently in.
-     * 
-     * @param exit
-     */
-    private void LeaveRoom(int exit) {
+    private void MoveOutOfRoom(int exit) {
         // TODO If player not in room, error.
         // TODO Auto-generated method stub
 
     }
 
-    /**
-     * Rolls the dice for the turn and displays the result.
-     */
-    private void Roll() {
+    private void RollDice() {
         // TODO Auto-generated method stub
 
     }
 
-    /**
-     * Ends the current turn
-     */
-    private void TurnDone() {
+    private void EndTurn() {
         // TODO Auto-generated method stub
 
     }
 
     /**
      * Displays a message to the display panel.
-     * 
-     * @param stringc
-     *            Message to display.
+     * Should potentially be moved to the Game class.
      */
     private void DisplayMessage(String string) {
         // TODO Auto-generated method stub
@@ -125,9 +96,7 @@ public class Turn {
 
     /**
      * Displays an error to the display panel.
-     * 
-     * @param string
-     *            Error to display.
+     * Should potentially be moved to the Game class.
      */
     private void DisplayError(String string) {
         // TODO Auto-generated method stub

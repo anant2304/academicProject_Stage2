@@ -5,6 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
+import Sigurd.Coordinates;
+
 
 /**
  * Weapons that are displayed to the screen.
@@ -22,8 +24,8 @@ public class WeaponObject extends BoardObject {
 	 * @param testChar
 	 * @param _name
 	 */
-    public WeaponObject(int _x, int _y, Character Char, String _name) {
-    	super(_x,_y,(Image)null,_name);
+    public WeaponObject(Coordinates co, Character Char, String _name) {
+    	super(co,(Image)null,_name);
         
     	// Creates the image that will be displayed for this object.
     	BufferedImage image = new BufferedImage(22,22,BufferedImage.TYPE_INT_ARGB);

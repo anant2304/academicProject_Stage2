@@ -66,12 +66,12 @@ public class Game {
 	 * @Summary creates and places all the players onto the board
 	 */
 	static void PlacePlayers() {
-		playerMap.put("white",new PlayerObject(9, 0, Color.decode("#ffffff"), "White"));
-		playerMap.put("green",new PlayerObject(14, 0, Color.decode("#00ff00"), "Green"));
-		playerMap.put("peacock",new PlayerObject(23, 6, Color.decode("#326872"), "Peacock"));
-		playerMap.put("plum",new PlayerObject(23, 19, Color.decode("#8E4585"), "Plum"));
-		playerMap.put("scarlet",new PlayerObject(7, 24, Color.decode("#ff2400"), "Scarlet"));
-		playerMap.put("mustard",new PlayerObject(0, 17, Color.decode("#ffdb58"), "Mustard"));
+		playerMap.put("white",new PlayerObject(new Coordinates(9, 0), Color.decode("#ffffff"), "White"));
+		playerMap.put("green",new PlayerObject(new Coordinates(14, 0), Color.decode("#00ff00"), "Green"));
+		playerMap.put("peacock",new PlayerObject(new Coordinates(23, 6), Color.decode("#326872"), "Peacock"));
+		playerMap.put("plum",new PlayerObject(new Coordinates(23, 19), Color.decode("#8E4585"), "Plum"));
+		playerMap.put("scarlet",new PlayerObject(new Coordinates(7, 24), Color.decode("#ff2400"), "Scarlet"));
+		playerMap.put("mustard",new PlayerObject(new Coordinates(0, 17), Color.decode("#ffdb58"), "Mustard"));
 
         Board board = Board.GetBoard();
 		for(PlayerObject p : playerMap.values())
@@ -82,12 +82,12 @@ public class Game {
 	 * @Summary creates and places all weapons onto the board
 	 */
 	static void PlaceWeapons() {
-		weaponMap.put("rope",new WeaponObject(3,4,new Character('R'),"Rope"));
-		weaponMap.put("dagger",new WeaponObject(4,12,new Character('D'),"Dagger"));
-		weaponMap.put("wrench",new WeaponObject(3,21,new Character('W'),"Wrench"));
-		weaponMap.put("pistol",new WeaponObject(10,3,new Character('P'),"Pistol"));
-		weaponMap.put("candlestick",new WeaponObject(10,21,new Character('C'),"CandleStick"));
-		weaponMap.put("leadpipe",new WeaponObject(20,22,new Character('L'),"LeadPipe"));
+		weaponMap.put("rope",new WeaponObject(new Coordinates(3,4),new Character('R'),"Rope"));
+		weaponMap.put("dagger",new WeaponObject(new Coordinates(4,12),new Character('D'),"Dagger"));
+		weaponMap.put("wrench",new WeaponObject(new Coordinates(3,21),new Character('W'),"Wrench"));
+		weaponMap.put("pistol",new WeaponObject(new Coordinates(10,3),new Character('P'),"Pistol"));
+		weaponMap.put("candlestick",new WeaponObject(new Coordinates(10,21),new Character('C'),"CandleStick"));
+		weaponMap.put("leadpipe",new WeaponObject(new Coordinates(20,22),new Character('L'),"LeadPipe"));
 		
 		Board board = Board.GetBoard();
         for(WeaponObject p : weaponMap.values())
