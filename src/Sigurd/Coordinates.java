@@ -1,5 +1,7 @@
 package Sigurd;
 
+import java.util.zip.DataFormatException;
+
 public class Coordinates {
 
     private int row, col;
@@ -9,9 +11,8 @@ public class Coordinates {
         this.row = row;
     }
 
-    public void add(Coordinates coordinates) {
-        col = col + coordinates.getCol();
-        row = row + coordinates.getRow();
+    public Coordinates add(Coordinates coordinates) {
+        return new Coordinates(col + coordinates.getCol(), row + coordinates.getRow());
     }
 
     public int getRow() {
@@ -20,5 +21,21 @@ public class Coordinates {
 
     public int getCol() {
         return col;
+    }
+    
+    public static Coordinates parse(String s) throws DataFormatException
+    {
+        String[] cooArray = s.trim().split(",");
+        if(cooArray.length != 2)
+            throw new DataFormatException("Coordnate string must be of format x,y where x and y are ints");
+       
+        try {
+            return new Coordinates(Integer.parseInt(cooArray[0]),
+                                   Integer.parseInt(cooArray[1]));
+        }
+        catch(NumberFormatException e)
+        {
+            throw new DataFormatException("Coordnate string must be of format x,y where x and y are ints");
+        }
     }
 }

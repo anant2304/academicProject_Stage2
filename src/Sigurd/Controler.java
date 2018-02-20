@@ -62,7 +62,6 @@ public class Controler {
 	 */
 	void Move(moveDirection d){
 		if(Game.currentObject != null) {
-			Game.currentObject.Move(d);
 	        Board.GetBoard().GetBoardPanel().repaint();
 		}
 		else 

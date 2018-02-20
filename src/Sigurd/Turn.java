@@ -20,6 +20,7 @@ public class Turn {
 
     /**
      * Do an action based on a sting input.
+     * 
      * @param input
      */
     public void TurnAction(String input) {
@@ -63,10 +64,34 @@ public class Turn {
         // TODO Auto-generated method stub
 
     }
-
+    
     private void MoveInDirection(String dir) {
-        // TODO Auto-generated method stub
-
+        Coordinates positionChange;
+        switch (dir) {
+        case "u":
+            positionChange = new Coordinates(0, -1);
+            break;
+        case "d":
+            positionChange = new Coordinates(0, 1);
+            break;
+        case "l":
+            positionChange = new Coordinates(-1, 0);
+            break;
+        case "r":
+            positionChange = new Coordinates(1, 0);
+            break;
+        default:
+            throw new IllegalArgumentException("Move dir must be a string in the set {u, d, l, r}.");
+        }
+        
+        if (Board.GetBoard().IsPositionMovable(turnPlayer.GetCoordinates().add(positionChange))) {
+            turnPlayer.Move(positionChange);
+            DisplayMessage(turnPlayer.GetName() + " moved in direction: " + dir);
+        }
+        else
+        {
+            DisplayError(turnPlayer.GetName() + " cannot move in direction " + dir);
+        }
     }
 
     private void MoveOutOfRoom(int exit) {
@@ -86,8 +111,8 @@ public class Turn {
     }
 
     /**
-     * Displays a message to the display panel.
-     * Should potentially be moved to the Game class.
+     * Displays a message to the display panel. Should potentially be moved to
+     * the Game class.
      */
     private void DisplayMessage(String string) {
         // TODO Auto-generated method stub
@@ -95,8 +120,8 @@ public class Turn {
     }
 
     /**
-     * Displays an error to the display panel.
-     * Should potentially be moved to the Game class.
+     * Displays an error to the display panel. Should potentially be moved to
+     * the Game class.
      */
     private void DisplayError(String string) {
         // TODO Auto-generated method stub

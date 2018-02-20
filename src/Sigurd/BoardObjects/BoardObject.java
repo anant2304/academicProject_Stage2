@@ -2,7 +2,6 @@ package Sigurd.BoardObjects;
 
 import java.awt.Image;
 
-import Sigurd.Controler;
 import Sigurd.Coordinates;
 
 /**

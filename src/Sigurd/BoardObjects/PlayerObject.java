@@ -5,11 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-
-import Sigurd.Board;
-import Sigurd.Controler;
 import Sigurd.Coordinates;
-import Sigurd.Game;
 
 /**
  * Players that are displayed to the screen.
@@ -43,6 +39,6 @@ public class PlayerObject extends BoardObject {
      * moves the currently controlled player in the given direction
      */
     public void Move(Coordinates c) {
-    	GetCoordinates().add(c);
+    	MoveTo(GetCoordinates().add(c));
     }
 }

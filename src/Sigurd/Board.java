@@ -21,7 +21,7 @@ import Sigurd.BoardObjects.BoardObject;
  * 16751195, 16202907, 16375246
  */
 public class Board {
-    private static Board Instance = new Board(); // Singleton instance of the board class.
+    private static Board Instance; // Singleton instance of the board class.
     private static final String BOARD_PATH = "/Layout.txt"; // Path to the board layout.
     private boolean[][] boardArray; // Grid array, true if grid square is in the hallway.
     private List<BoardObject> boardObjectList; // List of objects on the board.
@@ -57,6 +57,8 @@ public class Board {
      * @return A reference to the board singleton instance.
      */
     public static Board GetBoard() {
+        if(Instance == null)
+            Instance = new Board();
         return Instance;
     }
 
@@ -85,16 +87,11 @@ public class Board {
         }
     }
 
-    /**
-     * Check if a position can be moved to.
-     * @param x - an x coordinate on the grid
-     * @param y - a y coordinate on the grid
-     * @return true if the x, y grid position can be moved to.
-     */
-    public boolean IsPositionMovable(int x, int y) {
-        boolean validX = x >= 0 && x < boardArray.length;
-        boolean validY = y >= 0 && y < boardArray[0].length;
-        return validX && validY && boardArray[x][y];
+    
+    public boolean IsPositionMovable(Coordinates co) {
+        boolean validX = co.getCol() >= 0 && co.getCol() < boardArray.length;
+        boolean validY = co.getRow() >= 0 && co.getRow() < boardArray[0].length;
+        return validX && validY && boardArray[co.getCol()][co.getRow()];
     }
 
     /**
