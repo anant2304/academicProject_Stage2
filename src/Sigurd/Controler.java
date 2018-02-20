@@ -37,7 +37,7 @@ public class Controler {
 	 */
 	public void ExicuteCommand(String command) {
 
-        Game.display.sendMessage(command);
+        Game.GetDisplay().sendMessage(command);
 		command = command.toLowerCase();
 		command = command.trim();
 		
@@ -50,7 +50,7 @@ public class Controler {
 			coms.get(splitCom[0]).run();
 		}
 		else{
-			Game.display.sendMessage("    Command does not exist\n");
+			Game.GetDisplay().sendMessage("    Command does not exist\n");
 		}
 		
 		argument = "";
@@ -63,13 +63,13 @@ public class Controler {
 	 * @param direction
 	 */
 	void Move(Coordinates co){
-		BoardObject currObj = Game.currentObject;
+		BoardObject currObj = Game.GetCurrentObject();
 		if(currObj != null) {
 			currObj.MoveTo(currObj.GetCoordinates().add(co));
-	        Game.getBoard().GetBoardPanel().repaint();
+	        Game.GetBoard().GetBoardPanel().repaint();
 		}
 		else 
-			Game.display.sendMessage("    Current object is null\n");
+			Game.GetDisplay().sendMessage("    Current object is null\n");
 	}
 
 	/**
@@ -79,10 +79,10 @@ public class Controler {
 	void Control(String Object) {
 		if(Game.ObjectExistes(Object)) {
 			Game.SetCurrentObject(Object);
-			Game.display.sendMessage("    Controling " + Object + "\n");
+			Game.GetDisplay().sendMessage("    Controling " + Object + "\n");
 		}
 		
 		else
-			Game.display.sendMessage("    Object not found\n");
+			Game.GetDisplay().sendMessage("    Object not found\n");
 	}
 }

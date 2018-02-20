@@ -15,15 +15,15 @@ import Sigurd.BoardObjects.*;
  * 16751195, 16202907, 16375246
  */
 public class Game {
-	static Controler controler;
-	static BoardObject currentObject;
-	static CommandPanel command;
-	static Board board;
-	public static DisplayPanel display;
+	private static Controler controler;
+	private static BoardObject currentObject;
+	private static CommandPanel command;
+	private static Board board;
+	private static DisplayPanel display;
 	
 	
-	static Map<String,PlayerObject> playerMap = new HashMap<String,PlayerObject>();
-	static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
+	private static Map<String,PlayerObject> playerMap = new HashMap<String,PlayerObject>();
+	private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
 	
 	/**
 	 *  Private Constructor
@@ -51,7 +51,7 @@ public class Game {
 	 * @Summary creates the window that holds all the panels
 	 */
     @SuppressWarnings("static-access")
-	static void CreateWindow() {
+	private static void CreateWindow() {
         JFrame window = new JFrame();
 		window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
 		window.setLayout(new BorderLayout());
@@ -67,7 +67,7 @@ public class Game {
 	/**
 	 * @Summary creates and places all the players onto the board
 	 */
-	static void PlacePlayers() {
+	private static void PlacePlayers() {
 		playerMap.put("white",new PlayerObject(new Coordinates(9, 0), Color.decode("#ffffff"), "White"));
 		playerMap.put("green",new PlayerObject(new Coordinates(14, 0), Color.decode("#00ff00"), "Green"));
 		playerMap.put("peacock",new PlayerObject(new Coordinates(23, 6), Color.decode("#326872"), "Peacock"));
@@ -82,7 +82,7 @@ public class Game {
 	/**
 	 * @Summary creates and places all weapons onto the board
 	 */
-	static void PlaceWeapons() {
+	private static void PlaceWeapons() {
 		weaponMap.put("rope",new WeaponObject(new Coordinates(3,4),new Character('R'),"Rope"));
 		weaponMap.put("dagger",new WeaponObject(new Coordinates(4,12),new Character('D'),"Dagger"));
 		weaponMap.put("wrench",new WeaponObject(new Coordinates(3,21),new Character('W'),"Wrench"));
@@ -138,7 +138,11 @@ public class Game {
 		return currentObject;
 	}
 	
-	public static Board getBoard() {
+	public static Board GetBoard() {
 		return board;
+	}
+	
+	public static DisplayPanel GetDisplay() {
+		return display;
 	}
 }
