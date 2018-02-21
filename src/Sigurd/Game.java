@@ -99,6 +99,7 @@ public class Game {
 	 * @Summary creates a new turn with the next player
 	 */
 	public static void NextTurn() {
+		//TODO : there is currently no list of players so i can't incrment them
 		NewTurn(null);
 	}
 	
