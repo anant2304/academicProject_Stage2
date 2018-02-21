@@ -63,6 +63,7 @@ public class Game {
 		
 		window.pack();
 		window.setVisible(true);
+		window.setResizable(false); //makes the frame non-resizable
 	}
 	
 	/**
