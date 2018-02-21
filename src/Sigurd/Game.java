@@ -21,14 +21,10 @@ public class Game {
 	private static Board board;
 	private static DisplayPanel display;
 	
+	private static Stack<Turn> turnList = new Stack<Turn>();
 	
 	private static Map<String,PlayerObject> playerMap = new HashMap<String,PlayerObject>();
 	private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
-	
-	/**
-	 *  Private Constructor
-	 */
-	private Game() {} 
 	
 	/**
 	 * @Summary the main that runs the game
@@ -46,6 +42,11 @@ public class Game {
         CreateWindow();
 		SetCurrentObject("white");
 	}
+	
+	/**
+	 * private constructor
+	 */
+	private Game() {}
 	
 	/**
 	 * @Summary creates the window that holds all the panels
@@ -95,6 +96,27 @@ public class Game {
 	}
 	
 	/**
+	 * @Summary creates a new turn with the next player
+	 */
+	public static void NextTurn() {
+		NewTurn(null);
+	}
+	
+	/**
+	 * @Summary ends the last turn and starts a new one
+	 */
+	public static void NewTurn(PlayerObject p) {
+		turnList.push(new Turn(p));
+	}
+	
+	/**
+	 * @Summary returns a reference to the current turn
+	 */
+	public static Turn CurrentTurn() {
+		return turnList.peek();
+	}
+	
+	/**
 	 * @ Summary Sets the current object to a given one
 	 * @param index
 	 * @param isPlayer
@@ -138,10 +160,17 @@ public class Game {
 		return currentObject;
 	}
 	
+	/**
+	 * @Summary returns the game board
+	 */
 	public static Board GetBoard() {
 		return board;
 	}
 	
+	/**
+	 * 
+	 * @Summary returns the display pannel
+	 */
 	public static DisplayPanel GetDisplay() {
 		return display;
 	}

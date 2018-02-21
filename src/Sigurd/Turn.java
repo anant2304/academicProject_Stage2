@@ -110,9 +110,11 @@ public class Turn {
     	Game.GetDisplay().sendMessage("Die 1 gives: "+d1+"\n"+"Die 2 gives: "+d2+"\n"+"Player gets "+(d1+d2)+" moves"+"\n");
     }
 
+    /**
+     * @Summary finishes this turn and starts the next one
+     */
     private void EndTurn() {
-        // TODO Auto-generated method stub
-
+    	Game.NextTurn();
     }
 
     /**
@@ -120,7 +122,7 @@ public class Turn {
      * the Game class.
      */
     private void DisplayMessage(String string) {
-        // TODO Auto-generated method stub
+        Game.GetDisplay().sendMessage(string);
 
     }
 
