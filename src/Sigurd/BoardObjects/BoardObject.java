@@ -3,6 +3,7 @@ package Sigurd.BoardObjects;
 import java.awt.Image;
 
 import Sigurd.Coordinates;
+import Sigurd.Room;
 
 /**
  * Abstract superclass for objects that will be displayed on the board.
@@ -13,8 +14,9 @@ import Sigurd.Coordinates;
  */
 public abstract class BoardObject {
 	private String name;
-	private Coordinates obectCoordanates;
+	private Coordinates objectCoordanates;
 	private Image image;
+	private Room room;
     
 	/**
 	 * 
@@ -26,7 +28,7 @@ public abstract class BoardObject {
     protected BoardObject(Coordinates co, Image image, String name)
     {
     	this.name = name;
-    	obectCoordanates = co;
+    	objectCoordanates = co;
         this.image = image;
     }
     
@@ -44,7 +46,7 @@ public abstract class BoardObject {
      */
     public Coordinates GetCoordinates() 
     {
-        return obectCoordanates;
+        return objectCoordanates;
     }
 
     /**
@@ -65,6 +67,32 @@ public abstract class BoardObject {
      * @Summay moves the object in the specified direction, 0=up,1=right,2=down,3=left
      */
     public void MoveTo(Coordinates co){
-    	obectCoordanates = co;
+    	objectCoordanates = co;
+    }
+    
+    public void MoveToRoom(Room r) {
+        room = r;
+        r.AddObject(this);
+        MoveTo(r.GetObjectPosition(this));
+    }
+    
+    public boolean IsInRoom()
+    {
+        return room != null;
+    }
+    
+    public Room GetRoom()
+    {
+        if(room == null)
+            throw new IllegalStateException(name + " not in a room.");
+        return room;
+    }
+    
+    public void LeaveRoom()
+    {
+        if(room == null)
+            throw new IllegalStateException(name + " not in a room.");
+        room.RemoveObject(this);
+        room = null;
     }
 }

@@ -11,8 +11,8 @@ import Sigurd.BoardObjects.*;
  */
 public class Turn {
     private PlayerObject turnPlayer;
-    private static final String[] MOVE_DIRECTION_VALUES = new String[] { "u", "d", "l", "r" };
-    private static final Set<String> MOVE_DIRECTIONS = new HashSet<String>(Arrays.asList(MOVE_DIRECTION_VALUES));
+    private static final Set<String> MOVE_DIRECTIONS = new HashSet<String>(
+            Arrays.asList(new String[] { "u", "d", "l", "r" }));
 
     public Turn(PlayerObject player) {
         turnPlayer = player;
@@ -40,9 +40,7 @@ public class Turn {
             case "quit": // Quit the game
                 // TODO: Add quit game method.
                 break;
-            case "done": // Done with the round.
-                // TODO Should we allow done as initial input? Without
-                // moving or rolling?
+            case "done":
                 EndTurn();
                 break;
             case "roll":
@@ -64,8 +62,9 @@ public class Turn {
         // TODO Auto-generated method stub
 
     }
-    
+
     private void MoveInDirection(String dir) {
+        // TODO if player in room error.
         Coordinates positionChange;
         switch (dir) {
         case "u":
@@ -83,21 +82,36 @@ public class Turn {
         default:
             throw new IllegalArgumentException("Move dir must be a string in the set {u, d, l, r}.");
         }
-        
-        if (Board.GetBoard().IsPositionMovable(turnPlayer.GetCoordinates().add(positionChange))) {
-            turnPlayer.Move(positionChange);
-            DisplayMessage(turnPlayer.GetName() + " moved in direction: " + dir);
-        }
-        else
-        {
+
+        Coordinates movingToCo = turnPlayer.GetCoordinates().add(positionChange);
+
+        if (Board.GetBoard().IsPositionMovable(movingToCo)) {
+            if (Board.GetBoard().IsDoor(movingToCo)) {
+                // Moves player into room, and adds the player to the room object.
+                turnPlayer.MoveToRoom(Board.GetBoard().GetDoorRoom(movingToCo));
+                // TODO Stop players form moving more steps.
+            } else {
+                // Moves a player along the board grid.
+                turnPlayer.Move(positionChange);
+                DisplayMessage(turnPlayer.GetName() + " moved in direction: " + dir);
+                // TODO decrement number of steps left.
+            }
+        } else {
             DisplayError(turnPlayer.GetName() + " cannot move in direction " + dir);
         }
     }
 
     private void MoveOutOfRoom(int exit) {
-        // TODO If player not in room, error.
-        // TODO Auto-generated method stub
-
+        if(turnPlayer.IsInRoom() == false)
+            DisplayError(""); // TODO Add relevant error message.
+        
+        Coordinates[] roomDoors = turnPlayer.GetRoom().GetDoors();
+        
+        if(roomDoors.length <= exit)
+            DisplayError(""); // TODO Add relevant error message.
+        
+        turnPlayer.LeaveRoom();
+        turnPlayer.MoveTo(roomDoors[exit]);
     }
 
     private void RollDice() {

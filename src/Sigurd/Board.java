@@ -4,9 +4,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -23,9 +22,12 @@ import Sigurd.BoardObjects.BoardObject;
 public class Board {
     private static Board Instance; // Singleton instance of the board class.
     private static final String BOARD_PATH = "/Layout.txt"; // Path to the board layout.
+    private static final String ROOMS_PATH = "/RoomInfo.txt"; // Path to room info file.
     private boolean[][] boardArray; // Grid array, true if grid square is in the hallway.
+    private Map<Coordinates, Room> doorPositions;
     private List<BoardObject> boardObjectList; // List of objects on the board.
     private BoardPanel panel; // Panel where the board is displayed.
+    private Room[] rooms;
 
     /**
      * Testing the board display
@@ -50,6 +52,7 @@ public class Board {
         boardObjectList = new LinkedList<>();
         panel = new BoardPanel();
         LoadBoard();
+        LoadRooms();
     }
 
     /**
@@ -86,26 +89,54 @@ public class Board {
             e.printStackTrace();
         }
     }
+    
+    private void LoadRooms() {
+        rooms = new Room[10];
+        doorPositions = new HashMap<Coordinates, Room>(); 
+        try(Scanner layoutReader = new Scanner(Board.class.getResource(ROOMS_PATH).openStream(), "UTF-8"))
+        {
+            int roomIndex = 0;
+            while(layoutReader.hasNext())
+            {
+                String line = layoutReader.nextLine();
+                String[] lineParts = line.split("\\s+");
+
+                String roomName = lineParts[0];
+                String[] doorStrings = lineParts[1].split("\\|");
+                Coordinates[] doorCoordinates = new Coordinates[doorStrings.length];
+
+                for(int i = 0; i < doorStrings.length; i++) {
+                    doorCoordinates[i] = new Coordinates(doorStrings[i]);
+                }
+                
+                Coordinates roomCentrePosition = (lineParts.length > 2?new Coordinates(lineParts[2]): null);
+                
+                rooms[roomIndex] = new Room(roomName, doorCoordinates, roomCentrePosition);
+                
+                for (Coordinates c : doorCoordinates)
+                    doorPositions.put(c, rooms[roomIndex]);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     
     public boolean IsPositionMovable(Coordinates co) {
         boolean validX = co.getCol() >= 0 && co.getCol() < boardArray.length;
         boolean validY = co.getRow() >= 0 && co.getRow() < boardArray[0].length;
-        return validX && validY && boardArray[co.getCol()][co.getRow()];
+        return validX && validY && (boardArray[co.getCol()][co.getRow()] || IsDoor(co));
     }
-
-    /**
-     * Prints the contents of the board array in 1s and 0s.
-     */
-    private void display() {
-        StringBuilder str = new StringBuilder();
-        for (int i = 0; i < boardArray[0].length; i++) {
-            for (int j = 0; j < boardArray.length; j++) {
-                str.append(boardArray[j][i] ? '1' : '0');
-            }
-            str.append('\n');
-        }
-        System.out.println(str.toString());
+    
+    public boolean IsDoor(Coordinates co) {
+        return doorPositions.containsKey(co);
+    }
+    
+    public Room GetDoorRoom(Coordinates co)
+    {
+        return doorPositions.get(co);
     }
 
     /**
@@ -122,6 +153,20 @@ public class Board {
      */
     public JPanel GetBoardPanel() {
         return panel;
+    }
+    
+    /**
+     * Prints the contents of the board array in 1s and 0s.
+     */
+    private void display() {
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < boardArray[0].length; i++) {
+            for (int j = 0; j < boardArray.length; j++) {
+                str.append(boardArray[j][i] ? '1' : '0');
+            }
+            str.append('\n');
+        }
+        System.out.println(str.toString());
     }
 
     /**
