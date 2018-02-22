@@ -60,9 +60,6 @@ public class Turn {
                 DisplayError(input + " is not a valid command.");
                 break;
             }
-
-            // TODO Add a help command and add info about help command in
-            // default response.
         }
     }
 

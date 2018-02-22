@@ -179,17 +179,20 @@ public class Game {
 	}
 	
 	/**
-	 * @Summary Takes a command and passes it to the correct handeling functions, this could be debug in game or take turn in turn
+	 * @Summary Takes a command and passes it to the correct handeling method, this could be debug in game, help in game or take turn in turn
 	 */
 	public static void PassCommand(String com) {
 		
 		if(com.charAt(0) == '#') {
 			DebugCommand(com);
-			return;
 		}
-		
-		turnStack.peek().TurnAction(com);
-		board.GetBoardPanel().repaint();
+		else if(com.toLowerCase() == "help" || com == "h") {
+			DisplayHelp();
+		}
+		else {
+			turnStack.peek().TurnAction(com);
+			board.GetBoardPanel().repaint();
+		}
 	}
 	
 	/**
@@ -206,5 +209,11 @@ public class Game {
 		}
 		
 		display.sendMessage(com);
+	}
+	
+	private static void DisplayHelp(){
+		display.sendMessage(
+				""//TODO : add text here
+				);
 	}
 }
