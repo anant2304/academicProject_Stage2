@@ -1,6 +1,9 @@
 package Sigurd;
 
 import java.util.*;
+
+import com.sun.glass.ui.Application;
+
 import Sigurd.BoardObjects.*;
 
 /**
@@ -41,8 +44,8 @@ public class Turn {
         else {
 
             switch (input) {
-            case "quit": // Quit the game
-                // TODO: Add quit game method.
+            case "quit": //Quit the game
+                System.exit(0);
                 break;
             case "done":
                 EndTurn();
@@ -84,16 +87,16 @@ public class Turn {
         Coordinates positionChange;
         switch (dir) {
         case "u":
-            positionChange = new Coordinates(0, -1);
+            positionChange = Coordinates.UP;
             break;
         case "d":
-            positionChange = new Coordinates(0, 1);
+            positionChange = Coordinates.DOWN;
             break;
         case "l":
-            positionChange = new Coordinates(-1, 0);
+            positionChange = Coordinates.LEFT;
             break;
         case "r":
-            positionChange = new Coordinates(1, 0);
+            positionChange = Coordinates.RIGHT;
             break;
         default:
             throw new IllegalArgumentException("Move dir must be a string in the set {u, d, l, r}.");
@@ -101,11 +104,11 @@ public class Turn {
 
         Coordinates movingToCo = turnPlayer.GetCoordinates().add(positionChange);
 
-        if (Board.GetBoard().IsPositionMovable(turnPlayer.GetCoordinates(), movingToCo)) {
-            if (Board.GetBoard().IsDoor(movingToCo)) {
+        if (Game.GetBoard().IsPositionMovable(turnPlayer.GetCoordinates(), movingToCo)) {
+            if (Game.GetBoard().IsDoor(movingToCo)) {
                 // Moves player into room, and adds the player to the room
                 // object.
-                turnPlayer.MoveToRoom(Board.GetBoard().GetDoorRoom(movingToCo));
+                turnPlayer.MoveToRoom(Game.GetBoard().GetDoorRoom(movingToCo));
             } else {
                 // Moves a player along the board grid.
                 turnPlayer.Move(positionChange);
@@ -167,6 +170,7 @@ public class Turn {
 
     private void EndTurn() {
         Game.NextTurn();
+        Game.GetDisplay().sendMessage("Turn Over");
     }
 
     /**
@@ -183,5 +187,10 @@ public class Turn {
      */
     private void DisplayError(String string) {
         Game.GetDisplay().SendError(string);
+    }
+    
+    public void SetStepsLeft(int quantaty) {
+    	d1 = 1;
+    	stepsLeft = quantaty;
     }
 }

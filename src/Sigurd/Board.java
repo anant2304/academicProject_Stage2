@@ -18,7 +18,6 @@ import Sigurd.BoardObjects.BoardObject;
  *         16375246
  */
 public class Board {
-    private static Board Instance;
     private static final String BOARD_PATH = "/Layout.txt";
     private static final String ROOMS_PATH = "/RoomInfo.txt";
     private boolean[][] boardArray; // Grid array, true if grid square is in the
@@ -35,7 +34,7 @@ public class Board {
      * @param args
      */
     public static void main(String[] args) {
-        Board b = GetBoard();
+        Board b = new Board();
         b.SetRoom(b.rooms[1]);
         b.GetBoardPanel().repaint();
         // b.display();
@@ -51,7 +50,7 @@ public class Board {
     /**
      * Constructor to create the initial board.
      */
-    private Board() {
+    public Board() {
         boardObjectList = new LinkedList<>();
         panel = new BoardPanel();
         LoadBoard();
@@ -64,17 +63,6 @@ public class Board {
 
     public void ResetRoom(Room r) {
         selectedRoom = null;
-    }
-
-    /**
-     * Gets the reference to the board object.
-     * 
-     * @return A reference to the board singleton instance.
-     */
-    public static Board GetBoard() {
-        if (Instance == null)
-            Instance = new Board();
-        return Instance;
     }
 
     /**

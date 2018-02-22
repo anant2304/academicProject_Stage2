@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowListener;
 
 /**
  * @author Peter Major
@@ -18,6 +19,7 @@ public class CommandPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	JTextField commandLine;
 	JButton enterButton;
+	Board board;
 
 	public CommandPanel() {
 		this.setBackground(Color.BLACK);
@@ -35,7 +37,7 @@ public class CommandPanel extends JPanel {
 		commandLine.addActionListener(
 				new ActionListener(){
 						public void actionPerformed(ActionEvent e) {
-							// TODO execute move.
+							Game.PassCommand(commandLine.getText());
 							commandLine.setText("");
 							}
 				}
@@ -48,13 +50,13 @@ public class CommandPanel extends JPanel {
 	 * @Summary adds the enter button to the main panel
 	 */
 	void AddEnterButton() {
-		enterButton = new JButton("PLAY");
+		enterButton = new JButton("Enter");
 		
 		//when button is pressed
 		enterButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-					    // TODO execute move.
+						Game.PassCommand(commandLine.getText());
 						commandLine.setText("");
 					}
 				}

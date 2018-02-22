@@ -1,6 +1,9 @@
 package Sigurd;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.*;
 import java.util.*;
@@ -20,7 +23,7 @@ public class Game {
 	private static Board board;
 	private static DisplayPanel display;
 	
-	private static Stack<Turn> turnList = new Stack<Turn>();
+	private static Stack<Turn> turnStack = new Stack<Turn>();
 	
 	private static Map<String,PlayerObject> playerMap = new HashMap<String,PlayerObject>();
 	private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
@@ -32,13 +35,13 @@ public class Game {
 	public static void main(String[] args) {
 		command = new CommandPanel();
 		display = new DisplayPanel();
-		board = GetBoard();
-	
-		
+		board = new Board();
+			
 		PlacePlayers();
 		PlaceWeapons();
         CreateWindow();
-		SetCurrentObject("white");
+		NewTurn(playerMap.get("white"));
+		command.TakeFocus();//would be in create window but some issue causes it to work only half the time, here it always works
 	}
 	
 	/**
@@ -54,15 +57,21 @@ public class Game {
         JFrame window = new JFrame();
 		window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
 		window.setLayout(new BorderLayout());
-		
+				
 		window.add(command, BorderLayout.SOUTH);
 		window.add(board.GetBoardPanel(), BorderLayout.CENTER);
 		window.add(display, BorderLayout.EAST);
 		
 		window.pack();
-		window.setVisible(true);
-		command.TakeFocus();
 		window.setResizable(false); //makes the frame non-resizable
+		window.setVisible(true);
+		
+		//sets the currser to the command line when the game window is opened
+		window.addWindowListener(new WindowAdapter() {
+			public void windowOpened(WindowEvent e) {
+				command.TakeFocus();
+			}
+		});
 	}
 	
 	/**
@@ -107,18 +116,14 @@ public class Game {
 	 * @Summary ends the last turn and starts a new one
 	 */
 	public static void NewTurn(PlayerObject p) {
-		turnList.push(new Turn(p));
-	}
-	
-	public static void UndoTurn() {//TODO : this only destroys the turn it dose not roll back the curr player
-		turnList.pop().UndoAllMoves();
+		turnStack.push(new Turn(p));
 	}
 	
 	/**
 	 * @Summary returns a reference to the current turn
 	 */
 	public static Turn CurrentTurn() {
-		return turnList.peek();
+		return turnStack.peek();
 	}
 	
 	/**
@@ -157,18 +162,35 @@ public class Game {
 		return currentObject;
 	}
 	
-	/**
-	 * @Summary returns the game board
-	 */
+	public static DisplayPanel GetDisplay() {
+		return display;
+	}
+	
 	public static Board GetBoard() {
 		return board;
 	}
 	
-	/**
-	 * 
-	 * @Summary returns the display pannel
-	 */
-	public static DisplayPanel GetDisplay() {
-		return display;
+	public static void PassCommand(String com) {
+		
+		if(com.charAt(0) == '#') {
+			DebugCommand(com);
+			return;
+		}
+		
+		turnStack.peek().TurnAction(com);
+		board.GetBoardPanel().repaint();
+	}
+	
+	private static void DebugCommand(String com) {
+		switch(com) {
+		case "#exit" :
+			System.exit(0);
+			break;
+		case "#steps100" :
+			turnStack.peek().SetStepsLeft(100);
+			break;
+		}
+		
+		display.sendMessage(com);
 	}
 }
