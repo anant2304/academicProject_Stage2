@@ -63,14 +63,13 @@ public abstract class BoardObject {
     	return name;
     }
     
-    /**
-     * @Summay moves the object in the specified direction, 0=up,1=right,2=down,3=left
-     */
     public void MoveTo(Coordinates co){
-    	objectCoordanates = co;
+        objectCoordanates = co;
     }
-    
+
     public void MoveToRoom(Room r) {
+        if(room != null)
+            LeaveRoom();
         room = r;
         r.AddObject(this);
         MoveTo(r.GetObjectPosition(this));

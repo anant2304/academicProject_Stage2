@@ -5,14 +5,14 @@ import Sigurd.BoardObjects.*;
 public class Room {
     private static final String[] PLAYER_OFFSETS = { "1,0", "1,-1", "2,-1", "2,0", "2,1", "1,1" };
     private static final String[] WEAPON_OFFSETS = { "-1,0", "-1,-1", "-2,-1", "-2,0", "-2,1", "-1,1" };
-    private Coordinates[] doors;
+    private Door[] doors;
     private Coordinates roomCentrePos;
     private PlayerObject[] players;
     private WeaponObject[] weapons;
     private String name;
     private Room passageRoom;
 
-    public Room(String name, Coordinates[] doors, Coordinates roomCentrePos) {
+    public Room(String name, Door[] doors, Coordinates roomCentrePos) {
         this.name = name;
         this.doors = doors;
         this.roomCentrePos = roomCentrePos;
@@ -107,7 +107,7 @@ public class Room {
         }
     }
 
-    public Coordinates[] GetDoors() {
+    public Door[] GetDoors() {
         return doors;
     }
 }

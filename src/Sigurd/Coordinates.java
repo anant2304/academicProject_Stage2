@@ -20,8 +20,8 @@ public class Coordinates {
             throw new IllegalArgumentException("Coordnate string must be of format x,y where x and y are ints");
        
         try {
-            row = Integer.parseInt(cooArray[0]);
-            col = Integer.parseInt(cooArray[1]);
+            col = Integer.parseInt(cooArray[0]);
+            row = Integer.parseInt(cooArray[1]);
         }
         catch(NumberFormatException e)
         {

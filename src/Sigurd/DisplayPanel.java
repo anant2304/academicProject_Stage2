@@ -55,6 +55,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         {
             panel.sendMessage(st); //calling the sendMessage function
         }
+        panel.SendError(st);
         JFrame frame=new JFrame(); //creating a new JFrame for testing 
         frame.setBackground(Color.red);
         frame.add(panel);

@@ -14,28 +14,31 @@ import javax.swing.JPanel;
 import Sigurd.BoardObjects.BoardObject;
 
 /**
- * @author Adrian Wennberg
- * Team: Sigurd
- * Student Numbers:
- * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg Team: Sigurd Student Numbers: 16751195, 16202907,
+ *         16375246
  */
 public class Board {
-    private static Board Instance; // Singleton instance of the board class.
-    private static final String BOARD_PATH = "/Layout.txt"; // Path to the board layout.
-    private static final String ROOMS_PATH = "/RoomInfo.txt"; // Path to room info file.
-    private boolean[][] boardArray; // Grid array, true if grid square is in the hallway.
-    private Map<Coordinates, Room> doorPositions;
-    private List<BoardObject> boardObjectList; // List of objects on the board.
-    private BoardPanel panel; // Panel where the board is displayed.
+    private static Board Instance;
+    private static final String BOARD_PATH = "/Layout.txt";
+    private static final String ROOMS_PATH = "/RoomInfo.txt";
+    private boolean[][] boardArray; // Grid array, true if grid square is in the
+                                    // hallway.
+    private Map<Door, Room> doorPositions;
+    private List<BoardObject> boardObjectList;
+    private BoardPanel panel;
     private Room[] rooms;
+    private Room selectedRoom;
 
     /**
      * Testing the board display
+     * 
      * @param args
      */
     public static void main(String[] args) {
         Board b = GetBoard();
-        b.display();
+        b.SetRoom(b.rooms[1]);
+        b.GetBoardPanel().repaint();
+        // b.display();
         JFrame frame = new JFrame();
         frame.add(b.GetBoardPanel());
 
@@ -55,12 +58,21 @@ public class Board {
         LoadRooms();
     }
 
+    public void SetRoom(Room r) {
+        selectedRoom = r;
+    }
+
+    public void ResetRoom(Room r) {
+        selectedRoom = null;
+    }
+
     /**
      * Gets the reference to the board object.
+     * 
      * @return A reference to the board singleton instance.
      */
     public static Board GetBoard() {
-        if(Instance == null)
+        if (Instance == null)
             Instance = new Board();
         return Instance;
     }
@@ -70,15 +82,12 @@ public class Board {
      */
     private void LoadBoard() {
         boardArray = new boolean[24][25];
-        
-        try(Scanner layoutReader = new Scanner(Board.class.getResource(BOARD_PATH).openStream(), "UTF-8"))
-        {
+
+        try (Scanner layoutReader = new Scanner(Board.class.getResource(BOARD_PATH).openStream(), "UTF-8")) {
             int row = 0;
-            while(layoutReader.hasNext())
-            {
+            while (layoutReader.hasNext()) {
                 String line = layoutReader.next();
-                for(int i = 0; i < line.length(); i++)
-                {
+                for (int i = 0; i < line.length(); i++) {
                     boardArray[i][row] = (line.charAt(i) == '1');
                 }
                 row++;
@@ -89,32 +98,36 @@ public class Board {
             e.printStackTrace();
         }
     }
-    
+
     private void LoadRooms() {
         rooms = new Room[10];
-        doorPositions = new HashMap<Coordinates, Room>(); 
-        try(Scanner layoutReader = new Scanner(Board.class.getResource(ROOMS_PATH).openStream(), "UTF-8"))
-        {
+        doorPositions = new HashMap<Door, Room>();
+        try (Scanner layoutReader = new Scanner(Board.class.getResource(ROOMS_PATH).openStream(), "UTF-8")) {
             int roomIndex = 0;
-            while(layoutReader.hasNext())
-            {
+            while (layoutReader.hasNext()) {
                 String line = layoutReader.nextLine();
                 String[] lineParts = line.split("\\s+");
 
-                String roomName = lineParts[0];
-                String[] doorStrings = lineParts[1].split("\\|");
-                Coordinates[] doorCoordinates = new Coordinates[doorStrings.length];
+                String[] roomNameParts = lineParts[0].split("_");
+                String roomName = roomNameParts[0];
+                for (int i = 1; i < roomNameParts.length; i++)
+                    roomName += " " + roomNameParts[i];
 
-                for(int i = 0; i < doorStrings.length; i++) {
-                    doorCoordinates[i] = new Coordinates(doorStrings[i]);
+                String[] doorStrings = lineParts[1].split("\\|");
+                Door[] doorCoordinates = new Door[doorStrings.length];
+
+                for (int i = 0; i < doorStrings.length; i++) {
+                    doorCoordinates[i] = new Door(doorStrings[i]);
                 }
-                
-                Coordinates roomCentrePosition = (lineParts.length > 2?new Coordinates(lineParts[2]): null);
-                
+
+                Coordinates roomCentrePosition = (lineParts.length > 2 ? new Coordinates(lineParts[2]) : null);
+
                 rooms[roomIndex] = new Room(roomName, doorCoordinates, roomCentrePosition);
-                
-                for (Coordinates c : doorCoordinates)
+
+                for (Door c : doorCoordinates)
                     doorPositions.put(c, rooms[roomIndex]);
+
+                roomIndex++;
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -123,25 +136,26 @@ public class Board {
         }
     }
 
-    
-    public boolean IsPositionMovable(Coordinates co) {
-        boolean validX = co.getCol() >= 0 && co.getCol() < boardArray.length;
-        boolean validY = co.getRow() >= 0 && co.getRow() < boardArray[0].length;
-        return validX && validY && (boardArray[co.getCol()][co.getRow()] || IsDoor(co));
+    public boolean IsPositionMovable(Coordinates current, Coordinates to) {
+        boolean validX = to.getCol() >= 0 && to.getCol() < boardArray.length;
+        boolean validY = to.getRow() >= 0 && to.getRow() < boardArray[0].length;
+        return validX && validY
+                && (boardArray[to.getCol()][to.getRow()] || (IsDoor(to) && ((Door) to).HasOutside(current)));
     }
-    
+
     public boolean IsDoor(Coordinates co) {
         return doorPositions.containsKey(co);
     }
-    
-    public Room GetDoorRoom(Coordinates co)
-    {
+
+    public Room GetDoorRoom(Coordinates co) {
         return doorPositions.get(co);
     }
 
     /**
      * Adds a BoardObject to the board.
-     * @param boardObject - Board Object to add.
+     * 
+     * @param boardObject
+     *            - Board Object to add.
      */
     public void AddMovable(BoardObject boardObject) {
         boardObjectList.add(boardObject);
@@ -149,12 +163,13 @@ public class Board {
 
     /**
      * Gets the panel where the board is displayed.
+     * 
      * @return The panel where the board is displayed
      */
     public JPanel GetBoardPanel() {
         return panel;
     }
-    
+
     /**
      * Prints the contents of the board array in 1s and 0s.
      */
@@ -171,45 +186,23 @@ public class Board {
 
     /**
      * A JPanel that displays the game board.
+     * 
      * @author Adrian Wennberg
      * 
      */
     @SuppressWarnings("serial")
     private class BoardPanel extends JPanel {
 
-        /**
-         * File path to the board image.
-         */
         private static final String BOARD_PATH = "/cluedo board.jpg";
-        /**
-         * Grid corner x coordinate.
-         */
-        private static final int CORNER_X = 42; 
-        /**
-         * Grid corner y coordinate
-         */
-        private static final int CORNER_Y = 23; 
-        /**
-         * Grid cell size.
-         */
-        private static final int CELL_SIZE = 23; 
+        private static final int CORNER_X = 42;
+        private static final int CORNER_Y = 23;
+        private static final int CELL_SIZE = 23;
 
-        /**
-         *  Image of the game board.
-         */
         private BufferedImage boardImage;
-        /**
-         * Preferred height of the board panel;
-         */
+
         private int prefH;
-        /**
-         * Preferred width of the board panel;
-         */
         private int prefW;
 
-        /**
-         * Constructor
-         */
         public BoardPanel() {
             try {
                 boardImage = ImageIO.read(BoardPanel.class.getResource(BOARD_PATH));
@@ -219,38 +212,55 @@ public class Board {
                 e.printStackTrace();
             }
         }
+
         /**
-         * Used by the swing system.
-         * Gets the preferred size of the panel.
+         * Used by the swing system. Gets the preferred size of the panel.
          */
         public Dimension getPreferredSize() {
             return new Dimension(prefW, prefH);
         }
 
         /**
-         * Used by the swing system.
-         * Decides how the panel is drawn.
-         * @param g - Graphics object.
+         * Used by the swing system. Decides how the panel is drawn.
+         * 
+         * @param g
+         *            - Graphics object.
          */
         public void paintComponent(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
             g2d.drawImage(boardImage, 0, 0, this);
 
             DrawBoardObjects(g2d);
+
+            if (selectedRoom != null)
+                DrawRoomDoors(g2d, selectedRoom);
         }
 
         /**
          * Draws BoardObjects added to the board.
-         * @param g2d - Graphics2D object to draw on
+         * 
+         * @param g2d
+         *            - Graphics2D object to draw on
          */
         private void DrawBoardObjects(Graphics2D g2d) {
             g2d.translate(CORNER_X, CORNER_Y);
             for (BoardObject m : boardObjectList) {
-                if(m.GetImage() != null)
-                    g2d.drawImage(m.GetImage(), m.GetCoordinates().getCol() * CELL_SIZE, m.GetCoordinates().getRow() * CELL_SIZE, this);
+                if (m.GetImage() != null)
+                    g2d.drawImage(m.GetImage(), m.GetCoordinates().getCol() * CELL_SIZE,
+                            m.GetCoordinates().getRow() * CELL_SIZE, this);
                 else {
-                	System.err.println("WARNNING : No image found for : " + m.GetName());
+                    System.err.println("WARNNING : No image found for : " + m.GetName());
                 }
+            }
+        }
+
+        private void DrawRoomDoors(Graphics2D g2d, Room r) {
+            Font f = new Font("Arial", Font.BOLD, 23);
+            g2d.setFont(f);
+            Door[] doors = r.GetDoors();
+            for (int i = 0; i < doors.length; i++) {
+                Coordinates outsideDoor = doors[i].GetOutside();
+                g2d.drawString(" " + (i + 1), outsideDoor.getCol() * CELL_SIZE, (1 + outsideDoor.getRow()) * CELL_SIZE);
             }
         }
     }

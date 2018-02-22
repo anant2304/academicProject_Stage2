@@ -35,6 +35,8 @@ public class PlayerObject extends BoardObject {
         SetImage(image);
     }
     
+    
+    
     /**
      * moves the currently controlled player in the given direction
      */
