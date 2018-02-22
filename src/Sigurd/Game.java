@@ -162,14 +162,25 @@ public class Game {
 		return currentObject;
 	}
 	
+	/**
+	 * @Summary returns the dispaly panel
+	 * @return
+	 */
 	public static DisplayPanel GetDisplay() {
 		return display;
 	}
 	
+	/**
+	 * @summary returns the board, witch you can get the board panel from
+	 * @return
+	 */
 	public static Board GetBoard() {
 		return board;
 	}
 	
+	/**
+	 * @Summary Takes a command and passes it to the correct handeling functions, this could be debug in game or take turn in turn
+	 */
 	public static void PassCommand(String com) {
 		
 		if(com.charAt(0) == '#') {
@@ -181,6 +192,9 @@ public class Game {
 		board.GetBoardPanel().repaint();
 	}
 	
+	/**
+	 * @Summary exicutes developer commands for debuging purposes
+	 */
 	private static void DebugCommand(String com) {
 		switch(com) {
 		case "#exit" :

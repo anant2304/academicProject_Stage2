@@ -189,6 +189,10 @@ public class Turn {
         Game.GetDisplay().SendError(string);
     }
     
+    /**
+     * @Summary sets the number of remaing steps in this turn to 100, to be used for debuing
+     * @param quantaty
+     */
     public void SetStepsLeft(int quantaty) {
     	d1 = 1;
     	stepsLeft = quantaty;
