@@ -1,7 +1,6 @@
 package Sigurd;
 
 import java.util.*;
-
 import Sigurd.BoardObjects.*;
 
 /**
@@ -13,8 +12,10 @@ public class Turn {
     private PlayerObject turnPlayer;
     private static final Set<String> MOVE_DIRECTIONS = new HashSet<String>(
             Arrays.asList(new String[] { "u", "d", "l", "r" }));
-
-    public Turn(PlayerObject player) {
+    private int d1,d2;
+    public Turn(PlayerObject player) 
+    {
+        d1=d2=0; 
         turnPlayer = player;
     }
 
@@ -114,14 +115,18 @@ public class Turn {
         turnPlayer.MoveTo(roomDoors[exit]);
     }
 
-    private void RollDice() {
-        // TODO Auto-generated method stub
 
+
+    private void RollDice() 
+    {
+        Random rand = new Random();
+        d1=rand.nextInt((6 - 1) + 1) + 1; //creating randomly generated numbers for the die results
+        d2=rand.nextInt((6 - 1) + 1) + 1; //creating randomly generated numbers for the die results
+        Game.GetDisplay().sendMessage("Die 1 gives: "+d1+"\n"+"Die 2 gives: "+d2+"\n"+"Player gets "+(d1+d2)+" moves"+"\n");
     }
 
     private void EndTurn() {
-        // TODO Auto-generated method stub
-
+        Game.NextTurn();
     }
 
     /**
@@ -129,7 +134,7 @@ public class Turn {
      * the Game class.
      */
     private void DisplayMessage(String string) {
-        // TODO Auto-generated method stub
+        Game.GetDisplay().sendMessage(string);
 
     }
 
@@ -138,8 +143,7 @@ public class Turn {
      * the Game class.
      */
     private void DisplayError(String string) {
-        // TODO Auto-generated method stub
+        Game.GetDisplay().SendError(string);
 
     }
-
 }

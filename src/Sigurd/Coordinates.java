@@ -1,3 +1,4 @@
+
 package Sigurd;
 
 public class Coordinates {
@@ -39,6 +40,4 @@ public class Coordinates {
     public int getCol() {
         return col;
     }
-    
-    
 }

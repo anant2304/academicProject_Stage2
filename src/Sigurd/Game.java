@@ -15,28 +15,24 @@ import Sigurd.BoardObjects.*;
  * 16751195, 16202907, 16375246
  */
 public class Game {
-	static Controler controler;
-	static BoardObject currentObject;
-	static CommandPanel command;
-	public static DisplayPanel display;
+	private static BoardObject currentObject;
+	private static CommandPanel command;
+	private static Board board;
+	private static DisplayPanel display;
 	
+	private static Stack<Turn> turnList = new Stack<Turn>();
 	
-	static Map<String,PlayerObject> playerMap = new HashMap<String,PlayerObject>();
-	static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
-	
-	/**
-	 *  Private Constructor
-	 */
-	private Game() {} 
+	private static Map<String,PlayerObject> playerMap = new HashMap<String,PlayerObject>();
+	private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
 	
 	/**
 	 * @Summary the main that runs the game
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		controler = new Controler();
 		command = new CommandPanel();
 		display = new DisplayPanel();
+		board = GetBoard();
 	
 		
 		PlacePlayers();
@@ -46,26 +42,32 @@ public class Game {
 	}
 	
 	/**
+	 * private constructor
+	 */
+	private Game() {}
+	
+	/**
 	 * @Summary creates the window that holds all the panels
 	 */
     @SuppressWarnings("static-access")
-	static void CreateWindow() {
+	private static void CreateWindow() {
         JFrame window = new JFrame();
 		window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
 		window.setLayout(new BorderLayout());
 		
-		window.add(Board.GetBoard().GetBoardPanel(), BorderLayout.CENTER);
+		window.add(board.GetBoardPanel(), BorderLayout.CENTER);
 		window.add(command, BorderLayout.SOUTH);
 		window.add(display, BorderLayout.EAST);
 		
 		window.pack();
 		window.setVisible(true);
+		window.setResizable(false); //makes the frame non-resizable
 	}
 	
 	/**
 	 * @Summary creates and places all the players onto the board
 	 */
-	static void PlacePlayers() {
+	private static void PlacePlayers() {
 		playerMap.put("white",new PlayerObject(new Coordinates(9, 0), Color.decode("#ffffff"), "White"));
 		playerMap.put("green",new PlayerObject(new Coordinates(14, 0), Color.decode("#00ff00"), "Green"));
 		playerMap.put("peacock",new PlayerObject(new Coordinates(23, 6), Color.decode("#326872"), "Peacock"));
@@ -73,7 +75,6 @@ public class Game {
 		playerMap.put("scarlet",new PlayerObject(new Coordinates(7, 24), Color.decode("#ff2400"), "Scarlet"));
 		playerMap.put("mustard",new PlayerObject(new Coordinates(0, 17), Color.decode("#ffdb58"), "Mustard"));
 
-        Board board = Board.GetBoard();
 		for(PlayerObject p : playerMap.values())
 		    board.AddMovable(p);
 	}
@@ -81,7 +82,7 @@ public class Game {
 	/**
 	 * @Summary creates and places all weapons onto the board
 	 */
-	static void PlaceWeapons() {
+	private static void PlaceWeapons() {
 		weaponMap.put("rope",new WeaponObject(new Coordinates(3,4),new Character('R'),"Rope"));
 		weaponMap.put("dagger",new WeaponObject(new Coordinates(4,12),new Character('D'),"Dagger"));
 		weaponMap.put("wrench",new WeaponObject(new Coordinates(3,21),new Character('W'),"Wrench"));
@@ -89,9 +90,30 @@ public class Game {
 		weaponMap.put("candlestick",new WeaponObject(new Coordinates(10,21),new Character('C'),"CandleStick"));
 		weaponMap.put("leadpipe",new WeaponObject(new Coordinates(20,22),new Character('L'),"LeadPipe"));
 		
-		Board board = Board.GetBoard();
         for(WeaponObject p : weaponMap.values())
             board.AddMovable(p);
+	}
+	
+	/**
+	 * @Summary creates a new turn with the next player
+	 */
+	public static void NextTurn() {
+		//TODO : there is currently no list of players so i can't incrment them
+		NewTurn(null);
+	}
+	
+	/**
+	 * @Summary ends the last turn and starts a new one
+	 */
+	public static void NewTurn(PlayerObject p) {
+		turnList.push(new Turn(p));
+	}
+	
+	/**
+	 * @Summary returns a reference to the current turn
+	 */
+	public static Turn CurrentTurn() {
+		return turnList.peek();
 	}
 	
 	/**
@@ -123,18 +145,25 @@ public class Game {
 	}
 	
 	/**
-	 * @Summary returns the working instance of the controller
-	 * @return
-	 */
-	public static Controler GetControlerInstance() {
-		return controler;
-	}
-	
-	/**
 	 * @Summary returns the object that is currently being controlled by commands
 	 * @return
 	 */
 	public static BoardObject GetCurrentObject() {
 		return currentObject;
+	}
+	
+	/**
+	 * @Summary returns the game board
+	 */
+	public static Board GetBoard() {
+		return board;
+	}
+	
+	/**
+	 * 
+	 * @Summary returns the display pannel
+	 */
+	public static DisplayPanel GetDisplay() {
+		return display;
 	}
 }

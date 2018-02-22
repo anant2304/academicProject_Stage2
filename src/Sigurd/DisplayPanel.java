@@ -25,19 +25,25 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     JScrollPane pane=new JScrollPane();
     SimpleAttributeSet set=new SimpleAttributeSet();
     StyledDocument text1=tpane.getStyledDocument();
+    Style style;
+    
     public DisplayPanel() //constructor to set the display panel
     {
         this.setLayout(new BorderLayout(10,10)); 
         this.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
-        this.setBackground(Color.RED);
         tpane.setEditable(false);
         StyleConstants.setAlignment(set, StyleConstants.ALIGN_CENTER);
         tpane.setParagraphAttributes(set, true);
         tpane.setOpaque(true);
         tpane.setBackground(Color.gray);
+        DefaultCaret c=(DefaultCaret)tpane.getCaret();
+        c.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         pane=new JScrollPane(tpane); 
         pane.setPreferredSize( new Dimension(363,632));
         add(pane);
+        
+        style = text1.addStyle("defualt", null);        
+        
         sendMessage("GAME BEGINS");
     }
     public static void main(String args[]) throws IOException //main function which takes the input string and sends it to the sendMessage function to be displayed in the panel, for testing
@@ -60,12 +66,18 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     {
         try
         {
-            text1.insertString(text1.getLength(), str+"\n\n", null);
+            text1.insertString(text1.getLength(), str+"\n\n", style);
         }
         catch(Exception exe) 
         { 
             System.out.println(exe); 
         }
+    }
+    
+    public void SendError(String str) {
+    	StyleConstants.setForeground(style, Color.white);
+    	sendMessage(str);
+    	StyleConstants.setForeground(style, Color.black);
     }
 }
 
