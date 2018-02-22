@@ -55,12 +55,13 @@ public class Game {
 		window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
 		window.setLayout(new BorderLayout());
 		
-		window.add(board.GetBoardPanel(), BorderLayout.CENTER);
 		window.add(command, BorderLayout.SOUTH);
+		window.add(board.GetBoardPanel(), BorderLayout.CENTER);
 		window.add(display, BorderLayout.EAST);
 		
 		window.pack();
 		window.setVisible(true);
+		command.TakeFocus();
 		window.setResizable(false); //makes the frame non-resizable
 	}
 	
@@ -107,6 +108,10 @@ public class Game {
 	 */
 	public static void NewTurn(PlayerObject p) {
 		turnList.push(new Turn(p));
+	}
+	
+	public static void UndoTurn() {//TODO : this only destroys the turn it dose not roll back the curr player
+		turnList.pop().UndoAllMoves();
 	}
 	
 	/**

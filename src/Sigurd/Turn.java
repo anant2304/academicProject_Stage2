@@ -13,6 +13,9 @@ public class Turn {
     private static final Set<String> MOVE_DIRECTIONS = new HashSet<String>(
             Arrays.asList(new String[] { "u", "d", "l", "r" }));
     private int d1,d2;
+    
+    private Stack<String> moveInverse = new Stack<String>();
+    
     public Turn(PlayerObject player) 
     {
         d1=d2=0; 
@@ -50,6 +53,9 @@ public class Turn {
             case "passage":
                 MoveThroughPassage();
                 break;
+            case "Undo":
+            	UndoMove();
+            	break;
             default:
                 DisplayError(input + " is not a valid command.");
                 break;
@@ -70,15 +76,19 @@ public class Turn {
         switch (dir) {
         case "u":
             positionChange = new Coordinates(0, -1);
+            moveInverse.add("d");
             break;
         case "d":
             positionChange = new Coordinates(0, 1);
+            moveInverse.add("u");
             break;
         case "l":
             positionChange = new Coordinates(-1, 0);
+            moveInverse.add("r");
             break;
         case "r":
             positionChange = new Coordinates(1, 0);
+            moveInverse.add("l");
             break;
         default:
             throw new IllegalArgumentException("Move dir must be a string in the set {u, d, l, r}.");
@@ -100,6 +110,16 @@ public class Turn {
         } else {
             DisplayError(turnPlayer.GetName() + " cannot move in direction " + dir);
         }
+    }
+    
+    public void UndoMove() {
+    	if(moveInverse.isEmpty() == false)
+    		MoveInDirection(moveInverse.pop());
+    }
+    
+    public void UndoAllMoves() {
+    	if(moveInverse.isEmpty() == false)
+    		MoveInDirection(moveInverse.pop());
     }
 
     private void MoveOutOfRoom(int exit) {

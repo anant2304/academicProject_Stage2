@@ -63,6 +63,10 @@ public class CommandPanel extends JPanel {
 		add(enterButton);
 	}
 	
+	public void TakeFocus() {
+		commandLine.requestFocusInWindow();
+	}
+	
 	/**
 	 * testing main
 	 * @param args
