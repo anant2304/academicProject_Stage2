@@ -205,20 +205,22 @@ public class Game {
 	 */
 	public static void PassCommand(String com) {
 		
-		if(com.charAt(0) == '#') {
-			DebugCommand(com);
-		}
-		else if(com.toLowerCase() == "help" || com == "h") {
-			DisplayHelp();
-		}
-		else {
-			turnStack.peek().TurnAction(com);
-			if(turnStack.peek().CanLeaveRoom())
-			    board.SetRoom(turnStack.peek().GetPlayer().GetRoom());
-			else
-			    board.ResetRoom();
-			board.GetBoardPanel().repaint();
-		}
+        if(isGameStarted()==false)
+        {
+            
+            playerSign.takeInput(com);
+        }
+        
+        else if(com.charAt(0) == '#') {
+            DebugCommand(com);
+        }
+        else if(com.toLowerCase() == "help" || com == "h") {
+            DisplayHelp();
+        }
+        else {
+            turnStack.peek().TurnAction(com);
+            board.GetBoardPanel().repaint();
+        }
 	}
 	
 	/**
