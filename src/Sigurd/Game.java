@@ -118,7 +118,12 @@ public class Game {
             board.AddMovable(p);
 	}
 	
-	/**
+    public static boolean isGameStarted()
+    {
+        return (!turnStack.isEmpty());
+    }
+    
+    /**
 	 * @Summary creates a new turn with the next player
 	 */
 	public static void NextTurn() {
