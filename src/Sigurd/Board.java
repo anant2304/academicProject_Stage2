@@ -257,7 +257,7 @@ public class Board {
                     g2d.drawImage(m.GetImage(), m.GetCoordinates().getCol() * CELL_SIZE,
                             m.GetCoordinates().getRow() * CELL_SIZE, this);
                 else {
-                    System.err.println("WARNNING : No image found for : " + m.GetName());
+                    System.err.println("WARNNING : No image found for : " + m.GetObjectName());
                 }
             }
         }

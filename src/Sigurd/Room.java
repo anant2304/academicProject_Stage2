@@ -48,7 +48,7 @@ public class Room {
             ;
         if (!p.equals(players[i]))
             throw new IllegalArgumentException(
-                    "Trying to get player: " + p.GetName() + " while player not in room: " + name);
+                    "Trying to get player: " + p.GetObjectName() + " while player not in room: " + name);
 
         return i;
     }
@@ -59,7 +59,7 @@ public class Room {
             ;
         if (!w.equals(weapons[i]))
             throw new IllegalArgumentException(
-                    "Trying to get weapon: " + w.GetName() + " while weapon not in room: " + name);
+                    "Trying to get weapon: " + w.GetObjectName() + " while weapon not in room: " + name);
 
         return i;
     }

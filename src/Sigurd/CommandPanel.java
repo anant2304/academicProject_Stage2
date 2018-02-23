@@ -37,7 +37,7 @@ public class CommandPanel extends JPanel {
 		commandLine.addActionListener(
 				new ActionListener(){
 						public void actionPerformed(ActionEvent e) {
-							Game.PassCommand(commandLine.getText());
+							Game.PassCommand(commandLine.getText().toLowerCase());
 							commandLine.setText("");
 							}
 				}
@@ -56,7 +56,7 @@ public class CommandPanel extends JPanel {
 		enterButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Game.PassCommand(commandLine.getText());
+						Game.PassCommand(commandLine.getText().toLowerCase());
 						commandLine.setText("");
 					}
 				}

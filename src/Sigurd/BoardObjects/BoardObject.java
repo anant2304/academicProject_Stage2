@@ -59,7 +59,7 @@ public abstract class BoardObject {
     /**
      * @return The name of this object.
      */
-    public String GetName() {
+    public String GetObjectName() {
     	return name;
     }
     

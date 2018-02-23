@@ -37,7 +37,7 @@ public class PlayerObject extends BoardObject {
         
         SetImage(image);
         playerName=_playerName;
-        Game.GetDisplay().sendMessage(playerName);
+        Game.GetDisplay().SendMessage(playerName);
     }
     
     public String getPlayerName()

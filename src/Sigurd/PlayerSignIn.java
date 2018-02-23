@@ -1,6 +1,7 @@
 package Sigurd;
 import java.awt.*;
 import java.util.Scanner;
+import java.util.Vector;
 
 import Sigurd.BoardObjects.PlayerObject;
 
@@ -9,138 +10,54 @@ import java.util.LinkedList;
 /*  Class PlayerSignIn  */
 class PlayerSignIn
 {
-    LinkedList<PlayerObject> list = new LinkedList<PlayerObject>();
-    LinkedList<String> nameList=new LinkedList<String>();
-    protected String name;
-    protected PlayerSignIn link;
-    public int numPlayers;
-    boolean isnumPlayersSet;
-    CommandPanel command;
+    Vector<PlayerObject> players = new Vector<PlayerObject>();
+    LinkedList<String> nameList = new LinkedList<String>();
     DisplayPanel display;
+    int currPossition;
     
     public PlayerSignIn()
     {
-        command=Game.GetCommand();
         display= Game.GetDisplay();
-        link=null;
-        name="";
-        isnumPlayersSet=false;
-    }
-    public PlayerSignIn(String n,PlayerSignIn l)
-    {
-        name=n;
-        link=l;
-    }
-    /*Function to set link to next PlayerSignIn node*/
-    public void setLink(PlayerSignIn n)
-    {
-        link = n;
-    }
-    /*Function to set data to current PlayerSignIn node*/
-    public void setData(String n)
-    {
-        name=n;
+        currPossition = 0;
     }
     
-    public void add(PlayerObject e)
+    public void add(PlayerObject p) 
     {
-        list.addLast(e);
+    	players.add(p);
     }
     
-    /*Function to get link to next node*/
-    public PlayerSignIn getLink()
+    public Vector<PlayerObject> getPlayers() 
     {
-        return link;
-    }
-    /*Function to get data from current PlayerSignIn node*/
-    public String getName()
-    {
-        return name;
-    }
-    public void askPlayerNames()
-    {
-        Game.GetDisplay().sendMessage("Enter the number of players\n");
-        if(isnumPlayersSet==false)
-        {
-            
-        }
+    	return players;
     }
     
-    public void takeInput(String input)
+    @SuppressWarnings("unchecked")
+	public LinkedList<String> getNameListCopy() 
     {
-        if(isnumPlayersSet==false)
-        {
-            if(Character.isDigit(input.charAt(0)))
-            {
-                numPlayers=Integer.parseInt(input);
-                isnumPlayersSet=true;
-                Game.GetDisplay().sendMessage("Hello\n");
-            }
-        }
-        else
-            if(isnumPlayersSet==false && !Character.isDigit(input.charAt(0)))
-            {
-                Game.GetDisplay().sendMessage("Wrong Input\n Enter the number of players\n");
-            }
-            else
-                if(isnumPlayersSet==true && !Character.isDigit(input.charAt(0)) && !input.equalsIgnoreCase("Done"))
-                {
-                    nameList.addLast(input);
-                }
-                else
-                    if(input.equalsIgnoreCase("Done"))
-                    {
-                        if(nameList.size()==numPlayers)
-                        {
-                            Game.StartGame();
-                        }
-                        else
-                        {
-                            Game.GetDisplay().sendMessage("Wrong number of players inputted\n");
-                        }
-                    }
-        for(int i=0;i<nameList.size();i++)
-        {
-            Game.GetDisplay().sendMessage(nameList.get(i));
-        }
+    	return (LinkedList<String>) nameList.clone();
     }
     
-    public static void main(String[] args)
+    public PlayerObject NextPlayer() 
     {
-        
-        
-    				
-    				PlayerSignIn obj=new PlayerSignIn();
-    				Scanner scan = new Scanner(System.in);
-        System.out.println("Circular Singly Linked List Test\n");
-        char ch;
-        do
-        {
-            System.out.println("\nCircular Singly Linked List Operations\n");
-            System.out.println("1. insert");
-            System.out.println("5. check empty");
-            System.out.println("6. get size");
-            int choice = scan.nextInt();
-            switch (choice)
-            {
-                case 1 :
-                    System.out.println("Enter string element to insert");
-                    obj.name="Peter";
-                    obj.list.add(new PlayerObject(Coordinates.UP, Color.BLACK, "Peter", "Adrain"));
-                    break;
-                case 5 :
-                    System.out.println("Empty status = "+ obj.list.isEmpty());
-                    break;
-                case 6 :
-                    System.out.println("Size = "+ obj.list.size() +" \n");
-                    break;
-                default :
-                    System.out.println("Wrong Entry \n ");
-                    break;
-            }
-            System.out.println(obj.getName());
-            System.out.println("\nDo you want to continue (Type y or n) \n");
-            ch = scan.next().charAt(0);
-        } while (ch == 'Y'|| ch == 'y');
-    } 
+    	return players.get((currPossition++) % players.size());
+    }
+    
+    public void Commands(String command)
+    {
+    	if(command.equals("done")) {
+    		if(nameList.size() < 2)
+    			display.SendMessage("you must have at least 2 players to paly");
+    		else
+                Game.StartGame();
+    		
+    	}
+    	else {
+    		if(nameList.size() >= 6)
+    			display.SendMessage("You may only have up to six players\nEnter \"done\" to start the game");
+    		else {
+    			nameList.addLast(command);
+    			display.SendMessage(command + " has been added to the game");	
+    		}
+       	}
+    }
 }

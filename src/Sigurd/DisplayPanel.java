@@ -44,7 +44,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         
         style = text1.addStyle("defualt", null);        
         
-        sendMessage("GAME BEGINS");
+        SendMessage("GAME BEGINS");
     }
     public static void main(String args[]) throws IOException //main function which takes the input string and sends it to the sendMessage function to be displayed in the panel, for testing
     {
@@ -53,7 +53,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         String st=br.readLine(); 
         for(int i=0;i<100;i++) //testing the code whether multiple inputs can be added to the panel
         {
-            panel.sendMessage(st); //calling the sendMessage function
+            panel.SendMessage(st); //calling the sendMessage function
         }
         panel.SendError(st);
         JFrame frame=new JFrame(); //creating a new JFrame for testing 
@@ -63,7 +63,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         frame.pack();
         frame.setVisible(true);
     }
-    public void sendMessage(String str) //function adds the string to the panel
+    public void SendMessage(String str) //function adds the string to the panel
     {
         try
         {
@@ -77,7 +77,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     
     public void SendError(String str) {
     	StyleConstants.setForeground(style, Color.white);
-    	sendMessage(str);
+    	SendMessage(str);
     	StyleConstants.setForeground(style, Color.black);
     }
 }

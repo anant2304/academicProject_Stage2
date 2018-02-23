@@ -3,7 +3,6 @@ package Sigurd;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 import javax.swing.*;
 import java.util.*;
@@ -18,7 +17,6 @@ import Sigurd.BoardObjects.*;
  * 16751195, 16202907, 16375246
  */
 public class Game {
-	private static BoardObject currentObject;
 	private static CommandPanel command;
 	private static Board board;
 	private static DisplayPanel display;
@@ -28,6 +26,8 @@ public class Game {
 	private static Map<String,PlayerObject> playerMap = new HashMap<String,PlayerObject>();
 	private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
 	
+	private static PlayerSignIn playerSign;
+	
 	/**
 	 * @Summary the main that runs the game
 	 * @param args
@@ -36,12 +36,15 @@ public class Game {
 		command = new CommandPanel();
 		display = new DisplayPanel();
 		board = new Board();
+		playerSign = new PlayerSignIn();
 			
-		PlacePlayers();
-		PlaceWeapons();
         CreateWindow();
-		NewTurn(playerMap.get("white"));
+        display.SendMessage("Enter the names of the players\n");
+        
 		command.TakeFocus();//would be in create window but some issue causes it to work only half the time, here it always works
+	
+		//the game now waits for input, first that input is passed to the PlayerSignIn class,
+		//after the game has started it is then passed to each respective turn object as they are taken
 	}
 	
 	/**
@@ -74,28 +77,40 @@ public class Game {
 		});
 	}
 	
+    /**
+     * @Summary called by the PlayerSignIn class to progress the game into a playable state
+     */
+    public static void StartGame() {
+		PlacePlayers();
+		PlaceWeapons();
+		
+		for(PlayerObject p : playerSign.players) {
+			display.SendMessage(p.getPlayerName() + " is " + p.GetObjectName());
+		}
+		
+		NextTurn();
+    }
+    
 	/**
 	 * @Summary creates and places all the players onto the board
 	 */
 	private static void PlacePlayers() {
-        playerMap.put("white",new PlayerObject(new Coordinates(9, 0), Color.decode("#ffffff"), "White", playerSign.nameList.pop()));
-        playerMap.put("green",new PlayerObject(new Coordinates(14, 0), Color.decode("#00ff00"), "Green", playerSign.nameList.pop()));
-        if(playerSign.numPlayers>=3)
-        {
-            playerMap.put("peacock",new PlayerObject(new Coordinates(23, 6), Color.decode("#326872"), "Peacock", playerSign.nameList.pop()));
-        }
-        if(playerSign.numPlayers>=4)
-        {
-            playerMap.put("plum",new PlayerObject(new Coordinates(23, 19), Color.decode("#8E4585"), "Plum", playerSign.nameList.pop()));
-        }
-        if(playerSign.numPlayers>=5)
-        {
-            playerMap.put("scarlet",new PlayerObject(new Coordinates(7, 24), Color.decode("#ff2400"), "Scarlet", playerSign.nameList.pop()));
-        }
-        if(playerSign.numPlayers==6)
-        {
-            playerMap.put("mustard",new PlayerObject(new Coordinates(0, 17), Color.decode("#ffdb58"), "Mustard", playerSign.nameList.pop()));
-        }
+       LinkedList<String> names = playerSign.getNameListCopy();
+       
+		switch(names.size()) {
+		case 6 :
+			playerMap.put("white",new PlayerObject(new Coordinates(9, 0), Color.decode("#ffffff"), "White", names.pop()));
+		case 5 :
+			playerMap.put("green",new PlayerObject(new Coordinates(14, 0), Color.decode("#00ff00"), "Green", names.pop()));
+		case 4 :
+			playerMap.put("peacock",new PlayerObject(new Coordinates(23, 6), Color.decode("#326872"), "Peacock", names.pop()));
+		case 3 :
+			playerMap.put("plum",new PlayerObject(new Coordinates(23, 19), Color.decode("#8E4585"), "Plum", names.pop()));
+		case 2 :
+			playerMap.put("scarlet",new PlayerObject(new Coordinates(7, 24), Color.decode("#ff2400"), "Scarlet", names.pop()));
+	        playerMap.put("mustard",new PlayerObject(new Coordinates(0, 17), Color.decode("#ffdb58"), "Mustard", names.pop()));
+		}
+		
         for(PlayerObject p : playerMap.values())
         {
             board.AddMovable(p);
@@ -118,6 +133,9 @@ public class Game {
             board.AddMovable(p);
 	}
 	
+	/**
+	 * @Summary returns whether there has been a turn yet
+	 */
     public static boolean isGameStarted()
     {
         return (!turnStack.isEmpty());
@@ -127,8 +145,7 @@ public class Game {
 	 * @Summary creates a new turn with the next player
 	 */
 	public static void NextTurn() {
-		//TODO : there is currently no list of players so i can't incrment them
-		NewTurn(turnStack.peek().GetPlayer());
+		NewTurn(playerSign.NextPlayer());
 	}
 	
 	/**
@@ -139,6 +156,7 @@ public class Game {
 		if(newTurn.CanLeaveRoom())
 		    board.SetRoom(p.GetRoom());
 		board.GetBoardPanel().repaint();
+		display.SendMessage(turnStack.peek().GetPlayer().getPlayerName() + " its your turn, you are " + turnStack.peek().GetPlayer().GetObjectName());
 	}
 	
 	/**
@@ -146,42 +164,6 @@ public class Game {
 	 */
 	public static Turn CurrentTurn() {
 		return turnStack.peek();
-	}
-	
-	/**
-	 * @ Summary Sets the current object to a given one
-	 * @param index
-	 * @param isPlayer
-	 */
-	public static void SetCurrentObject(String name) {
-		if(playerMap.containsKey(name))
-			currentObject = playerMap.get(name);
-		else if(weaponMap.containsKey(name))
-			currentObject = weaponMap.get(name);
-		else
-			throw new RuntimeException("tried to set the current controled object to something that dose not exist");
-	}
-	
-	/**
-	 * returns true if they is an item in the system with the name given
-	 * @param name
-	 * @param isPlayer
-	 * @return
-	 */
-	public static boolean ObjectExistes(String name) {
-		if(playerMap.containsKey(name)) 
-			return true;
-		else
-			return weaponMap.containsKey(name);
-		
-	}
-	
-	/**
-	 * @Summary returns the object that is currently being controlled by commands
-	 * @return
-	 */
-	public static BoardObject GetCurrentObject() {
-		return currentObject;
 	}
 	
 	/**
@@ -201,24 +183,22 @@ public class Game {
 	}
 	
 	/**
-	 * @Summary Takes a command and passes it to the correct handeling method, this could be debug in game, help in game or take turn in turn
-	 */
+	 * @Summary Takes a command and passes it to the correct command method in some class
+	 * */
 	public static void PassCommand(String com) {
 		
-        if(isGameStarted()==false)
-        {
-            
-            playerSign.takeInput(com);
+		if(com.equals(""));//ignore empty strings
+		else if(com.charAt(0) == '#') {
+            Commands(com);
         }
-        
-        else if(com.charAt(0) == '#') {
-            DebugCommand(com);
-        }
-        else if(com.toLowerCase() == "help" || com == "h") {
+        else if(com.equals("help")) {
             DisplayHelp();
         }
+        else if(isGameStarted()==false){
+            playerSign.Commands(com);
+        }
         else {
-            turnStack.peek().TurnAction(com);
+            turnStack.peek().Commands(com);//commands in the turn class
             board.GetBoardPanel().repaint();
         }
 	}
@@ -226,7 +206,7 @@ public class Game {
 	/**
 	 * @Summary exicutes developer commands for debuging purposes
 	 */
-	private static void DebugCommand(String com) {
+	private static void Commands(String com) {
 		switch(com) {
 		case "#exit" :
 			System.exit(0);
@@ -236,12 +216,27 @@ public class Game {
 			break;
 		}
 		
-		display.sendMessage(com);
+		display.SendMessage(com);
 	}
 	
+	/**
+	 * @Summary Dispalys a context sensitive help menu to the display pannel
+	 */
 	private static void DisplayHelp(){
-		display.sendMessage(
-				""//TODO : add text here
+		if(isGameStarted())
+			display.SendMessage(
+				"type in \"roll\" to roll your dice\n"
+				+ "type in u,d,l or r to move up, down, left, or right respectivly\n"
+				+ "if you are in a room at the start of your turn, after rolling type the number corrisponding to an exit to leave\n"
+				+ "type in \"done\" to end your turn"
+				+ "type in \"quit\" to close down the game\n"
+				+ "type in \"#exit\" if something goes wrong"
 				);
+		else
+			display.SendMessage(
+					"type in a name then press enter or return to add it to the game\n"
+					+ "if you have entered everyone's name type \"done\" to start the game"
+					+ "type in \"#exit\" to abort the game"
+					);
 	}
 }
