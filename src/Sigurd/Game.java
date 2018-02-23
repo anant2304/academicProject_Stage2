@@ -78,15 +78,29 @@ public class Game {
 	 * @Summary creates and places all the players onto the board
 	 */
 	private static void PlacePlayers() {
-		playerMap.put("white",new PlayerObject(new Coordinates(9, 0), Color.decode("#ffffff"), "White"));
-		playerMap.put("green",new PlayerObject(new Coordinates(14, 0), Color.decode("#00ff00"), "Green"));
-		playerMap.put("peacock",new PlayerObject(new Coordinates(23, 6), Color.decode("#326872"), "Peacock"));
-		playerMap.put("plum",new PlayerObject(new Coordinates(23, 19), Color.decode("#8E4585"), "Plum"));
-		playerMap.put("scarlet",new PlayerObject(new Coordinates(7, 24), Color.decode("#ff2400"), "Scarlet"));
-		playerMap.put("mustard",new PlayerObject(new Coordinates(0, 17), Color.decode("#ffdb58"), "Mustard"));
-
-		for(PlayerObject p : playerMap.values())
-		    board.AddMovable(p);
+        playerMap.put("white",new PlayerObject(new Coordinates(9, 0), Color.decode("#ffffff"), "White", playerSign.nameList.pop()));
+        playerMap.put("green",new PlayerObject(new Coordinates(14, 0), Color.decode("#00ff00"), "Green", playerSign.nameList.pop()));
+        if(playerSign.numPlayers>=3)
+        {
+            playerMap.put("peacock",new PlayerObject(new Coordinates(23, 6), Color.decode("#326872"), "Peacock", playerSign.nameList.pop()));
+        }
+        if(playerSign.numPlayers>=4)
+        {
+            playerMap.put("plum",new PlayerObject(new Coordinates(23, 19), Color.decode("#8E4585"), "Plum", playerSign.nameList.pop()));
+        }
+        if(playerSign.numPlayers>=5)
+        {
+            playerMap.put("scarlet",new PlayerObject(new Coordinates(7, 24), Color.decode("#ff2400"), "Scarlet", playerSign.nameList.pop()));
+        }
+        if(playerSign.numPlayers==6)
+        {
+            playerMap.put("mustard",new PlayerObject(new Coordinates(0, 17), Color.decode("#ffdb58"), "Mustard", playerSign.nameList.pop()));
+        }
+        for(PlayerObject p : playerMap.values())
+        {
+            board.AddMovable(p);
+            playerSign.add(p);
+        }
 	}
 	
 	/**
