@@ -22,7 +22,7 @@ public class Board {
     private static final String ROOMS_PATH = "/RoomInfo.txt";
     private boolean[][] boardArray; // Grid array, true if grid square is in the
                                     // hallway.
-    private Map<Door, Room> doorPositions;
+    private Map<Coordinates, Door> doorPositions;
     private List<BoardObject> boardObjectList;
     private BoardPanel panel;
     private Room[] rooms;
@@ -61,7 +61,7 @@ public class Board {
         selectedRoom = r;
     }
 
-    public void ResetRoom(Room r) {
+    public void ResetRoom() {
         selectedRoom = null;
     }
 
@@ -89,7 +89,7 @@ public class Board {
 
     private void LoadRooms() {
         rooms = new Room[10];
-        doorPositions = new HashMap<Door, Room>();
+        doorPositions = new HashMap<Coordinates, Door>();
         try (Scanner layoutReader = new Scanner(Board.class.getResource(ROOMS_PATH).openStream(), "UTF-8")) {
             int roomIndex = 0;
             while (layoutReader.hasNext()) {
@@ -113,10 +113,17 @@ public class Board {
                 rooms[roomIndex] = new Room(roomName, doorCoordinates, roomCentrePosition);
 
                 for (Door c : doorCoordinates)
-                    doorPositions.put(c, rooms[roomIndex]);
+                    doorPositions.put((Coordinates) c, c);
 
                 roomIndex++;
             }
+            
+            rooms[0].SetPassageRoom(rooms[5]);
+            rooms[5].SetPassageRoom(rooms[0]);
+
+            rooms[2].SetPassageRoom(rooms[7]);
+            rooms[7].SetPassageRoom(rooms[2]);
+            
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -128,7 +135,7 @@ public class Board {
         boolean validX = to.getCol() >= 0 && to.getCol() < boardArray.length;
         boolean validY = to.getRow() >= 0 && to.getRow() < boardArray[0].length;
         return validX && validY
-                && (boardArray[to.getCol()][to.getRow()] || (IsDoor(to) && ((Door) to).HasOutside(current)));
+                && (boardArray[to.getCol()][to.getRow()] || (IsDoor(to) && doorPositions.get(to).HasOutside(current)));
     }
 
     public boolean IsDoor(Coordinates co) {
@@ -136,7 +143,7 @@ public class Board {
     }
 
     public Room GetDoorRoom(Coordinates co) {
-        return doorPositions.get(co);
+        return doorPositions.get(co).GetRoom();
     }
 
     /**
@@ -222,6 +229,19 @@ public class Board {
 
             if (selectedRoom != null)
                 DrawRoomDoors(g2d, selectedRoom);
+            
+            Coordinates current = new Coordinates(7, 5);
+            DisplayMovable(g2d, current);
+        }
+
+        private void DisplayMovable(Graphics2D g2d, Coordinates current) {
+            for (int i = 0; i < boardArray.length; i++) {
+                for (int j = 0; j < boardArray[i].length; j++) {
+                    if(IsPositionMovable(current, new Coordinates(i, j)))
+                        g2d.drawRect(i * CELL_SIZE, j * CELL_SIZE, 12, 12);
+                }
+            }
+            g2d.drawRect(current.getCol()* CELL_SIZE, current.getRow()* CELL_SIZE, 15, 15);
         }
 
         /**

@@ -109,14 +109,17 @@ public class Game {
 	 */
 	public static void NextTurn() {
 		//TODO : there is currently no list of players so i can't incrment them
-		NewTurn(null);
+		NewTurn(turnStack.peek().GetPlayer());
 	}
 	
 	/**
 	 * @Summary ends the last turn and starts a new one
 	 */
 	public static void NewTurn(PlayerObject p) {
-		turnStack.push(new Turn(p));
+		Turn newTurn = turnStack.push(new Turn(p));
+		if(newTurn.CanLeaveRoom())
+		    board.SetRoom(p.GetRoom());
+		board.GetBoardPanel().repaint();
 	}
 	
 	/**
@@ -191,6 +194,10 @@ public class Game {
 		}
 		else {
 			turnStack.peek().TurnAction(com);
+			if(turnStack.peek().CanLeaveRoom())
+			    board.SetRoom(turnStack.peek().GetPlayer().GetRoom());
+			else
+			    board.ResetRoom();
 			board.GetBoardPanel().repaint();
 		}
 	}

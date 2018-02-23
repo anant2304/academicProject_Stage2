@@ -2,7 +2,6 @@ package Sigurd;
 
 import java.util.*;
 
-import com.sun.glass.ui.Application;
 
 import Sigurd.BoardObjects.*;
 
@@ -25,6 +24,8 @@ public class Turn {
         turnPlayer = player;
         hasEneteredRoom = false;
     }
+    
+    
 
     /**
      * Do an action based on a sting input.
@@ -106,6 +107,8 @@ public class Turn {
                 // Moves player into room, and adds the player to the room
                 // object.
                 turnPlayer.MoveToRoom(Game.GetBoard().GetDoorRoom(movingToCo));
+                hasEneteredRoom = true;
+                DisplayMessage(turnPlayer.GetName() + " entered the " + turnPlayer.GetRoom().GetName());
             } else {
                 // Moves a player along the board grid.
                 turnPlayer.Move(positionChange);
@@ -140,27 +143,32 @@ public class Turn {
         else if (d1 == 0)
             DisplayError("You need to roll the dice befor you can move.");
 
-        else if (turnPlayer.GetRoom().GetDoors().length <= exit)
+        else if (exit < 1 || turnPlayer.GetRoom().GetDoors().length < exit)
             DisplayError("Please enter a valid door number or type '' ");
         // TODO Add help info in error message
 
         else {
+            Room playerRoom = turnPlayer.GetRoom();
             turnPlayer.LeaveRoom();
-            turnPlayer.MoveTo(turnPlayer.GetRoom().GetDoors()[exit]);
+            turnPlayer.MoveTo(playerRoom.GetDoors()[exit - 1].GetOutside());
             stepsLeft--;
+            DisplayMessage(turnPlayer.GetName() + " left the " + playerRoom.GetName() + " through exit number " + exit);
+            DisplayMessage(turnPlayer.GetName() + " has " + stepsLeft + " steps left to move.");
         }
     }
 
     private void RollDice() {
-        if (d1 != 0)
+        if (d1 != 0) {
             DisplayError("You have allready rolled your dice");
+            return;
+        }
 
         Random rand = new Random();
         d1 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
                                             // numbers for the die results
         d2 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
                                             // numbers for the die results
-        Game.GetDisplay().sendMessage("Die 1 gives: " + d1 + "\n" + "Die 2 gives: " + d2 + "\n" + "Player gets "
+        Game.GetDisplay().sendMessage("Die 1 gives: " + d1 + "\n" + "Die 2 gives: " + d2 + "\n" + turnPlayer.GetName() +" gets "
                 + (d1 + d2) + " moves" + "\n");
         stepsLeft = d1 + d2;
     }
@@ -169,6 +177,19 @@ public class Turn {
         Game.NextTurn();
         Game.GetDisplay().sendMessage("Turn Over");
     }
+    
+    
+    public PlayerObject GetPlayer()
+    {
+        return turnPlayer;
+    }
+    
+    public boolean CanLeaveRoom()
+    {
+        return (hasEneteredRoom == false && turnPlayer.IsInRoom());
+    }
+    
+    
 
     /**
      * Displays a message to the display panel. Should potentially be moved to

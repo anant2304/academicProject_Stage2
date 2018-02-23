@@ -45,4 +45,23 @@ public class Coordinates {
     public int getCol() {
         return col;
     }
+    
+    public boolean equals(Object o)
+    {
+        if(o == null)
+            return false;
+        
+        if(this.getClass().isAssignableFrom(o.getClass())  == false)
+            return false;
+        
+        Coordinates co = (Coordinates) o;
+        
+        return (co.col == col && co.row == row); 
+    }
+    
+    public int hashCode()
+    {
+        return col * 30 + row;
+        
+    }
 }

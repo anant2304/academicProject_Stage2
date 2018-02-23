@@ -18,6 +18,9 @@ public class Room {
         this.roomCentrePos = roomCentrePos;
         players = new PlayerObject[6];
         weapons = new WeaponObject[6];
+        
+        for(Door d : this.doors)
+            d.SetRoom(this);
     }
 
     public String GetName() {
@@ -66,10 +69,10 @@ public class Room {
             PlayerObject p = (PlayerObject) o;
 
             int i = -1;
-            while (players[++i] != null && i < 5)
+            while (players[++i] != null && i < 5) System.out.println(i);
                 ;
 
-            if (players[i] == null)
+            if (players[i] != null)
                 throw new IllegalStateException("More than 6 players in room");
             players[i] = p;
         } else if (o.getClass() == WeaponObject.class) {
@@ -79,7 +82,7 @@ public class Room {
             while (weapons[++i] != null && i < 5)
                 ;
 
-            if (weapons[i] == null)
+            if (weapons[i] != null)
                 throw new IllegalStateException("More than 6 weapons in room");
             weapons[i] = w;
         }else {
@@ -98,9 +101,9 @@ public class Room {
     }
 
     public Coordinates GetObjectPosition(BoardObject o) {
-        if (o.getClass() == WeaponObject.class) {
+        if (o.getClass() == PlayerObject.class) {
         return roomCentrePos.add(new Coordinates(PLAYER_OFFSETS[GetPlayerIndex((PlayerObject) o)]));
-        } else if (o.getClass() == PlayerObject.class) {
+        } else if (o.getClass() == WeaponObject.class) {
         return roomCentrePos.add(new Coordinates(WEAPON_OFFSETS[GetWeaponIndex((WeaponObject) o)]));
         }else {
             throw new IllegalArgumentException("Argument not player or weapon");

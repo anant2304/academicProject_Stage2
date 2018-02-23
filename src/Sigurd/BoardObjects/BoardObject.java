@@ -82,14 +82,14 @@ public abstract class BoardObject {
     
     public Room GetRoom()
     {
-        if(room == null)
+        if(IsInRoom() == false)
             throw new IllegalStateException(name + " not in a room.");
         return room;
     }
     
     public void LeaveRoom()
     {
-        if(room == null)
+        if(IsInRoom() == false)
             throw new IllegalStateException(name + " not in a room.");
         room.RemoveObject(this);
         room = null;
