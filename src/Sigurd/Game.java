@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 import Sigurd.BoardObjects.*;
 
@@ -107,12 +108,22 @@ public class Game {
 	 * @Summary creates and places all weapons onto the board
 	 */
 	private static void PlaceWeapons() {
-		weaponMap.put("rope",new WeaponObject(new Coordinates(3,4),new Character('R'),"Rope"));
-		weaponMap.put("dagger",new WeaponObject(new Coordinates(4,12),new Character('D'),"Dagger"));
-		weaponMap.put("wrench",new WeaponObject(new Coordinates(3,21),new Character('W'),"Wrench"));
-		weaponMap.put("pistol",new WeaponObject(new Coordinates(10,3),new Character('P'),"Pistol"));
-		weaponMap.put("candlestick",new WeaponObject(new Coordinates(10,21),new Character('C'),"CandleStick"));
-		weaponMap.put("leadpipe",new WeaponObject(new Coordinates(20,22),new Character('L'),"LeadPipe"));
+		weaponMap.put("rope",new WeaponObject(new Coordinates(0,0),new Character('R'),"Rope"));
+		weaponMap.put("dagger",new WeaponObject(new Coordinates(0,0),new Character('D'),"Dagger"));
+		weaponMap.put("wrench",new WeaponObject(new Coordinates(0,0),new Character('W'),"Wrench"));
+		weaponMap.put("pistol",new WeaponObject(new Coordinates(0,0),new Character('P'),"Pistol"));
+		weaponMap.put("candlestick",new WeaponObject(new Coordinates(0,0),new Character('C'),"CandleStick"));
+		weaponMap.put("leadpipe",new WeaponObject(new Coordinates(0,0),new Character('L'),"LeadPipe"));
+		
+		Room[] rooms = board.GetRooms();
+		int i = 0;
+		for(Entry<String, WeaponObject> e : weaponMap.entrySet())
+		{
+		    e.getValue().MoveToRoom(rooms[i++]);
+		    if(i % 3 == 2)
+		        i++;
+		}
+		
 		
         for(WeaponObject p : weaponMap.values())
             board.AddMovable(p);

@@ -69,8 +69,7 @@ public class Room {
             PlayerObject p = (PlayerObject) o;
 
             int i = -1;
-            while (players[++i] != null && i < 5) System.out.println(i);
-                ;
+            while (players[++i] != null && i < 5) ;
 
             if (players[i] != null)
                 throw new IllegalStateException("More than 6 players in room");

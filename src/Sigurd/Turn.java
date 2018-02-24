@@ -133,8 +133,8 @@ public class Turn {
             DisplayError("You cannot enter a passage if you enetered a room this turn");
         }else{
             turnPlayer.MoveToRoom(turnPlayer.GetRoom().GetPassageRoom());
-            DisplayMessage(turnPlayer.GetObjectName() + " took a secret passage to the " + turnPlayer.GetRoom().GetName());
             Game.GetBoard().ResetRoom();
+            DisplayMessage(turnPlayer.GetObjectName() + " took a secret passage to the " + turnPlayer.GetRoom().GetName());
             hasEneteredRoom = true;
             canRoll = false;
             dice1 = 1;
@@ -143,14 +143,12 @@ public class Turn {
 
     private void MoveOutOfRoom(int exit) {
         if (hasEneteredRoom)
-            DisplayError("You have allready entered a room on this turn. Type ''");
-        // TODO Add help info in error message
+            DisplayError("You have allready entered a room on this turn.");
         else if (dice1 == 0)
             DisplayError("You need to roll the dice befor you can move.");
 
         else if (exit < 1 || turnPlayer.GetRoom().GetDoors().length < exit)
-            DisplayError("Please enter a valid door number or type '' ");
-        // TODO Add help info in error message
+            DisplayError("Please enter a valid door number");
 
         else {
             Room playerRoom = turnPlayer.GetRoom();
