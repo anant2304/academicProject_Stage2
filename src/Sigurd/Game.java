@@ -23,7 +23,7 @@ public class Game {
 	
 	private static Stack<Turn> turnStack = new Stack<Turn>();
 	
-	private static Map<String,PlayerObject> playerMap = new HashMap<String,PlayerObject>();
+	private static Map<String,PlayerObject> characterMap = new HashMap<String,PlayerObject>();
 	private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
 	
 	private static PlayerSignIn playerSign;
@@ -39,10 +39,12 @@ public class Game {
 		playerSign = new PlayerSignIn();
 			
         CreateWindow();
-        display.SendMessage("Enter the names of the players\n");
+		PlacePlayers();
+		PlaceWeapons();
         
 		command.TakeFocus();//would be in create window but some issue causes it to work only half the time, here it always works
 	
+		display.SendMessage("Enter the names of the players\nin the form [Player Name] [Character Name]");
 		//the game now waits for input, first that input is passed to the PlayerSignIn class,
 		//after the game has started it is then passed to each respective turn object as they are taken
 	}
@@ -80,14 +82,7 @@ public class Game {
     /**
      * @Summary called by the PlayerSignIn class to progress the game into a playable state
      */
-    public static void StartGame() {
-		PlacePlayers();
-		PlaceWeapons();
-		
-		for(PlayerObject p : playerSign.players) {
-			display.SendMessage(p.getPlayerName() + " is " + p.GetObjectName());
-		}
-		
+    public static void StartGame() {		
 		NextTurn();
     }
     
@@ -95,26 +90,16 @@ public class Game {
 	 * @Summary creates and places all the players onto the board
 	 */
 	private static void PlacePlayers() {
-       LinkedList<String> names = playerSign.getNameListCopy();
-       
-		switch(names.size()) {
-		case 6 :
-			playerMap.put("white",new PlayerObject(new Coordinates(9, 0), Color.decode("#ffffff"), "White", names.pop()));
-		case 5 :
-			playerMap.put("green",new PlayerObject(new Coordinates(14, 0), Color.decode("#00ff00"), "Green", names.pop()));
-		case 4 :
-			playerMap.put("peacock",new PlayerObject(new Coordinates(23, 6), Color.decode("#326872"), "Peacock", names.pop()));
-		case 3 :
-			playerMap.put("plum",new PlayerObject(new Coordinates(23, 19), Color.decode("#8E4585"), "Plum", names.pop()));
-		case 2 :
-			playerMap.put("scarlet",new PlayerObject(new Coordinates(7, 24), Color.decode("#ff2400"), "Scarlet", names.pop()));
-	        playerMap.put("mustard",new PlayerObject(new Coordinates(0, 17), Color.decode("#ffdb58"), "Mustard", names.pop()));
-		}
+		characterMap.put("white",new PlayerObject(new Coordinates(9, 0), Color.decode("#ffffff"), "White"));
+		characterMap.put("green",new PlayerObject(new Coordinates(14, 0), Color.decode("#00ff00"), "Green"));
+		characterMap.put("peacock",new PlayerObject(new Coordinates(23, 6), Color.decode("#326872"), "Peacock"));
+		characterMap.put("plum",new PlayerObject(new Coordinates(23, 19), Color.decode("#8E4585"), "Plum"));
+		characterMap.put("scarlet",new PlayerObject(new Coordinates(7, 24), Color.decode("#ff2400"), "Scarlet"));
+		characterMap.put("mustard",new PlayerObject(new Coordinates(0, 17), Color.decode("#ffdb58"), "Mustard"));
 		
-        for(PlayerObject p : playerMap.values())
+        for(PlayerObject p : characterMap.values())
         {
             board.AddMovable(p);
-            playerSign.add(p);
         }
 	}
 	
@@ -164,6 +149,14 @@ public class Game {
 	 */
 	public static Turn CurrentTurn() {
 		return turnStack.peek();
+	}
+	
+	public static boolean DoseCharacterExist(String name) {
+		return characterMap.containsKey(name);
+	}
+	
+	public static PlayerObject GetCharacter(String name) {
+		return characterMap.get(name);
 	}
 	
 	/**
@@ -235,6 +228,7 @@ public class Game {
 		else
 			display.SendMessage(
 					"type in a name then press enter or return to add it to the game\n"
+					+ "type in \"players\" to see who is currently in the game"
 					+ "if you have entered everyone's name type \"done\" to start the game"
 					+ "type in \"#exit\" to abort the game"
 					);

@@ -134,6 +134,7 @@ public class Turn {
         }else{
             turnPlayer.MoveToRoom(turnPlayer.GetRoom().GetPassageRoom());
             DisplayMessage(turnPlayer.GetObjectName() + " took a secret passage to the " + turnPlayer.GetRoom().GetName());
+            Game.GetBoard().ResetRoom();
             hasEneteredRoom = true;
             canRoll = false;
             dice1 = 1;

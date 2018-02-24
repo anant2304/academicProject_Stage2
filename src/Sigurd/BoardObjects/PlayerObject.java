@@ -26,7 +26,7 @@ public class PlayerObject extends BoardObject {
      * @param c
      * @param _playerName
      */
-    public PlayerObject(Coordinates co, Color c, String _objectName, String _playerName) {
+    public PlayerObject(Coordinates co, Color c, String _objectName) {
         super(co,(Image)null,_objectName);
         
         BufferedImage image = new BufferedImage(23, 23, BufferedImage.TYPE_INT_ARGB);
@@ -36,13 +36,16 @@ public class PlayerObject extends BoardObject {
         g2d.fillOval(0, 0, 23, 23);
         
         SetImage(image);
-        playerName=_playerName;
         Game.GetDisplay().SendMessage(playerName);
     }
     
     public String getPlayerName()
     {
         return playerName;
+    }
+    
+    public void setPlayerName(String _PlayerName) {
+    	playerName = _PlayerName;
     }
     
     /**
