@@ -159,6 +159,10 @@ public class Game {
 		return characterMap.get(name);
 	}
 	
+	public static Collection<PlayerObject> GetAllCharcters() {
+		return characterMap.values();
+	}
+	
 	/**
 	 * @Summary returns the dispaly panel
 	 * @return
@@ -228,8 +232,9 @@ public class Game {
 		else
 			display.SendMessage(
 					"type in a name then press enter or return to add it to the game\n"
-					+ "type in \"players\" to see who is currently in the game"
-					+ "if you have entered everyone's name type \"done\" to start the game"
+					+ "type in \"players\" to see who is currently in the game\n"
+					+ "type in \"characters\" to see unclamed characters\n"
+					+ "if you have entered everyone's name type \"done\" to start the game\n"
 					+ "type in \"#exit\" to abort the game"
 					);
 	}
