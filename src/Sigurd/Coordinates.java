@@ -1,6 +1,15 @@
 
 package Sigurd;
 
+/**
+ * 
+ * @author Adrian
+ *
+ *Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ */
+
 public class Coordinates {
 
     private int row, col;

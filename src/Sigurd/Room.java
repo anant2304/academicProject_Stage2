@@ -2,6 +2,15 @@ package Sigurd;
 
 import Sigurd.BoardObjects.*;
 
+/**
+ * 
+ * @author Adrian
+ *
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ */
+
 public class Room {
     private static final String[] PLAYER_OFFSETS = { "1,0", "1,-1", "2,-1", "2,0", "2,1", "1,1" };
     private static final String[] WEAPON_OFFSETS = { "-1,0", "-1,-1", "-2,-1", "-2,0", "-2,1", "-1,1" };

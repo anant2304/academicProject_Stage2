@@ -9,6 +9,9 @@ import Sigurd.BoardObjects.*;
  * Applies the actions a player does during their turn.
  * 
  * @author Adrian Wennberg
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
  */
 public class Turn {
     private PlayerObject turnPlayer;

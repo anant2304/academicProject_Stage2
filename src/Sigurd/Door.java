@@ -1,5 +1,13 @@
 package Sigurd;
 
+/**
+ * @author Adrian
+ * 
+ *  * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * */
+
 public class Door extends Coordinates {
     private Coordinates outside;
     private Room room;

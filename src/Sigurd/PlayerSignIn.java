@@ -8,6 +8,14 @@ import Sigurd.BoardObjects.PlayerObject;
 import java.util.Collection;
 import java.util.LinkedList;
 
+/**
+ * @author Anant 
+ * 
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246 
+ */
+
 /*  Class PlayerSignIn  */
 class PlayerSignIn
 {
