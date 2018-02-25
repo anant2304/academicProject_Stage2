@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import Sigurd.BoardObjects.BoardObject;
+import Sigurd.BoardObjects.PlayerObject;
 
 /**
  * @author Adrian Wennberg Team: Sigurd Student Numbers: 16751195, 16202907,
@@ -36,7 +37,6 @@ public class Board {
     public static void main(String[] args) {
         Board b = new Board();
         b.SetRoom(b.rooms[1]);
-        b.GetBoardPanel().repaint();
         // b.display();
         JFrame frame = new JFrame();
         frame.add(b.GetBoardPanel());
@@ -117,25 +117,38 @@ public class Board {
 
                 roomIndex++;
             }
-            
+
             rooms[0].SetPassageRoom(rooms[5]);
             rooms[5].SetPassageRoom(rooms[0]);
 
             rooms[2].SetPassageRoom(rooms[7]);
             rooms[7].SetPassageRoom(rooms[2]);
-            
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
+    public Room[] GetRooms()
+    {
+        return rooms;
+    }
 
     public boolean IsPositionMovable(Coordinates current, Coordinates to) {
         boolean validX = to.getCol() >= 0 && to.getCol() < boardArray.length;
         boolean validY = to.getRow() >= 0 && to.getRow() < boardArray[0].length;
         return validX && validY
-                && (boardArray[to.getCol()][to.getRow()] || (IsDoor(to) && doorPositions.get(to).HasOutside(current)));
+                && !IsPlayerPosition(to) && (boardArray[to.getCol()][to.getRow()] || (IsDoor(to) && doorPositions.get(to).HasOutside(current)));
+    }
+
+    public boolean IsPlayerPosition(Coordinates co) {
+        for (BoardObject p : boardObjectList) {
+            if (p.GetCoordinates().equals(co) && p.getClass().isAssignableFrom(PlayerObject.class))
+                return true;
+        }
+        return false;
     }
 
     public boolean IsDoor(Coordinates co) {
@@ -229,19 +242,6 @@ public class Board {
 
             if (selectedRoom != null)
                 DrawRoomDoors(g2d, selectedRoom);
-            
-            Coordinates current = new Coordinates(7, 5);
-            DisplayMovable(g2d, current);
-        }
-
-        private void DisplayMovable(Graphics2D g2d, Coordinates current) {
-            for (int i = 0; i < boardArray.length; i++) {
-                for (int j = 0; j < boardArray[i].length; j++) {
-                    if(IsPositionMovable(current, new Coordinates(i, j)))
-                        g2d.drawRect(i * CELL_SIZE, j * CELL_SIZE, 12, 12);
-                }
-            }
-            g2d.drawRect(current.getCol()* CELL_SIZE, current.getRow()* CELL_SIZE, 15, 15);
         }
 
         /**
