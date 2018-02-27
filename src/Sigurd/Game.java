@@ -45,7 +45,9 @@ public class Game {
         
 		command.TakeFocus();//would be in create window but some issue causes it to work only half the time, here it always works
 	
-		display.SendMessage("Enter the names of the players\nin the form [Player Name] [Character Name]");
+		display.SendMessage("Enter the names of the players\nin the form [Player Name] [Character Name]\n"
+				+ "when you are finished type in \"done\" to start the game\n"
+				+ "type in \"help\" at any time to recive help");
 		//the game now waits for input, first that input is passed to the PlayerSignIn class,
 		//after the game has started it is then passed to each respective turn object as they are taken
 	}
@@ -68,8 +70,9 @@ public class Game {
 		window.add(board.GetBoardPanel(), BorderLayout.CENTER);
 		window.add(display, BorderLayout.EAST);
 		
-		window.pack();
+		
 		window.setResizable(false); //makes the frame non-resizable
+		window.pack();
 		window.setVisible(true);
 		
 		//sets the currser to the command line when the game window is opened
