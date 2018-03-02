@@ -8,6 +8,9 @@ import javax.swing.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import java.util.Vector;
+import java.util.Collections;
+
 import Sigurd.BoardObjects.*;
 
 /**
@@ -24,6 +27,9 @@ public class Game {
 	
 	private static Stack<Turn> turnStack = new Stack<Turn>();
 	
+    static int[] turn= {0,0,0,0,0,0};
+    static int c=0;
+    static int d01,d02,max,pos;
 	private static Map<String,PlayerObject> characterMap = new HashMap<String,PlayerObject>();
 	private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
 	
@@ -87,8 +93,62 @@ public class Game {
      * @Summary called by the PlayerSignIn class to progress the game into a playable state
      */
     public static void StartGame() {		
-		NextTurn();
+		RollForEach();
+        NextTurn();
     }
+    
+    private static void RollForEach()
+    {
+        for(int i=0;i<playerSign.strength;i++)
+        {
+            if(turn[i]!=-1)
+            {
+                Random rand = new Random();
+                d01=rand.nextInt((6 - 1) + 1) + 1;
+                d02=rand.nextInt((6 - 1) + 1) + 1;
+                turn[i]=d01+d02;
+            }
+        }
+        display.SendMessage("The dice results are\n");
+        for(int i=0;i<playerSign.strength;i++)
+        {
+            display.SendMessage(turn[i]+"\n");
+        }
+        max=turn[0];
+        for(int i=0;i<playerSign.strength;i++)
+        {
+            if(turn[i]>=max)
+            {
+                max=turn[i];
+                pos=i;
+            }
+        }
+        for(int i=0;i<playerSign.strength;i++)
+        {
+            if(turn[i]!=max)
+            {
+                turn[i]=-1;
+            }
+        }
+        for(int i=0;i<playerSign.strength;i++)
+        {
+            if(turn[i]==-1)
+                c++;
+        }
+        if(c==playerSign.strength-1)
+        {
+            while(pos>0)
+            {
+                Collections.swap(playerSign.players,pos-1,pos);
+                pos--;
+            }
+        }
+        else
+        {
+            RollForEach();
+        }
+    }
+
     
 	/**
 	 * @Summary creates and places all the players onto the board

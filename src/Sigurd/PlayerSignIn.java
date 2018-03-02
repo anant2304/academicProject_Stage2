@@ -22,6 +22,7 @@ class PlayerSignIn
     Vector<PlayerObject> players = new Vector<PlayerObject>();
     DisplayPanel display;
     int currPossition;
+    public static int strength;
     
     public PlayerSignIn()
     {
@@ -57,7 +58,8 @@ class PlayerSignIn
     		CheckCharactersLeft();
     		break;
     	default : 
-    		addPlayer(command);
+    		strength++;
+            addPlayer(command);
     	}
     }
     
