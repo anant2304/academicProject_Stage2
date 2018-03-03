@@ -137,15 +137,20 @@ public class Game {
         }
         if(c==playerSign.strength-1)
         {
-            while(pos>0)
-            {
-                Collections.swap(playerSign.players,pos-1,pos);
-                pos--;
-            }
+            ChangeOrder(pos);
         }
         else
         {
             RollForEach();
+        }
+    }
+    
+    private static void ChangeOrder(int p)
+    {
+        while(p>0)
+        {
+            Collections.swap(playerSign.players,p-1,p);
+            p--;
         }
     }
 
