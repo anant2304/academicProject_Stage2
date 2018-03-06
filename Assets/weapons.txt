@@ -1,6 +1,6 @@
-3,4     Dagger
-20,10   Lead Pipe
-13,4    Spanner
-11,20   Candlestick
-4,11    Revolver
-3,22    Rope
+Dagger		3,4
+Lead Pipe	20,10
+Spanner		13,4
+Candlestick	11,20
+Revolver	4,11
+Rope		3,22

@@ -20,7 +20,7 @@ import Sigurd.BoardObjects.PlayerObject;
  */
 public class Board {
     private static final String BOARD_PATH = "/Layout.txt";
-    private static final String ROOMS_PATH = "/RoomInfo.txt";
+    private static final String ROOMS_PATH = "/rooms.txt";
     private boolean[][] boardArray; // Grid array, true if grid square is in the
                                     // hallway.
     private Map<Coordinates, Door> doorPositions;

@@ -127,6 +127,20 @@ public class Deck {
 		throw new RuntimeException("Item not found when retriving from deck");
 	}
 	
+	@SuppressWarnings("unchecked")
+	public Iterator<Card> GetAllCards(Class<?> typeOfCard) {
+		if(typeOfCard == PlayerCard.class) {//can't do swtich statment on Class<?>
+			return (Iterator<Card>) playerCards.values();
+		}
+		else if(typeOfCard == RoomCard.class) {
+			return (Iterator<Card>) roomCards.values();		
+		}
+		else if(typeOfCard == WeaponCard.class) {
+			return (Iterator<Card>) weaponCards.values();
+		}
+		else throw new RuntimeException("Tryed to get cards with an incorect type in deck"); 
+	}
+	
 	
 	public static void main(String[] args) {
 		Deck deck = new Deck();

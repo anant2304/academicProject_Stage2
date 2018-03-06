@@ -1,6 +1,6 @@
-0,9     #ffffff     White
-0,14    #00ff00     Green
-6,23    #326872     Peacock
-19,23   #8E4585     Plum
-24,7    #ff2400     Scarlet
-18,0    #ffdb58     Mustard
+White	0,9     #ffffff
+Green	0,14    #00ff00
+Peacock	6,23    #326872
+Plum	19,23   #8E4585
+Scarlet	24,7    #ff2400
+Mustard	18,0    #ffdb58
