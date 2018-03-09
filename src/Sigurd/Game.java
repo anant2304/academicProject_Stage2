@@ -32,6 +32,8 @@ public class Game {
     static int d01,d02,max,pos;
 	private static Map<String,PlayerObject> characterMap = new HashMap<String,PlayerObject>();
 	private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
+    
+    static Random rand=new Random(System.currentTimeMillis());
 	
 	private static PlayerSignIn playerSign;
 	
