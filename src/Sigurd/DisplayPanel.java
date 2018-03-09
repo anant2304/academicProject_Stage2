@@ -67,11 +67,24 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     {
         try
         {
+            StyleConstants.setForeground(style, Color.black);
             text1.insertString(text1.getLength(), str+"\n\n", style);
         }
         catch(Exception exe) 
         { 
             System.out.println(exe); 
+        }
+    }
+    public void SendDevMessage(String str)
+    {
+        try
+        {
+            StyleConstants.setForeground(style, Color.red);
+            text1.insertString(text1.getLength(), str+"\n\n", style);
+        }
+        catch(Exception exe)
+        {
+            System.out.println(exe);
         }
     }
     

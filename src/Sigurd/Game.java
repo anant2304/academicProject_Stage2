@@ -309,7 +309,7 @@ public class Game {
 			break;
 		}
 		
-		display.SendMessage(com);
+		display.SendDevMessage(com);
 	}
 	
 	/**
