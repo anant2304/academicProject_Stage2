@@ -103,21 +103,21 @@ public class Game {
         {
             if(turn[i]!=-1)
             {
-                Random rand = new Random();
-                d01=rand.nextInt((6 - 1) + 1) + 1;
-                d02=rand.nextInt((6 - 1) + 1) + 1;
+                d01=rand.nextInt(6)+1;
+                d02=rand.nextInt(6)+1;
                 turn[i]=d01+d02;
             }
         }
         display.SendMessage("The dice results are\n");
         for(int i=0;i<playerSign.strength;i++)
         {
-            display.SendMessage(turn[i]+"\n");
+            display.SendMessage(playerSign.players.get(i).getPlayerName()+" "+ turn[i]+"\n");
         }
         max=turn[0];
+        pos=0;
         for(int i=0;i<playerSign.strength;i++)
         {
-            if(turn[i]>=max)
+            if(turn[i]>max)
             {
                 max=turn[i];
                 pos=i;
@@ -132,25 +132,37 @@ public class Game {
         }
         for(int i=0;i<playerSign.strength;i++)
         {
-            if(turn[i]==-1)
+            if(turn[i]!=max)
                 c++;
         }
         if(c==playerSign.strength-1)
         {
+            display.SendMessage(playerSign.players.get(pos).getPlayerName()+" got the highest roll of "+max+" \n");
             ChangeOrder(pos);
         }
         else
         {
+            display.SendMessage("Rolling again for tied players: \n");
             RollForEach();
         }
     }
     
     private static void ChangeOrder(int p)
     {
-        while(p>0)
-        {
-            Collections.swap(playerSign.players,p-1,p);
-            p--;
+        if(p!=0)
+        {	
+            int j=0;
+            
+            for(int i=p;i<playerSign.strength;i++)
+            {
+                int x=i;
+                while(x>j)
+                {
+                    Collections.swap(playerSign.players,x-1,x);
+                    x--;
+                }
+                j++;
+            }
         }
     }
 

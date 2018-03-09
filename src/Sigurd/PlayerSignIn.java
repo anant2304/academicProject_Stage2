@@ -58,7 +58,6 @@ class PlayerSignIn
     		CheckCharactersLeft();
     		break;
     	default : 
-    		strength++;
             addPlayer(command);
     	}
     }
@@ -111,6 +110,7 @@ class PlayerSignIn
 		else {
 			PlayerObject p = Game.GetCharacter(playerEnteries[1]);
 			players.add(p);
+            strength++;
 			p.setPlayerName(playerEnteries[0]);
 			display.SendMessage(playerEnteries[0] + " Is playing " + playerEnteries[1]);	
 			return;
