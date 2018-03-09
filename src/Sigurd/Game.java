@@ -113,7 +113,10 @@ public class Game {
         display.SendMessage("The dice results are\n");
         for(int i=0;i<playerSign.strength;i++)
         {
-            display.SendMessage(playerSign.players.get(i).getPlayerName()+" "+ turn[i]+"\n");
+            if(turn[i]!=-1)
+            {
+                display.SendMessage(playerSign.players.get(i).getPlayerName()+" "+ turn[i]+"\n");
+            }
         }
         max=turn[0];
         pos=0;
