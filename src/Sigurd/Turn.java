@@ -2,7 +2,7 @@ package Sigurd;
 
 import java.util.*;
 
-
+import Cards.*;
 import Sigurd.BoardObjects.*;
 
 /**
@@ -14,7 +14,8 @@ import Sigurd.BoardObjects.*;
  * 16751195, 16202907, 16375246
  */
 public class Turn {
-    private PlayerObject turnPlayer;
+    private Player turnPlayer;
+    private PlayerObject turnPlayerObject;
     private static final Set<String> MOVE_DIRECTIONS = new HashSet<String>(
             Arrays.asList(new String[] { "u", "d", "l", "r" })
             );
@@ -23,10 +24,11 @@ public class Turn {
     private int stepsLeft;
     private boolean hasEneteredRoom;
 
-    public Turn(PlayerObject player) {
+    public Turn(Player player) {
         dice1 = dice2 = 0;
         stepsLeft = 0;
         turnPlayer = player;
+        turnPlayerObject = turnPlayer.GetPlayerObject();
         hasEneteredRoom = false;
         canRoll = true;
     }
@@ -41,7 +43,7 @@ public class Turn {
     public void Commands(String command) {
 
         // If the player is in a room, check if the input was a number.
-        if (turnPlayer.IsInRoom() && command.length() == 1 && Character.isDigit(command.toCharArray()[0]))
+        if (turnPlayerObject.IsInRoom() && command.length() == 1 && Character.isDigit(command.toCharArray()[0]))
             MoveOutOfRoom(Integer.parseInt(command));
 
         // Check if the input is a movable direction.
@@ -63,6 +65,13 @@ public class Turn {
             case "passage":
                 MoveThroughPassage();
                 break;
+            case "notes":
+                ShowNotes();
+                break;
+            case "cheat":
+                DisplayMessage("You're not allowed to cheat.\n" +
+                               "Type #cheat if you want to ruin all the fun.");
+                break;
             default:
                 DisplayError(command + " is not a valid command.");
                 break;
@@ -83,7 +92,7 @@ public class Turn {
             DisplayError("You do not have any steps left to move.");
             return;
         }
-        if(turnPlayer.IsInRoom())
+        if(turnPlayerObject.IsInRoom())
         {
             DisplayError("You have to move out of the room first.");
             return;
@@ -105,39 +114,41 @@ public class Turn {
         default:
             throw new IllegalArgumentException("Move dir must be a string in the set {u, d, l, r}.");
         }
+        
+        
+        Coordinates movingToCo = turnPlayerObject.GetCoordinates().add(positionChange);
 
-        Coordinates movingToCo = turnPlayer.GetCoordinates().add(positionChange);
-
-        if (Game.GetBoard().IsPositionMovable(turnPlayer.GetCoordinates(), movingToCo)) {
+        if (Game.GetBoard().IsPositionMovable(turnPlayerObject.GetCoordinates(), movingToCo)) {
             if (Game.GetBoard().IsDoor(movingToCo)) {
                 // Moves player into room, and adds the player to the room
                 // object.
-                turnPlayer.MoveToRoom(Game.GetBoard().GetDoorRoom(movingToCo));
+                turnPlayerObject.MoveToRoom(Game.GetBoard().GetDoorRoom(movingToCo));
                 hasEneteredRoom = true;
-                DisplayMessage(turnPlayer.GetObjectName() + " entered the " + turnPlayer.GetRoom().GetName());
+                DisplayMessage(turnPlayer + " entered the " + turnPlayerObject.GetRoom().GetName());
             } else {
                 // Moves a player along the board grid.
-                turnPlayer.Move(positionChange);
-                DisplayMessage(turnPlayer.GetObjectName() + " moved in direction: " + dir);
+                turnPlayerObject.Move(positionChange);
+                DisplayMessage(turnPlayer + " moved in direction: " + dir);
                 stepsLeft--;
-                DisplayMessage(turnPlayer.GetObjectName() + " has " + stepsLeft + " steps left to move.");
+                DisplayMessage(turnPlayer + " has " + stepsLeft + " steps left to move.");
             }
         } else {
-            DisplayError(turnPlayer.GetObjectName() + " cannot move in direction " + dir);
+            DisplayError(turnPlayer + " cannot move in direction " + dir);
         }
     }
 
     private void MoveThroughPassage() {
-        if (turnPlayer.IsInRoom() == false) {
+        
+        if (turnPlayerObject.IsInRoom() == false) {
             DisplayError("You cannot take a passage while not in a room");
-        } else if (turnPlayer.GetRoom().HasPassage() == false) {
+        } else if (turnPlayerObject.GetRoom().HasPassage() == false) {
             DisplayError("The current room hase no passages");
         } else if(hasEneteredRoom){
             DisplayError("You cannot enter a passage if you enetered a room this turn");
         }else{
-            turnPlayer.MoveToRoom(turnPlayer.GetRoom().GetPassageRoom());
+            turnPlayerObject.MoveToRoom(turnPlayerObject.GetRoom().GetPassageRoom());
             Game.GetBoard().ResetRoom();
-            DisplayMessage(turnPlayer.GetObjectName() + " took a secret passage to the " + turnPlayer.GetRoom().GetName());
+            DisplayMessage(turnPlayer + " took a secret passage to the " + turnPlayerObject.GetRoom().GetName());
             hasEneteredRoom = true;
             canRoll = false;
             dice1 = 1;
@@ -145,22 +156,24 @@ public class Turn {
     }
 
     private void MoveOutOfRoom(int exit) {
+        PlayerObject playerObject = turnPlayer.GetPlayerObject();
+        
         if (hasEneteredRoom)
             DisplayError("You have allready entered a room on this turn.");
         else if (dice1 == 0)
             DisplayError("You need to roll the dice befor you can move.");
 
-        else if (exit < 1 || turnPlayer.GetRoom().GetDoors().length < exit)
+        else if (exit < 1 || playerObject.GetRoom().GetDoors().length < exit)
             DisplayError("Please enter a valid door number");
 
         else {
-            Room playerRoom = turnPlayer.GetRoom();
-            turnPlayer.LeaveRoom();
+            Room playerRoom = playerObject.GetRoom();
+            playerObject.LeaveRoom();
             Game.GetBoard().ResetRoom();
-            turnPlayer.MoveTo(playerRoom.GetDoors()[exit - 1].GetOutside());
+            turnPlayerObject.MoveTo(playerRoom.GetDoors()[exit - 1].GetOutside());
             stepsLeft--;
-            DisplayMessage(turnPlayer.GetObjectName() + " left the " + playerRoom.GetName() + " through exit number " + exit);
-            DisplayMessage(turnPlayer.GetObjectName() + " has " + stepsLeft + " steps left to move.");
+            DisplayMessage(turnPlayer + " left the " + playerRoom.GetName() + " through exit number " + exit);
+            DisplayMessage(turnPlayer + " has " + stepsLeft + " steps left to move.");
         }
     }
 
@@ -179,11 +192,47 @@ public class Turn {
                                             // numbers for the die results
         dice2 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
                                             // numbers for the die results
-        Game.GetDisplay().SendMessage("Die 1 gives: " + dice1 + "\n" + "Die 2 gives: " + dice2 + "\n" + turnPlayer.GetObjectName() +" gets "
+        Game.GetDisplay().SendMessage("Die 1 gives: " + dice1 + "\n" + "Die 2 gives: " + dice2 + "\n" + turnPlayer +" gets "
                 + (dice1 + dice2) + " moves" + "\n");
         stepsLeft = dice1 + dice2;
         
         canRoll = false;
+    }
+    
+    private void ShowNotes()
+    {
+        StringBuilder sb = new StringBuilder(
+                  String.format("%-30s \n", "Notes: " + turnPlayer));
+        sb.append(String.format("%-30s \n", "X: You have this card."));
+        sb.append(String.format("%-30s \n\n", "A: Everyone sees this card."));
+        
+        sb.append(String.format("%-30s \n", "Players"));
+        sb.append(GetCardNotesFromIterator(Game.GetCards(PlayerCard.class)));
+        
+        sb.append(String.format("%-30s\n", "Weapons"));
+        sb.append(GetCardNotesFromIterator(Game.GetCards(WeaponCard.class)));
+        
+        sb.append(String.format("%-30s\n", "Rooms"));
+        sb.append(GetCardNotesFromIterator(Game.GetCards(RoomCard.class)));
+        
+        DisplayMessage(sb.toString());
+    }
+    
+    private String GetCardNotesFromIterator(Iterator<? extends Card> cards)
+    {
+        StringBuilder sb = new StringBuilder();
+        while(cards.hasNext())
+        {
+            Card c = cards.next();
+            char displayChar;
+            if(turnPlayer.HasCard(c)) // Check if player has card
+                displayChar = c.CanEveryOneSee()?'A':'X';
+            else
+                displayChar = ' ';
+            
+            sb.append(String.format("%-30s%c\n", c.getName(), displayChar));
+        }
+        return sb.toString();
     }
 
     private void EndTurn() {
@@ -192,14 +241,14 @@ public class Turn {
     }
     
     
-    public PlayerObject GetPlayer()
+    public Player GetPlayer()
     {
         return turnPlayer;
     }
     
     public boolean CanLeaveRoom()
     {
-        return (hasEneteredRoom == false && turnPlayer.IsInRoom());
+        return (hasEneteredRoom == false && turnPlayerObject.IsInRoom());
     }
     
     /**

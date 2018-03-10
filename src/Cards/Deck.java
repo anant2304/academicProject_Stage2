@@ -9,29 +9,58 @@ public class Deck {
 	private Map<String,RoomCard> roomCards = new HashMap<String,RoomCard>();
 	private Map<String,WeaponCard> weaponCards = new HashMap<String,WeaponCard>();
 	private Stack<Card> deck = new Stack<Card>();
+	private Card[] envelope;
 	
 	private Random rand = new Random();
 	
-	private static Deck instance;//this is here JUST to make the get card method static
-	
 	public Deck(){
 		FillCards();
+		FillEnvelpoe();
 		FillDeck();
 		ShuffleDeck();
-		
-		if(instance == null)
-			instance = this;
-		else
-			throw new RuntimeException("Duplicate Deck Createded");
 	}
 	
-	private void FillCards() {//TODO : fill in all the cards
+	private void FillEnvelpoe() {
+        envelope = new Card[3];
+        envelope[0] = GetEnvelopeCard(playerCards);
+        envelope[1] = GetEnvelopeCard(weaponCards);
+        envelope[2] = GetEnvelopeCard(roomCards);
+        
+        for(Card c : envelope)
+            c.isInEnvelope = true;
+    }
+	
+	public Card[] GetEnvelope()
+	{
+	    return envelope;
+	}
+	
+	private Card GetEnvelopeCard(Map<String, ? extends Card> map)
+	{
+	    int playerCardIndex = rand.nextInt(map.size());
+	    Card randCard = null;
+        for(Card c : map.values())
+        {
+            if(playerCardIndex-- == 0)
+                randCard = c;
+        }
+        return randCard;
+	}
+
+    private void FillCards() {//TODO : fill in all the cards
 		//i think this should be done by pulling from a centeral location where we define
 		//all the players, rooms and weapons... so below is just test values
-		
-		playerCards.put("peter", new PlayerCard("peter", null));
-		roomCards.put("mancave", new RoomCard("mancave",null));
-		weaponCards.put("computer", new WeaponCard("computer",null));
+
+        playerCards.put("p1", new PlayerCard("p1", null));
+        playerCards.put("p2", new PlayerCard("p2", null));
+        playerCards.put("p3", new PlayerCard("p3", null));
+        playerCards.put("p4", new PlayerCard("p4", null));
+		roomCards.put(  "r1", new RoomCard(  "r1", null));
+        roomCards.put(  "r2", new RoomCard(  "r2", null));
+        roomCards.put(  "r3", new RoomCard(  "r3", null));
+        weaponCards.put("w1", new WeaponCard("w1", null));
+        weaponCards.put("w2", new WeaponCard("w2", null));
+        weaponCards.put("w3", new WeaponCard("w3", null));
 	}
 	
 	private void FillDeck() {
@@ -49,51 +78,46 @@ public class Deck {
 		if(ErrorPlaces.equals("") == false)
 			throw new RuntimeException("No cards found for" + ErrorPlaces);
 			
-		for(String key : playerCards.keySet()) 
-			deck.push(playerCards.get(key));
-		for(String key : roomCards.keySet()) 
-			deck.push(roomCards.get(key));
-		for(String key : weaponCards.keySet()) 
-			deck.push(weaponCards.get(key));
+		for(Card c : playerCards.values()) {
+		    if(c.isInEnvelope != true)
+		        deck.push(c);
+		}
+		for(Card c : weaponCards.values()) {
+            if(c.isInEnvelope != true)
+                deck.push(c);
+        }
+		for(Card c : roomCards.values()) {
+            if(c.isInEnvelope != true)
+                deck.push(c);
+        }
 	}
 	
 	
-	private void ShuffleDeck() {//TODO : this is an O(n) shuffel, look into better shuffeling algorithms
-		Card[][] array = new Card[3][Math.max(playerCards.size(), 
-						Math.max(roomCards.size(), weaponCards.size()))];
-		int sizeOfArray[] = new int[3];
+	private void ShuffleDeck() {
+		Card[] array = new Card[deck.size()];
+		int i = 0;
 		
 		while(deck.isEmpty() == false) {
-			int num = rand.nextInt(3);
-			
-			while(sizeOfArray[num] >= array[num].length)
-				num = (num+1) % 3;
-			
-			array[num][sizeOfArray[num]] = deck.pop();
-			sizeOfArray[num]++;
+			array[i++] = deck.pop();
 		}
 		
-		for(int i = 0; i < 3; i++) {
-			for(int j = 0; j < sizeOfArray[i]; j++) {
-				int num = rand.nextInt(sizeOfArray[i] - j) + j;
-				Card temp = array[i][num];
-				array[i][num] = array[i][j];
-				array[i][j] = temp;
+			for(int j = 0; j < array.length; j++) {
+				int num = rand.nextInt(array.length - j) + j;
+				Card temp = array[num];
+				array[num] = array[j];
+				array[j] = temp;
 			}
-		}
 		
-		for(int i = 0; i < 3; i++) {
-			for(int j = 0; j < sizeOfArray[i]; j++) {
-				deck.push(array[i][j]);
+			for(int j = 0; j < array.length; j++) {
+				deck.push(array[j]);
 			}
-		}
 	}
 	
 	
 	public Card DrawCard() {
 		if(IsEmpty() == false)
 			return deck.pop();
-		return null;
+		throw new IllegalStateException("No more cards");
 	}
 	
 	
@@ -107,19 +131,19 @@ public class Deck {
 	}
 	
 	
-	public static Card getCard(String name, Class<?> typeOfCard ) {
+	public Card getCard(String name, Class<?> typeOfCard ) {
 		Card temp;
 		
 		if(typeOfCard == PlayerCard.class) {//can't do swtich statment on Class<?>
-			if((temp = instance.playerCards.get(name)) != null)
+			if((temp = playerCards.get(name)) != null)
 				return temp;
 		}
 		else if(typeOfCard == RoomCard.class) {
-			if((temp = instance.roomCards.get(name)) != null)
+			if((temp = roomCards.get(name)) != null)
 				return temp;			
 		}
 		else if(typeOfCard == WeaponCard.class) {
-			if((temp = instance.weaponCards.get(name)) != null)
+			if((temp = weaponCards.get(name)) != null)
 				return temp;			
 		}
 		else throw new RuntimeException("Tryed to get a card with an incorect type in deck");
@@ -128,15 +152,15 @@ public class Deck {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Iterator<Card> GetAllCards(Class<?> typeOfCard) {
+	public Iterator<? extends Card> GetAllCards(Class<? extends Card> typeOfCard) {
 		if(typeOfCard == PlayerCard.class) {//can't do swtich statment on Class<?>
-			return (Iterator<Card>) playerCards.values();
+			return  playerCards.values().iterator();
 		}
 		else if(typeOfCard == RoomCard.class) {
-			return (Iterator<Card>) roomCards.values();		
+			return roomCards.values().iterator();		
 		}
 		else if(typeOfCard == WeaponCard.class) {
-			return (Iterator<Card>) weaponCards.values();
+			return weaponCards.values().iterator();
 		}
 		else throw new RuntimeException("Tryed to get cards with an incorect type in deck"); 
 	}
@@ -144,15 +168,15 @@ public class Deck {
 	
 	public static void main(String[] args) {
 		Deck deck = new Deck();
+
+        System.out.println(deck.Size());
+        System.out.println(deck.IsEmpty());
+        System.out.println(deck.Size());
+        System.out.println(deck.IsEmpty());
+        System.out.println(deck.getCard("p2",PlayerCard.class).getName());
+        
+		while(!deck.IsEmpty())
+	        System.out.println(deck.DrawCard().getName());
 		
-		System.out.println(deck.Size());
-		System.out.println(deck.IsEmpty());
-		System.out.println(deck.DrawCard());
-		System.out.println(deck.DrawCard());
-		System.out.println(deck.Size());
-		System.out.println(deck.DrawCard());
-		System.out.println(deck.IsEmpty());
-		System.out.println(Deck.getCard("peter",PlayerCard.class));
-		System.out.println(deck.DrawCard());
 	}
 }

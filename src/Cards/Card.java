@@ -4,16 +4,18 @@ public abstract class Card {
 
 	private String name;
 	private boolean canEveryOneSee = false;
+	boolean isInEnvelope;
 	
 	public Card(String _name) {
 		name = _name;
+		isInEnvelope = false;
 	}
 	
 	public String getName() {
 		return name;
 	}
 	
-	public void setcanEveryOneSee() {
+	public void SetCanEveryOneSee() {
 		canEveryOneSee = true;
 	}
 	

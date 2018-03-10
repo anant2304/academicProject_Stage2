@@ -6,7 +6,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import Sigurd.Coordinates;
-import Sigurd.Game;
 
 /**
  * Players that are displayed to the screen.
@@ -16,8 +15,9 @@ import Sigurd.Game;
  */
 public class PlayerObject extends BoardObject {
 
-    String playerName;
-
+    private boolean hasPlayer;
+    
+    
     /**
      * @Summary Creates a player represented on the board with a colored circle
      * @param _x
@@ -36,13 +36,17 @@ public class PlayerObject extends BoardObject {
 
         SetImage(image);
     }
-
-    public String getPlayerName() {
-        return playerName;
+    
+    public boolean HasPlayer()
+    {
+        return hasPlayer;
     }
-
-    public void setPlayerName(String _PlayerName) {
-        playerName = _PlayerName;
+    
+    public void SetPlayer()
+    {
+        if(hasPlayer)
+            throw new IllegalStateException(GetObjectName() + " has a player");
+        hasPlayer = true;
     }
 
     /**

@@ -19,10 +19,10 @@ import java.util.LinkedList;
 /*  Class PlayerSignIn  */
 class PlayerSignIn
 {
-    Vector<PlayerObject> players = new Vector<PlayerObject>();
+    Vector<Player> players = new Vector<Player>();
     DisplayPanel display;
     int currPossition;
-    public static int strength;
+    public int strength;
     
     public PlayerSignIn()
     {
@@ -30,17 +30,17 @@ class PlayerSignIn
         currPossition = 0;
     }
     
-    public void add(PlayerObject p) 
+    private void add(Player p) 
     {
     	players.add(p);
     }
     
-    public Vector<PlayerObject> getPlayers() 
+    public Vector<Player> getPlayers() 
     {
     	return players;
     }
     
-    public PlayerObject NextPlayer() 
+    public Player NextPlayer() 
     {
     	return players.get((currPossition++) % players.size());
     }
@@ -72,8 +72,8 @@ class PlayerSignIn
     void CheckPlayersInGame(){
     	if(players.isEmpty())
 			display.SendMessage("There are no players in the game yet");
-		for(PlayerObject p : players) {
-			display.SendMessage(p.getPlayerName() + " is playing " + p.GetObjectName());
+		for(Player p : players) {
+			display.SendMessage(p.GetPlayerName() + " is playing " + p.GetCharacterName());
 		}
     }
     
@@ -82,7 +82,7 @@ class PlayerSignIn
     	int i = 0;
     	
     	for(PlayerObject p : characters) {
-    		if(p.getPlayerName() == null)
+    		if(p.HasPlayer())
     			display.SendMessage(p.GetObjectName() + " is still avalable");
     		else
     			i++;
@@ -96,7 +96,7 @@ class PlayerSignIn
     	String[] playerEnteries = command.split("\\s+");
 		
 		if(playerEnteries.length != 2) {
-			display.SendMessage("Incorect number of elements entered");
+			display.SendError("Incorect number of elements entered");
 		}
 		else if(Game.DoseCharacterExist(playerEnteries[1]) == false) {
 			display.SendMessage("the character entered is not recodnised");
@@ -104,14 +104,13 @@ class PlayerSignIn
 		else if(players.size() >= 6) {
 			display.SendMessage("You may only have up to six players\nEnter \"done\" to start the game");
 		}
-		else if(Game.GetCharacter(playerEnteries[1]).getPlayerName() != null) {
+		else if(Game.GetCharacter(playerEnteries[1]).HasPlayer()) {
 			display.SendMessage("Someone is already playing " + playerEnteries[1]);
 		}
 		else {
 			PlayerObject p = Game.GetCharacter(playerEnteries[1]);
-			players.add(p);
+			players.add(new Player(playerEnteries[0] ,p));
             strength++;
-			p.setPlayerName(playerEnteries[0]);
 			display.SendMessage(playerEnteries[0] + " Is playing " + playerEnteries[1]);	
 			return;
 		}

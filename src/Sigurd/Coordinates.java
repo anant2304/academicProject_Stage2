@@ -12,18 +12,18 @@ package Sigurd;
 
 public class Coordinates {
 
-    private int row, col;
+    private final int row, col;
     
     public static final Coordinates UP = new Coordinates(0,-1);
     public static final Coordinates DOWN = new Coordinates(0,1);
     public static final Coordinates LEFT = new Coordinates(-1,0);
     public static final Coordinates RIGHT = new Coordinates(1,0);
 
+    
     Coordinates(int col, int row) {
         this.col = col;
         this.row = row;
     }
-    
     /**
      *  Constructor that takes in a string of the form "row,col".
      */

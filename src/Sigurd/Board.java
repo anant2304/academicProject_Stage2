@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import Sigurd.BoardObjects.BoardObject;
-import Sigurd.BoardObjects.PlayerObject;
 
 /**
  * @author Adrian Wennberg Team: Sigurd Student Numbers: 16751195, 16202907,
@@ -136,26 +135,20 @@ public class Board {
         return rooms;
     }
 
-    public boolean IsPositionMovable(Coordinates current, Coordinates to) {
+    public boolean IsPositionMovable(Coordinates current, Coordinates to) 
+    {
         boolean validX = to.getCol() >= 0 && to.getCol() < boardArray.length;
         boolean validY = to.getRow() >= 0 && to.getRow() < boardArray[0].length;
-        return validX && validY
-                && !IsPlayerPosition(to) && (boardArray[to.getCol()][to.getRow()] || (IsDoor(to) && doorPositions.get(to).HasOutside(current)));
+        return validX && validY && (boardArray[to.getCol()][to.getRow()] || (IsDoor(to) && doorPositions.get(to).HasOutside(current)));
     }
 
-    public boolean IsPlayerPosition(Coordinates co) {
-        for (BoardObject p : boardObjectList) {
-            if (p.GetCoordinates().equals(co) && p.getClass().isAssignableFrom(PlayerObject.class))
-                return true;
-        }
-        return false;
-    }
-
-    public boolean IsDoor(Coordinates co) {
+    public boolean IsDoor(Coordinates co) 
+    {
         return doorPositions.containsKey(co);
     }
 
-    public Room GetDoorRoom(Coordinates co) {
+    public Room GetDoorRoom(Coordinates co) 
+    {
         return doorPositions.get(co).GetRoom();
     }
 
