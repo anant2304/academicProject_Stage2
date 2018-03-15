@@ -10,6 +10,8 @@ import Cards.Card;
 import Cards.Deck;
 import Cards.PlayerCard;
 
+import java.io.IOException;
+
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -65,6 +67,15 @@ public class Game {
         
         command.TakeFocus();//would be in create window but some issue causes it to work only half the time, here it always works
     
+        try
+        {
+            lang1.main();
+        }
+        catch(IOException e)
+        {
+            
+        }
+        
         for(int i=0;i<4;i++)
         {
             display.SendMessage(lang1.English[i]+"\n");
