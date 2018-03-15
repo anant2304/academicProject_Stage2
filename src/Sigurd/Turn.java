@@ -92,7 +92,7 @@ public class Turn {
             DisplayError(Game.lang1.English[27]);
             return;
         }
-        if(turnPlayer.IsInRoom())
+        if(turnPlayerObject.IsInRoom())
         {
             DisplayError(Game.lang1.English[28]);
             return;
