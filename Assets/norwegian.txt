@@ -1,0 +1,42 @@
+Skriv navnene til spillerne som 
+dette [Spiller Navn] [Figur Navn]
+når du re ferdig, skriv \"ferdig\" for å starte spillet
+skriv \"hjelp\" nås som helst hvis du lurer på noe
+Triller terninger for hver spiller:  
+Terning resultatet ble 
+Triller igjen for de som fikk det samme:
+skriv \"trill\" for å trille terningene
+skriv o, n, v eller h for å bevege deg opp, ned, til venstre, eller til høyre
+hvis du begynner runden din i ett rom, skriv et tall etter at du har trillet for å gå ut gjennom døren med det tallet
+skriv \"ferdig\" for å avslutte runden
+skriv \"avslutt\" for å avslutte spillet
+skriv \"#avslutt\" hvis noe går galt
+skriv ett navn og en figur og trykk på Enter for legge til en spiller
+skriv \"spillere\" for å se hvilke spillere som er med i spillet
+skriv \"figurer\" for å se ledige figurer
+når alle har skrevet in navnet sitt, skriv \"ferdig\" for å starte spillet
+skriv \"#avslutt\" for å avslutte spillet
+det må være minst to spillere for å spille
+Det er ingen spillere i spillet enda 
+Det er ingen ledige figurer igjen
+Feil antall ord skrevet inn
+Vi finner ikke figuren du har skrevet inn
+Du kan bare ha opp til seks spillere \nSkriv \"ferdig\" for å starte spillet 
+Skriv inn en spiller som dette \n[Spiller Navn] [Figur Navn]
+Du må trille terningene før du kan flytte deg.
+Du kan ikke flytte deg etter at du har gått inn i et rom
+Du har ingen steg igjen for å flytte deg
+Du må gå ut av rommet først.
+En retning må være en av disse bokstavene {o, n, v, h}.
+Du må være i et romm for å bruke en hemmelig passasje
+Dette rommet har ingen hemmelige passasjer
+Du kan ikke bruke en hemmelig passasje den runden du gikk in i et rom
+Du har allerede gått in i ett rom denne runden
+Du må trille terningene før du kan flytte deg.
+Skriv in ett gyldig dør nummer
+Du har allerede trillet terningene denne runden
+Du kan ikke trille terningene akkurat nå
+Runden er ferdig
+SPILLET STARTER
+
+
