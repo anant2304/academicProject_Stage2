@@ -1,0 +1,42 @@
+Enter the names of the players 
+in the form [Player Name] [Character Name]
+when you are finished type in \"done\" to start the game
+type in \"help\" at any time to receive help
+Rolling for each player: 
+The dice results are
+Rolling again for tied players: 
+type in \"roll\" to roll your dice
+type in u, d, l or r to move up, down, left, or right respectively
+if you are in a room at the start of your turn, after rolling type the number corresponding to an exit to leave
+type in \"done\" to end your turn
+type in \"quit\" to close down the game
+type in \"#exit\" if something goes wrong
+type in a name then press enter or return to add it to the game
+type in \"players\" to see who is currently in the game
+type in \"characters\" to see unclaimed characters
+if you have entered everyone's name type \"done\" to start the game
+type in \"#exit\" to abort the game
+you must have at least 2 players to play
+There are no players in the game yet
+There are no characters left unclaimed
+Incorrect number of elements entered
+the character entered is not recognised
+You may only have up to six players\nEnter \"done\" to start the game 
+Please enter in the form \n[Player Name] [Character Name]
+You need to roll the dice before you can move.
+You cannot move after you have entered a room.
+You do not have any steps left to move.
+You have to move out of the room first.
+Move dir must be a string in the set {u, d, l, r}.
+You cannot take a passage while not in a room
+The current room has no passages
+You cannot enter a passage if you entered a room this turn
+You have already entered a room on this turn.
+You need to roll the dice before you can move.
+Please enter a valid door number
+You have already rolled your dice
+You cannot roll your dice at this time
+Turn Over
+GAME BEGINS
+
+

@@ -81,23 +81,22 @@ public class Turn {
 
     private void MoveInDirection(String dir) {
         if (canRoll) {
-            DisplayError("You need to roll the dice befor you can move.");
+            DisplayError(Game.lang1.English[25]);
             return;
         }
         if (hasEneteredRoom) {
-            DisplayError("You cannot move after you have enetered a room.");
+            DisplayError(Game.lang1.English[26]);
             return;
         }
         if (stepsLeft == 0) {
-            DisplayError("You do not have any steps left to move.");
+            DisplayError(Game.lang1.English[27]);
             return;
         }
-        if(turnPlayerObject.IsInRoom())
+        if(turnPlayer.IsInRoom())
         {
-            DisplayError("You have to move out of the room first.");
+            DisplayError(Game.lang1.English[28]);
             return;
-        }
-        Coordinates positionChange;
+        }        Coordinates positionChange;
         switch (dir) {
         case "u":
             positionChange = Coordinates.UP;
@@ -112,7 +111,7 @@ public class Turn {
             positionChange = Coordinates.RIGHT;
             break;
         default:
-            throw new IllegalArgumentException("Move dir must be a string in the set {u, d, l, r}.");
+            throw new IllegalArgumentException(Game.lang1.English[29]);
         }
         
         
@@ -140,11 +139,11 @@ public class Turn {
     private void MoveThroughPassage() {
         
         if (turnPlayerObject.IsInRoom() == false) {
-            DisplayError("You cannot take a passage while not in a room");
+            DisplayError(Game.lang1.English[30]);
         } else if (turnPlayerObject.GetRoom().HasPassage() == false) {
-            DisplayError("The current room hase no passages");
+            DisplayError(Game.lang1.English[31]);
         } else if(hasEneteredRoom){
-            DisplayError("You cannot enter a passage if you enetered a room this turn");
+            DisplayError(Game.lang1.English[32]);
         }else{
             turnPlayerObject.MoveToRoom(turnPlayerObject.GetRoom().GetPassageRoom());
             Game.GetBoard().ResetRoom();
@@ -159,12 +158,12 @@ public class Turn {
         PlayerObject playerObject = turnPlayer.GetPlayerObject();
         
         if (hasEneteredRoom)
-            DisplayError("You have allready entered a room on this turn.");
+            DisplayError(Game.lang1.English[33]);
         else if (dice1 == 0)
-            DisplayError("You need to roll the dice befor you can move.");
+            DisplayError(Game.lang1.English[34]);
 
         else if (exit < 1 || playerObject.GetRoom().GetDoors().length < exit)
-            DisplayError("Please enter a valid door number");
+            DisplayError(Game.lang1.English[35]);
 
         else {
             Room playerRoom = playerObject.GetRoom();
@@ -179,11 +178,11 @@ public class Turn {
 
     private void RollDice() {
         if (canRoll == false && dice1 == 0) {
-            DisplayError("You have allready rolled your dice");
+            DisplayError(Game.lang1.English[36]);
             return;
         }
         if (canRoll == false) {
-            DisplayError("You can not roll your dice at this time");
+            DisplayError(Game.lang1.English[37]);
             return;
         }
 
@@ -236,7 +235,7 @@ public class Turn {
     }
 
     private void EndTurn() {
-        Game.GetDisplay().SendMessage("Turn Over");
+        Game.GetDisplay().SendMessage(Game.lang1.English[38]);
         Game.NextTurn();
     }
     

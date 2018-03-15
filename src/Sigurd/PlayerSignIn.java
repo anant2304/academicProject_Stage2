@@ -64,14 +64,14 @@ class PlayerSignIn
     
     void FinishSignIn() {
     	if(players.size() < 2)
-			display.SendMessage("you must have at least 2 players to paly");
+			display.SendMessage(Game.lang1.English[18]);
 		else
             Game.StartGame();
     }
     
     void CheckPlayersInGame(){
     	if(players.isEmpty())
-			display.SendMessage("There are no players in the game yet");
+			display.SendMessage(Game.lang1.English[19]);
 		for(Player p : players) {
 			display.SendMessage(p.GetPlayerName() + " is playing " + p.GetCharacterName());
 		}
@@ -89,20 +89,20 @@ class PlayerSignIn
     	}
     	
     	if(i == characters.size()) 
-    		display.SendMessage("There are no characters left unclamed");
+    		display.SendMessage(Game.lang1.English[20]);
     }
     
     void addPlayer(String command) {
     	String[] playerEnteries = command.split("\\s+");
 		
 		if(playerEnteries.length != 2) {
-			display.SendError("Incorect number of elements entered");
+			display.SendMessage(Game.lang1.English[21]);
 		}
 		else if(Game.DoseCharacterExist(playerEnteries[1]) == false) {
-			display.SendMessage("the character entered is not recodnised");
+			display.SendMessage(Game.lang1.English[22]);
 		}
 		else if(players.size() >= 6) {
-			display.SendMessage("You may only have up to six players\nEnter \"done\" to start the game");
+			display.SendMessage(Game.lang1.English[23]);
 		}
 		else if(Game.GetCharacter(playerEnteries[1]).HasPlayer()) {
 			display.SendMessage("Someone is already playing " + playerEnteries[1]);
@@ -114,6 +114,6 @@ class PlayerSignIn
 			display.SendMessage(playerEnteries[0] + " Is playing " + playerEnteries[1]);	
 			return;
 		}
-		display.SendMessage("Please enter in the form \n[Player Name] [Character Name]");
+		display.SendMessage(Game.lang1.English[24]);
     }
 }

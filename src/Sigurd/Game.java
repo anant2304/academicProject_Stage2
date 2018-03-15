@@ -43,6 +43,8 @@ public class Game {
     
     static Random rand=new Random(System.currentTimeMillis());
     
+    public static language lang1;
+    
     
     /**
      * @Summary the main that runs the game
@@ -59,11 +61,14 @@ public class Game {
         PlacePlayers();
         PlaceWeapons();
         
+        lang1=new language();
+        
         command.TakeFocus();//would be in create window but some issue causes it to work only half the time, here it always works
     
-        display.SendMessage("Enter the names of the players\nin the form [Player Name] [Character Name]\n"
-                + "when you are finished type in \"done\" to start the game\n"
-                + "type in \"help\" at any time to recive help");
+        for(int i=0;i<4;i++)
+        {
+            display.SendMessage(lang1.English[i]+"\n");
+        }
         //the game now waits for input, first that input is passed to the PlayerSignIn class,
         //after the game has started it is then passed to each respective turn object as they are taken
     }
@@ -103,6 +108,7 @@ public class Game {
      * @Summary called by the PlayerSignIn class to progress the game into a playable state
      */
     public static void StartGame() {        
+        display.SendMessage(lang1.English[4]+"\n");
         RollForEach();
         DealCards();
         NextTurn();
@@ -119,7 +125,7 @@ public class Game {
                 turn[i]=d01+d02;
             }
         }
-        display.SendMessage("The dice results are\n");
+        display.SendMessage(lang1.English[5]+"\n");
         for(int i=0;i<playerSign.strength;i++)
         {
             if(turn[i]!=-1)
@@ -156,7 +162,7 @@ public class Game {
         }
         else
         {
-            display.SendMessage("Rolling again for tied players: \n");
+            display.SendMessage(lang1.English[6]+"\n");
             RollForEach();
         }
     }
@@ -364,21 +370,18 @@ public class Game {
      */
     private static void DisplayHelp(){
         if(isGameStarted())
-            display.SendMessage(
-                "type in \"roll\" to roll your dice\n"
-                + "type in u,d,l or r to move up, down, left, or right respectivly\n"
-                + "if you are in a room at the start of your turn, after rolling type the number corrisponding to an exit to leave\n"
-                + "type in \"done\" to end your turn"
-                + "type in \"quit\" to close down the game\n"
-                + "type in \"#help\" to see cheat/testing commands"
-                );
+        {
+            for(int i=7;i<13;i++)
+            {
+                display.SendMessage(lang1.English[i]+"\n");
+            }
+        }
         else
-            display.SendMessage(
-                    "type in a name then press enter or return to add it to the game\n"
-                    + "type in \"players\" to see who is currently in the game\n"
-                    + "type in \"characters\" to see unclamed characters\n"
-                    + "if you have entered everyone's name type \"done\" to start the game\n"
-                    + "type in \"#help\" to see cheat/testing commands"
-                    );
+        {
+            for(int i=13;i<18;i++)
+            {
+                display.SendMessage(lang1.English[i]+"\n");
+            }
+        }
     }
 }
