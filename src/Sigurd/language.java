@@ -9,7 +9,7 @@ public class language
 		BufferedReader br=null;
 		int i=0;
 		try {
-			br = new BufferedReader(new FileReader("/Users/anantshaw/Downloads/Sigurd-master 3/Assets/english.txt"));
+			br = new BufferedReader(new FileReader("Assets/english.txt"));
 		    String line = br.readLine();
 		
 		    while (line!=null) 
