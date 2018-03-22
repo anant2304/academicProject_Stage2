@@ -1,31 +1,34 @@
 package Sigurd;
 import java.util.*;
 import java.io.*;
-public class language 
+public class language
 {
-	static String[] English=new String[100];
-	public static void main() throws IOException
-	{
-		BufferedReader br=null;
-		int i=0;
-		try {
-			br = new BufferedReader(new FileReader("Assets/english.txt"));
-		    String line = br.readLine();
-		
-		    while (line!=null) 
-		    {
-		        English[i]=line;
-		        line = br.readLine();
-		        i++;
-		    }
-			} 
-			finally 
-			{
-				br.close();
-			}
-		
-	}
-	
-	
-	
+    static String[] English=new String[100];
+    public static void main() throws IOException, ClassNotFoundException
+    {
+        int i=0;
+        try
+        {
+            Scanner br= new Scanner(language.class.getResource("/english.txt").openStream());
+            String line = br.nextLine();
+            
+            while (line!=null && br.hasNextLine())
+            {
+                English[i]=line;
+                line = br.nextLine();
+                i++;
+            }
+            
+            
+            br.close();
+        }
+        finally {
+            
+        }
+        
+        
+    }
+    
+    
+    
 }
