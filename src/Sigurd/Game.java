@@ -57,11 +57,12 @@ public class Game {
         display = new DisplayPanel();
         board = new Board();
         playerSign = new PlayerSignIn();
-        deck = new Deck();
         
         CreateWindow();
         PlacePlayers();
         PlaceWeapons();
+        
+        deck = new Deck();//must come after placeing players and weaponss
         
         lang1=new language();
         
@@ -71,7 +72,7 @@ public class Game {
         {
             lang1.main();
         }
-        catch(IOException e)
+        catch(Exception e)
         {
             
         }
@@ -217,6 +218,7 @@ public class Game {
     }
 
     
+
     /**
      * @Summary creates and places all the players onto the board
      */
@@ -232,8 +234,14 @@ public class Game {
         {
             board.AddMovable(p);
         }
-    }
-    
+	}
+	
+	private static PlayerObject ParsePlayerLine(String line) {
+		String[] temp = line.split("\\s+");
+		
+		return new PlayerObject(new Coordinates(temp[1].trim()), Color.decode(temp[2]), temp[0]); 
+	}
+	  
     /**
      * @Summary creates and places all weapons onto the board
      */
@@ -318,6 +326,10 @@ public class Game {
      */
     public static Board GetBoard() {
         return board;
+    }
+    
+    public static Collection<WeaponObject> GetAllWeapons(){
+    	return weaponMap.values();    	
     }
     
     public static Iterator<? extends Card> GetCards(Class<? extends Card> c)

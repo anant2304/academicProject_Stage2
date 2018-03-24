@@ -1,5 +1,5 @@
 Dagger		3,4
-Lead Pipe	20,10
+LeadPipe	20,10
 Spanner		13,4
 Candlestick	11,20
 Revolver	4,11

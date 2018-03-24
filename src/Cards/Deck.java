@@ -2,6 +2,11 @@ package Cards;
 
 import java.util.*;
 
+import Sigurd.Game;
+import Sigurd.Room;
+import Sigurd.BoardObjects.PlayerObject;
+import Sigurd.BoardObjects.WeaponObject;
+
 public class Deck {
 
 	//only pass references to these cards, to have a card is to just have a reference to one of these elements
@@ -51,16 +56,21 @@ public class Deck {
 		//i think this should be done by pulling from a centeral location where we define
 		//all the players, rooms and weapons... so below is just test values
 
-        playerCards.put("p1", new PlayerCard("p1", null));
-        playerCards.put("p2", new PlayerCard("p2", null));
-        playerCards.put("p3", new PlayerCard("p3", null));
-        playerCards.put("p4", new PlayerCard("p4", null));
-		roomCards.put(  "r1", new RoomCard(  "r1", null));
-        roomCards.put(  "r2", new RoomCard(  "r2", null));
-        roomCards.put(  "r3", new RoomCard(  "r3", null));
-        weaponCards.put("w1", new WeaponCard("w1", null));
-        weaponCards.put("w2", new WeaponCard("w2", null));
-        weaponCards.put("w3", new WeaponCard("w3", null));
+    	Collection<PlayerObject> characters = Game.GetAllCharcters();
+    	Collection<WeaponObject> weapons = Game.GetAllWeapons();
+    	Room[] rooms = Game.GetBoard().GetRooms();
+    	
+    	for(PlayerObject p : characters) {
+    		playerCards.put(p.GetObjectName(), new PlayerCard(p.GetObjectName(),p));
+    	}
+    	
+    	for(WeaponObject w : weapons) {
+    		weaponCards.put(w.GetObjectName(), new WeaponCard(w.GetObjectName(),w));
+    	}
+    	
+    	for(Room r : rooms) {
+    		roomCards.put(r.GetName(), new RoomCard(r.GetName(),r));
+    	}
 	}
 	
 	private void FillDeck() {

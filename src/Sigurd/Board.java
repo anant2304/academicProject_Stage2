@@ -87,13 +87,13 @@ public class Board {
     }
 
     private void LoadRooms() {
-        rooms = new Room[10];
+    	List<String> lines = Reasource.GetRoomData();
+        rooms = new Room[lines.size()];
         doorPositions = new HashMap<Coordinates, Door>();
-        try (Scanner layoutReader = new Scanner(Board.class.getResource(ROOMS_PATH).openStream(), "UTF-8")) {
+        
             int roomIndex = 0;
-            while (layoutReader.hasNext()) {
-                String line = layoutReader.nextLine();
-                String[] lineParts = line.split("\\s+");
+            while (roomIndex < lines.size()) {
+                String[] lineParts = lines.get(roomIndex).split("\\s+");
 
                 String[] roomNameParts = lineParts[0].split("_");
                 String roomName = roomNameParts[0];
@@ -122,12 +122,6 @@ public class Board {
 
             rooms[2].SetPassageRoom(rooms[7]);
             rooms[7].SetPassageRoom(rooms[2]);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
     
     public Room[] GetRooms()
