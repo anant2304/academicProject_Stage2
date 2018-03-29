@@ -80,9 +80,9 @@ class PlayerSignIn
     void CheckCharactersLeft() {
     	Collection<PlayerObject> characters = Game.GetAllCharcters();
     	int i = 0;
-    	
+    	    	
     	for(PlayerObject p : characters) {
-    		if(p.HasPlayer())
+    		if(p.HasPlayer() == false)
     			display.SendMessage(p.GetObjectName() + " is still avalable");
     		else
     			i++;

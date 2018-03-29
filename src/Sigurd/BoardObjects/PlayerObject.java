@@ -15,7 +15,7 @@ import Sigurd.Coordinates;
  */
 public class PlayerObject extends BoardObject {
 
-    private boolean hasPlayer;
+    private boolean hasPlayer = false;
     
     
     /**

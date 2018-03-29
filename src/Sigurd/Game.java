@@ -223,36 +223,30 @@ public class Game {
      * @Summary creates and places all the players onto the board
      */
     private static void PlacePlayers() {
-        characterMap.put("white",new PlayerObject(new Coordinates(9, 0), Color.decode("#ffffff"), "White"));
-        characterMap.put("green",new PlayerObject(new Coordinates(14, 0), Color.decode("#00ff00"), "Green"));
-        characterMap.put("peacock",new PlayerObject(new Coordinates(23, 6), Color.decode("#326872"), "Peacock"));
-        characterMap.put("plum",new PlayerObject(new Coordinates(23, 19), Color.decode("#8E4585"), "Plum"));
-        characterMap.put("scarlet",new PlayerObject(new Coordinates(7, 24), Color.decode("#ff2400"), "Scarlet"));
-        characterMap.put("mustard",new PlayerObject(new Coordinates(0, 17), Color.decode("#ffdb58"), "Mustard"));
-        
+    	for(String s : Reasource.GetCharacterData()) {
+    		PlayerObject temp = ParsePlayerLine(s);
+    		characterMap.put(temp.GetObjectName(),temp); 
+    		System.out.println(temp.GetObjectName());
+    	}
         for(PlayerObject p : characterMap.values())
         {
             board.AddMovable(p);
         }
 	}
-	
 	private static PlayerObject ParsePlayerLine(String line) {
 		String[] temp = line.split("\\s+");
-		
-		return new PlayerObject(new Coordinates(temp[1].trim()), Color.decode(temp[2]), temp[0]); 
+
+		return new PlayerObject(new Coordinates(temp[1].trim()), Color.decode(temp[2]), temp[0].trim()); 
 	}
 	  
     /**
      * @Summary creates and places all weapons onto the board
      */
     private static void PlaceWeapons() {
-        weaponMap.put("rope",new WeaponObject(new Coordinates(0,0),new Character('R'),"Rope"));
-        weaponMap.put("dagger",new WeaponObject(new Coordinates(0,0),new Character('D'),"Dagger"));
-        weaponMap.put("wrench",new WeaponObject(new Coordinates(0,0),new Character('W'),"Wrench"));
-        weaponMap.put("pistol",new WeaponObject(new Coordinates(0,0),new Character('P'),"Pistol"));
-        weaponMap.put("candlestick",new WeaponObject(new Coordinates(0,0),new Character('C'),"CandleStick"));
-        weaponMap.put("leadpipe",new WeaponObject(new Coordinates(0,0),new Character('L'),"LeadPipe"));
-        
+    	for(String s : Reasource.GetWeaponData()) {
+    		WeaponObject temp = ParseWeaponLine(s);
+    		weaponMap.put(temp.GetObjectName(),temp); 
+    	}
         Room[] rooms = board.GetRooms();
         int i = 0;
         for(Entry<String, WeaponObject> e : weaponMap.entrySet())
@@ -265,6 +259,12 @@ public class Game {
         
         for(WeaponObject p : weaponMap.values())
             board.AddMovable(p);
+    }
+    
+    public static WeaponObject ParseWeaponLine(String line) {
+    	String[] temp = line.split("\\s+");
+    	
+		return new WeaponObject(new Coordinates(temp[1].trim()),temp[0].charAt(0),temp[0].trim()); 
     }
     
     /**

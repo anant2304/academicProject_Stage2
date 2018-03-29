@@ -11,7 +11,10 @@ public class Reasource {
 	private static List<String> weaponCach;
 
 	private Reasource() {}
-	
+
+	/**
+	 * @return a list of lines from the character txt 
+	 */
 	public static List<String> GetCharacterData(){
 		if(characterCach == null) {
 			characterCach = LoadFileLines("characters");
@@ -20,6 +23,9 @@ public class Reasource {
 		return characterCach;
 	}
 	
+	/**
+	 * @return a list of lines from the room txt 
+	 */
 	public static List<String> GetRoomData(){
 		if(roomCach == null) {
 			roomCach = LoadFileLines("rooms");
@@ -28,6 +34,9 @@ public class Reasource {
 		return roomCach;
 	}
 	
+	/**
+	 * @return a list of lines from the weapon txt 
+	 */
 	public static List<String> GetWeaponData(){
 		if(weaponCach == null) {
 			weaponCach = LoadFileLines("weapons");
@@ -36,14 +45,23 @@ public class Reasource {
 		return weaponCach;
 	}
 	
+	/**
+	 * @return a list of names of all the characters in the characters txt 
+	 */
 	public static List<String> GetCharacterNames(){
 		return GetNamesFromData(GetCharacterData());
 	}
 	
+	/**
+	 * @return a list of names of all the rooms in the rooms txt 
+	 */
 	public static List<String> GetRoomNames(){
 		return GetNamesFromData(GetRoomData());
 	}
 	
+	/**
+	 * @return a list of names of all the weapons in the weapons txt 
+	 */
 	public static List<String> GetWeaponNames(){
 		return GetNamesFromData(GetWeaponData());
 	}
@@ -69,8 +87,10 @@ public class Reasource {
 		String string;
 		
 		try {
-			while((string = buffReader.readLine()) != null)
-			temp.add(string);
+			while((string = buffReader.readLine()) != null) {
+			temp.add(string.toLowerCase());
+			System.out.println(string);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
