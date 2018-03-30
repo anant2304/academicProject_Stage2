@@ -34,6 +34,7 @@ public class Game {
     private static PlayerSignIn playerSign;
     private static Deck deck;
     
+    
     private static Stack<Turn> turnStack = new Stack<Turn>();
     
     static int[] turn= {0,0,0,0,0,0};
@@ -42,6 +43,7 @@ public class Game {
     private static Card[] envelope;
     private static Map<String,PlayerObject> characterMap = new HashMap<String,PlayerObject>();
     private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
+    private static boolean isGameOver;
     
     static Random rand=new Random(System.currentTimeMillis());
     
@@ -57,6 +59,7 @@ public class Game {
         display = new DisplayPanel();
         board = new Board();
         playerSign = new PlayerSignIn();
+        isGameOver = false;
         
         CreateWindow();
         PlacePlayers();
@@ -217,6 +220,11 @@ public class Game {
         }
     }
 
+    private static void EndGame() {
+    	  isGameOver = true;  	
+    	  display.SendMessage("The Game is over\nThe winner is :");
+    	  display.SendMessage("enter any command to exit the game");
+    }
     
 
     /**
@@ -337,6 +345,10 @@ public class Game {
         return deck.GetAllCards(c);
     }
     
+    public static boolean IsGameOver() {
+    	return isGameOver;
+    }
+    
     /**
      * @Summary Takes a command and passes it to the correct command method in some class
      * */
@@ -348,6 +360,9 @@ public class Game {
         }
         else if(com.equals("help")) {
             DisplayHelp();
+        }
+        else if(IsGameOver() == true) {
+        	System.exit(0);
         }
         else if(isGameStarted()==false){
             playerSign.Commands(com);
@@ -376,6 +391,9 @@ public class Game {
                                 + "\nWith the weapon: "         + envelope[1].getName()
                                 + "\nIn the room: "             + envelope[2].getName());
             break;
+        case "#end" :
+        	EndGame();
+        	break;
         case "#help" :
             display.SendMessage(
                     "These are cheat/testing comands, not to be used in a normal game\n"
