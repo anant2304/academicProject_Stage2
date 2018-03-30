@@ -12,11 +12,13 @@ public class Player {
     private final PlayerObject playerObject;
     private final Set<Card> playerCards;
     
+    private boolean isOutOfGame;
 
     Player(String name, PlayerObject o){
         playerName = name;
         playerObject = o;
         playerCards = new HashSet<Card>();
+        isOutOfGame = false;
         
         o.SetPlayer();
     }
@@ -49,5 +51,13 @@ public class Player {
     public boolean HasCard(Card c)
     {
         return playerCards.contains(c);
+    }
+    
+    public boolean IsOutOfGame() {
+    	return isOutOfGame;
+    }
+
+    public void KnockOutOfGame() {
+    	isOutOfGame = true;
     }
 }

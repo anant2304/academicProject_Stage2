@@ -287,7 +287,14 @@ public class Game {
      * @Summary creates a new turn with the next player
      */
     public static void NextTurn() {
-        NewTurn(playerSign.NextPlayer());
+    	Player temp;
+    	do {
+    	   temp = playerSign.NextPlayer();
+    	   if(temp.IsOutOfGame() == false)
+    		   NewTurn(temp);
+    	   else
+    		   display.SendMessage(temp.GetPlayerName() + " is out of the game");
+    	   }while(temp.IsOutOfGame());
     }
     
     /**
@@ -394,6 +401,12 @@ public class Game {
         case "#end" :
         	EndGame();
         	break;
+        case "#knockout" : 
+        	if(isGameStarted() == true) {
+        		turnStack.peek().GetPlayer().KnockOutOfGame();
+        		display.SendMessage("knockout : " + turnStack.peek().GetPlayer().GetPlayerName());
+        	}
+        	break;
         case "#help" :
             display.SendMessage(
                     "These are cheat/testing comands, not to be used in a normal game\n"
@@ -402,8 +415,10 @@ public class Game {
                     + "type in \"#exit\" to quit the game\n "
                     );
             break;
+        default :
+        	display.SendMessage("no sutch dev command");
+        	break;
         }
-        
     }
     
     /**
