@@ -8,15 +8,9 @@ import javax.swing.*;
 
 import Cards.Card;
 import Cards.Deck;
-import Cards.PlayerCard;
-
-import java.io.IOException;
 
 import java.util.*;
 import java.util.Map.Entry;
-
-import java.util.Vector;
-import java.util.Collections;
 
 import Sigurd.BoardObjects.*;
 
@@ -33,26 +27,23 @@ public class Game {
     private static DisplayPanel display;
     private static PlayerSignIn playerSign;
     private static Deck deck;
-    
-    
     private static Stack<Turn> turnStack = new Stack<Turn>();
-    
-    static int[] turn= {0,0,0,0,0,0};
-    static int c=0;
-    static int d01,d02,max,pos;
-    private static Card[] envelope;
+
     private static Map<String,PlayerObject> characterMap = new HashMap<String,PlayerObject>();
     private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
     private static boolean isGameOver;
     
+    
+    static int[] turn= {0,0,0,0,0,0};
+    static int c=0;
+    static int d01,d02,max,pos;
+    
     static Random rand=new Random(System.currentTimeMillis());
     
-    public static language lang1;
     
     
     /**
      * @Summary the main that runs the game
-     * @param args
      */
     public static void main(String[] args) {
         command = new CommandPanel();
@@ -60,29 +51,21 @@ public class Game {
         board = new Board();
         playerSign = new PlayerSignIn();
         isGameOver = false;
+        Language.load();
         
         CreateWindow();
         PlacePlayers();
         PlaceWeapons();
-        
+
         deck = new Deck();//must come after placeing players and weaponss
         
-        lang1=new language();
         
         command.TakeFocus();//would be in create window but some issue causes it to work only half the time, here it always works
     
-        try
-        {
-            lang1.main();
-        }
-        catch(Exception e)
-        {
-            
-        }
         
         for(int i=0;i<4;i++)
         {
-            display.SendMessage(lang1.English[i]+"\n");
+            display.SendMessage(Language.English[i]+"\n");
         }
         //the game now waits for input, first that input is passed to the PlayerSignIn class,
         //after the game has started it is then passed to each respective turn object as they are taken
@@ -123,7 +106,7 @@ public class Game {
      * @Summary called by the PlayerSignIn class to progress the game into a playable state
      */
     public static void StartGame() {        
-        display.SendMessage(lang1.English[4]+"\n");
+        display.SendMessage(Language.English[4]+"\n");
         RollForEach();
         DealCards();
         NextTurn();
@@ -131,7 +114,7 @@ public class Game {
 
     private static void RollForEach()
     {
-        for(int i=0;i<playerSign.strength;i++)
+        for(int i=0;i<playerSign.playerCount;i++)
         {
             if(turn[i]!=-1)
             {
@@ -140,8 +123,8 @@ public class Game {
                 turn[i]=d01+d02;
             }
         }
-        display.SendMessage(lang1.English[5]+"\n");
-        for(int i=0;i<playerSign.strength;i++)
+        display.SendMessage(Language.English[5]+"\n");
+        for(int i=0;i<playerSign.playerCount;i++)
         {
             if(turn[i]!=-1)
             {
@@ -150,7 +133,7 @@ public class Game {
         }
         max=turn[0];
         pos=0;
-        for(int i=0;i<playerSign.strength;i++)
+        for(int i=0;i<playerSign.playerCount;i++)
         {
             if(turn[i]>max)
             {
@@ -158,35 +141,35 @@ public class Game {
                 pos=i;
             }
         }
-        for(int i=0;i<playerSign.strength;i++)
+        for(int i=0;i<playerSign.playerCount;i++)
         {
             if(turn[i]!=max)
             {
                 turn[i]=-1;
             }
         }
-        for(int i=0;i<playerSign.strength;i++)
+        for(int i=0;i<playerSign.playerCount;i++)
         {
             if(turn[i]!=max)
                 c++;
         }
-        if(c==playerSign.strength-1)
+        if(c==playerSign.playerCount-1)
         {
             display.SendMessage(playerSign.players.get(pos).GetPlayerName()+" got the highest roll of "+max+" \n");
-            ChangeOrder(pos);
+            playerSign.currPossition = pos;
         }
         else
         {
-            display.SendMessage(lang1.English[6]+"\n");
+            display.SendMessage(Language.English[6]+"\n");
             RollForEach();
         }
     }
     
     private static void DealCards() {
         Vector<Player> players = playerSign.getPlayers();
-        while(deck.Size() >= playerSign.strength)
+        while(deck.Size() >= playerSign.playerCount)
         {
-            for(int i = 0; i < playerSign.strength; i++)
+            for(int i = 0; i < playerSign.playerCount; i++)
             {
                 players.get(i).GiveCard(deck.DrawCard());
             }
@@ -198,25 +181,6 @@ public class Game {
             for(Player p : players)
                 p.GiveCard(c);
             c.SetCanEveryOneSee();
-        }
-    }
-    
-    private static void ChangeOrder(int p)
-    {
-        if(p!=0)
-        {   
-            int j=0;
-            
-            for(int i=p;i<playerSign.strength;i++)
-            {
-                int x=i;
-                while(x>j)
-                {
-                    Collections.swap(playerSign.players,x-1,x);
-                    x--;
-                }
-                j++;
-            }
         }
     }
 
@@ -232,19 +196,16 @@ public class Game {
      */
     private static void PlacePlayers() {
     	for(String s : Reasource.GetCharacterData()) {
-    		PlayerObject temp = ParsePlayerLine(s);
-    		characterMap.put(temp.GetObjectName(),temp); 
-    		System.out.println(temp.GetObjectName());
+    		PlayerObject character = ParsePlayerLine(s);
+    		characterMap.put(character.GetObjectName(),character); 
+            board.AddMovable(character);
     	}
-        for(PlayerObject p : characterMap.values())
-        {
-            board.AddMovable(p);
-        }
-	}
+    }
+    
 	private static PlayerObject ParsePlayerLine(String line) {
 		String[] temp = line.split("\\s+");
 
-		return new PlayerObject(new Coordinates(temp[1].trim()), Color.decode(temp[2]), temp[0].trim()); 
+		return new PlayerObject(new Coordinates(temp[1]), Color.decode(temp[2]), temp[0]); 
 	}
 	  
     /**
@@ -252,8 +213,9 @@ public class Game {
      */
     private static void PlaceWeapons() {
     	for(String s : Reasource.GetWeaponData()) {
-    		WeaponObject temp = ParseWeaponLine(s);
-    		weaponMap.put(temp.GetObjectName(),temp); 
+    		WeaponObject weapon = ParseWeaponLine(s);
+    		weaponMap.put(weapon.GetObjectName(),weapon);
+            board.AddMovable(weapon);
     	}
         Room[] rooms = board.GetRooms();
         int i = 0;
@@ -263,10 +225,6 @@ public class Game {
             if(i % 3 == 2)
                 i++;
         }
-        
-        
-        for(WeaponObject p : weaponMap.values())
-            board.AddMovable(p);
     }
     
     public static WeaponObject ParseWeaponLine(String line) {
@@ -429,14 +387,14 @@ public class Game {
         {
             for(int i=7;i<13;i++)
             {
-                display.SendMessage(lang1.English[i]+"\n");
+                display.SendMessage(Language.English[i]+"\n");
             }
         }
         else
         {
             for(int i=13;i<18;i++)
             {
-                display.SendMessage(lang1.English[i]+"\n");
+                display.SendMessage(Language.English[i]+"\n");
             }
         }
     }

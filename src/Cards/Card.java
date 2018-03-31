@@ -6,7 +6,7 @@ public abstract class Card {
 	private boolean canEveryOneSee = false;
 	boolean isInEnvelope;
 	
-	public Card(String _name) {
+	protected Card(String _name) {
 		name = _name;
 		isInEnvelope = false;
 	}

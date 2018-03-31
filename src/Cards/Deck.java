@@ -1,18 +1,15 @@
 package Cards;
 
 import java.util.*;
-
-import Sigurd.Game;
-import Sigurd.Room;
-import Sigurd.BoardObjects.PlayerObject;
-import Sigurd.BoardObjects.WeaponObject;
+import Sigurd.*;
+import Sigurd.BoardObjects.*;
 
 public class Deck {
 
 	//only pass references to these cards, to have a card is to just have a reference to one of these elements
-	private Map<String,PlayerCard> playerCards = new HashMap<String,PlayerCard>();
-	private Map<String,RoomCard> roomCards = new HashMap<String,RoomCard>();
-	private Map<String,WeaponCard> weaponCards = new HashMap<String,WeaponCard>();
+	private Map<String,PlayerCard> playerCards;
+	private Map<String,RoomCard> roomCards;
+	private Map<String,WeaponCard> weaponCards;
 	private Stack<Card> deck = new Stack<Card>();
 	private Card[] envelope;
 	
@@ -26,6 +23,11 @@ public class Deck {
 	}
 	
 	private void FillEnvelpoe() {
+        if(envelope != null)
+            throw new RuntimeException("Envelope allready filled.");
+        if(playerCards == null || weaponCards == null || roomCards == null)
+            throw new RuntimeException("Cards do not exist yet.");
+        
         envelope = new Card[3];
         envelope[0] = GetEnvelopeCard(playerCards);
         envelope[1] = GetEnvelopeCard(weaponCards);
@@ -42,20 +44,24 @@ public class Deck {
 	
 	private Card GetEnvelopeCard(Map<String, ? extends Card> map)
 	{
-	    int playerCardIndex = rand.nextInt(map.size());
+	    int cardIndex = rand.nextInt(map.size());
 	    Card randCard = null;
         for(Card c : map.values())
         {
-            if(playerCardIndex-- == 0)
+            if(cardIndex-- == 0)
                 randCard = c;
         }
         return randCard;
 	}
 
-    private void FillCards() {//TODO : fill in all the cards
-		//i think this should be done by pulling from a centeral location where we define
-		//all the players, rooms and weapons... so below is just test values
+    private void FillCards() {
+        if(playerCards != null || weaponCards != null || roomCards != null)
+            throw new RuntimeException("Cards allready filled.");
 
+        playerCards = new HashMap<String,PlayerCard>();
+        roomCards = new HashMap<String,RoomCard>();
+        weaponCards = new HashMap<String,WeaponCard>();
+        
     	Collection<PlayerObject> characters = Game.GetAllCharcters();
     	Collection<WeaponObject> weapons = Game.GetAllWeapons();
     	Room[] rooms = Game.GetBoard().GetRooms();
@@ -102,27 +108,16 @@ public class Deck {
         }
 	}
 	
-	
 	private void ShuffleDeck() {
-		Card[] array = new Card[deck.size()];
-		int i = 0;
+		ArrayList<Card> deckList = new ArrayList<Card>(deck);
 		
-		while(deck.isEmpty() == false) {
-			array[i++] = deck.pop();
+        Collections.shuffle(deckList);
+
+        deck = new Stack<Card>();
+		for(int i = 0; i < deckList.size(); i++) {
+			deck.push(deckList.get(i));
 		}
-		
-			for(int j = 0; j < array.length; j++) {
-				int num = rand.nextInt(array.length - j) + j;
-				Card temp = array[num];
-				array[num] = array[j];
-				array[j] = temp;
-			}
-		
-			for(int j = 0; j < array.length; j++) {
-				deck.push(array[j]);
-			}
 	}
-	
 	
 	public Card DrawCard() {
 		if(IsEmpty() == false)
@@ -130,29 +125,26 @@ public class Deck {
 		throw new IllegalStateException("No more cards");
 	}
 	
-	
 	public int Size() {
 		return deck.size();
 	}
-	
 	
 	public boolean IsEmpty() {
 		return deck.size() == 0;
 	}
 	
-	
-	public Card getCard(String name, Class<?> typeOfCard ) {
+	public Card getCard(String name, Class<? extends Card> typeOfCard ) {
 		Card temp;
 		
-		if(typeOfCard == PlayerCard.class) {//can't do swtich statment on Class<?>
+		if(typeOfCard == PlayerCard.class && playerCards != null && playerCards.isEmpty() == false) {
 			if((temp = playerCards.get(name)) != null)
 				return temp;
 		}
-		else if(typeOfCard == RoomCard.class) {
+		else if(typeOfCard == RoomCard.class && roomCards != null && roomCards.isEmpty() == false) {
 			if((temp = roomCards.get(name)) != null)
 				return temp;			
 		}
-		else if(typeOfCard == WeaponCard.class) {
+		else if(typeOfCard == WeaponCard.class && weaponCards != null && weaponCards.isEmpty() == false) {
 			if((temp = weaponCards.get(name)) != null)
 				return temp;			
 		}
@@ -161,15 +153,14 @@ public class Deck {
 		throw new RuntimeException("Item not found when retriving from deck");
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Iterator<? extends Card> GetAllCards(Class<? extends Card> typeOfCard) {
-		if(typeOfCard == PlayerCard.class) {//can't do swtich statment on Class<?>
+		if(typeOfCard == PlayerCard.class && playerCards != null && playerCards.isEmpty() == false) {
 			return  playerCards.values().iterator();
 		}
-		else if(typeOfCard == RoomCard.class) {
+		else if(typeOfCard == RoomCard.class && roomCards != null && roomCards.isEmpty() == false) {
 			return roomCards.values().iterator();		
 		}
-		else if(typeOfCard == WeaponCard.class) {
+		else if(typeOfCard == WeaponCard.class && weaponCards != null && weaponCards.isEmpty() == false) {
 			return weaponCards.values().iterator();
 		}
 		else throw new RuntimeException("Tryed to get cards with an incorect type in deck"); 

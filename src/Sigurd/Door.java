@@ -48,6 +48,8 @@ public class Door extends Coordinates {
     
     public Room GetRoom()
     {
+        if(room == null)
+            throw new IllegalStateException("This door does not have a room");
         return room;
     }
     

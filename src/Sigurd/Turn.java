@@ -81,20 +81,20 @@ public class Turn {
 
     private void MoveInDirection(String dir) {
         if (canRoll) {
-            DisplayError(Game.lang1.English[25]);
+            DisplayError(Language.English[25]);
             return;
         }
         if (hasEneteredRoom) {
-            DisplayError(Game.lang1.English[26]);
+            DisplayError(Language.English[26]);
             return;
         }
         if (stepsLeft == 0) {
-            DisplayError(Game.lang1.English[27]);
+            DisplayError(Language.English[27]);
             return;
         }
         if(turnPlayerObject.IsInRoom())
         {
-            DisplayError(Game.lang1.English[28]);
+            DisplayError(Language.English[28]);
             return;
         }        Coordinates positionChange;
         switch (dir) {
@@ -111,7 +111,7 @@ public class Turn {
             positionChange = Coordinates.RIGHT;
             break;
         default:
-            throw new IllegalArgumentException(Game.lang1.English[29]);
+            throw new IllegalArgumentException(Language.English[29]);
         }
         
         
@@ -139,11 +139,11 @@ public class Turn {
     private void MoveThroughPassage() {
         
         if (turnPlayerObject.IsInRoom() == false) {
-            DisplayError(Game.lang1.English[30]);
+            DisplayError(Language.English[30]);
         } else if (turnPlayerObject.GetRoom().HasPassage() == false) {
-            DisplayError(Game.lang1.English[31]);
+            DisplayError(Language.English[31]);
         } else if(hasEneteredRoom){
-            DisplayError(Game.lang1.English[32]);
+            DisplayError(Language.English[32]);
         }else{
             turnPlayerObject.MoveToRoom(turnPlayerObject.GetRoom().GetPassageRoom());
             Game.GetBoard().ResetRoom();
@@ -158,12 +158,12 @@ public class Turn {
         PlayerObject playerObject = turnPlayer.GetPlayerObject();
         
         if (hasEneteredRoom)
-            DisplayError(Game.lang1.English[33]);
+            DisplayError(Language.English[33]);
         else if (dice1 == 0)
-            DisplayError(Game.lang1.English[34]);
+            DisplayError(Language.English[34]);
 
         else if (exit < 1 || playerObject.GetRoom().GetDoors().length < exit)
-            DisplayError(Game.lang1.English[35]);
+            DisplayError(Language.English[35]);
 
         else {
             Room playerRoom = playerObject.GetRoom();
@@ -178,11 +178,11 @@ public class Turn {
 
     private void RollDice() {
         if (canRoll == false && dice1 == 0) {
-            DisplayError(Game.lang1.English[36]);
+            DisplayError(Language.English[36]);
             return;
         }
         if (canRoll == false) {
-            DisplayError(Game.lang1.English[37]);
+            DisplayError(Language.English[37]);
             return;
         }
 
@@ -235,7 +235,7 @@ public class Turn {
     }
 
     private void EndTurn() {
-        Game.GetDisplay().SendMessage(Game.lang1.English[38]);
+        Game.GetDisplay().SendMessage(Language.English[38]);
         Game.NextTurn();
     }
     

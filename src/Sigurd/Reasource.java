@@ -1,7 +1,6 @@
 package Sigurd;
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 
 public class Reasource {
@@ -89,7 +88,6 @@ public class Reasource {
 		try {
 			while((string = buffReader.readLine()) != null) {
 			temp.add(string.toLowerCase());
-			System.out.println(string);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -99,10 +97,10 @@ public class Reasource {
 	}
 	
 	public static void main(String[] args) {
-		Game.GetDisplay().SendMessage(Reasource.GetCharacterData().get(0));
-		Game.GetDisplay().SendMessage(Reasource.GetRoomData().get(0));
-		Game.GetDisplay().SendMessage(Reasource.GetWeaponData().get(0));
+		System.out.println(Reasource.GetCharacterData().get(0));
+		System.out.println(Reasource.GetRoomData().get(0));
+		System.out.println(Reasource.GetWeaponData().get(0));
 		
-		Game.GetDisplay().SendMessage(Reasource.GetCharacterNames().get(0));
+		System.out.println(Reasource.GetCharacterNames().get(0));
 	}
 }

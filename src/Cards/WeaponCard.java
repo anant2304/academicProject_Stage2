@@ -6,7 +6,7 @@ public class WeaponCard extends Card {
 
 	public WeaponObject myWeaponObject;
 	
-	public WeaponCard(String _name, WeaponObject weapon) {
+	WeaponCard(String _name, WeaponObject weapon) {
 		super(_name);
 		myWeaponObject = weapon;
 	}

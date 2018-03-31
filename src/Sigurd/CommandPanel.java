@@ -5,7 +5,6 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowListener;
 
 /**
  * @author Peter Major
@@ -19,7 +18,6 @@ public class CommandPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	JTextField commandLine;
 	JButton enterButton;
-	Board board;
 
 	public CommandPanel() {
 		this.setBackground(Color.BLACK);

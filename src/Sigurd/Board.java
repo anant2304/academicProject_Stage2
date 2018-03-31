@@ -2,15 +2,10 @@ package Sigurd;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
-
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
+import javax.swing.*;
 import Sigurd.BoardObjects.BoardObject;
 
 /**
@@ -19,9 +14,7 @@ import Sigurd.BoardObjects.BoardObject;
  */
 public class Board {
     private static final String BOARD_PATH = "/Layout.txt";
-    private static final String ROOMS_PATH = "/rooms.txt";
-    private boolean[][] boardArray; // Grid array, true if grid square is in the
-                                    // hallway.
+    private boolean[][] boardArray; // Grid array, true if grid square is in the hallway.
     private Map<Coordinates, Door> doorPositions;
     private List<BoardObject> boardObjectList;
     private BoardPanel panel;
@@ -36,7 +29,7 @@ public class Board {
     public static void main(String[] args) {
         Board b = new Board();
         b.SetRoom(b.rooms[1]);
-        // b.display();
+        b.display();
         JFrame frame = new JFrame();
         frame.add(b.GetBoardPanel());
 
@@ -74,14 +67,12 @@ public class Board {
             int row = 0;
             while (layoutReader.hasNext()) {
                 String line = layoutReader.next();
-                for (int i = 0; i < line.length(); i++) {
+                for (int i = 0; i < line.length(); i++) 
                     boardArray[i][row] = (line.charAt(i) == '1');
-                }
+
                 row++;
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -93,7 +84,11 @@ public class Board {
         
             int roomIndex = 0;
             while (roomIndex < lines.size()) {
+                
                 String[] lineParts = lines.get(roomIndex).split("\\s+");
+                if(lineParts.length != 3)
+                    throw new RuntimeException("Invalid number of parts in room data line.");
+                
 
                 String[] roomNameParts = lineParts[0].split("_");
                 String roomName = roomNameParts[0];
@@ -107,7 +102,7 @@ public class Board {
                     doorCoordinates[i] = new Door(doorStrings[i]);
                 }
 
-                Coordinates roomCentrePosition = (lineParts.length > 2 ? new Coordinates(lineParts[2]) : null);
+                Coordinates roomCentrePosition = new Coordinates(lineParts[2]);
 
                 rooms[roomIndex] = new Room(roomName, doorCoordinates, roomCentrePosition);
 
@@ -117,6 +112,7 @@ public class Board {
                 roomIndex++;
             }
 
+            // Hardcoding passages between corner rooms.
             rooms[0].SetPassageRoom(rooms[5]);
             rooms[5].SetPassageRoom(rooms[0]);
 
@@ -129,11 +125,11 @@ public class Board {
         return rooms;
     }
 
-    public boolean IsPositionMovable(Coordinates current, Coordinates to) 
+    public boolean IsPositionMovable(Coordinates current, Coordinates movingTo) 
     {
-        boolean validX = to.getCol() >= 0 && to.getCol() < boardArray.length;
-        boolean validY = to.getRow() >= 0 && to.getRow() < boardArray[0].length;
-        return validX && validY && (boardArray[to.getCol()][to.getRow()] || (IsDoor(to) && doorPositions.get(to).HasOutside(current)));
+        boolean validX = movingTo.getCol() >= 0 && movingTo.getCol() < boardArray.length;
+        boolean validY = movingTo.getRow() >= 0 && movingTo.getRow() < boardArray[0].length;
+        return validX && validY && (boardArray[movingTo.getCol()][movingTo.getRow()] || (IsDoor(movingTo) && doorPositions.get(movingTo).HasOutside(current)));
     }
 
     public boolean IsDoor(Coordinates co) 
@@ -146,21 +142,10 @@ public class Board {
         return doorPositions.get(co).GetRoom();
     }
 
-    /**
-     * Adds a BoardObject to the board.
-     * 
-     * @param boardObject
-     *            - Board Object to add.
-     */
     public void AddMovable(BoardObject boardObject) {
         boardObjectList.add(boardObject);
     }
 
-    /**
-     * Gets the panel where the board is displayed.
-     * 
-     * @return The panel where the board is displayed
-     */
     public JPanel GetBoardPanel() {
         return panel;
     }
@@ -203,7 +188,7 @@ public class Board {
                 boardImage = ImageIO.read(BoardPanel.class.getResource(BOARD_PATH));
                 prefW = boardImage.getWidth();
                 prefH = boardImage.getHeight();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -217,9 +202,6 @@ public class Board {
 
         /**
          * Used by the swing system. Decides how the panel is drawn.
-         * 
-         * @param g
-         *            - Graphics object.
          */
         public void paintComponent(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
@@ -233,9 +215,6 @@ public class Board {
 
         /**
          * Draws BoardObjects added to the board.
-         * 
-         * @param g2d
-         *            - Graphics2D object to draw on
          */
         private void DrawBoardObjects(Graphics2D g2d) {
             g2d.translate(CORNER_X, CORNER_Y);
@@ -249,6 +228,9 @@ public class Board {
             }
         }
 
+        /**
+         *  Draws numbers outside each door to display where a player can leave.
+         */
         private void DrawRoomDoors(Graphics2D g2d, Room r) {
             Font f = new Font("Arial", Font.BOLD, 23);
             g2d.setFont(f);

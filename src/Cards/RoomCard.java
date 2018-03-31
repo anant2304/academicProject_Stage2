@@ -6,7 +6,7 @@ public class RoomCard extends Card {
 
 	private Room myRoom;
 	
-	public RoomCard(String _name, Room room) {
+	RoomCard(String _name, Room room) {
 		super(_name);
 		myRoom = room;
 	}

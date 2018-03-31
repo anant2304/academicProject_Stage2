@@ -1,12 +1,9 @@
 package Sigurd;
-import java.awt.*;
-import java.util.Scanner;
 import java.util.Vector;
 
 import Sigurd.BoardObjects.PlayerObject;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * @author Anant 
@@ -22,17 +19,12 @@ class PlayerSignIn
     Vector<Player> players = new Vector<Player>();
     DisplayPanel display;
     int currPossition;
-    public int strength;
+    public int playerCount;
     
     public PlayerSignIn()
     {
         display= Game.GetDisplay();
         currPossition = 0;
-    }
-    
-    private void add(Player p) 
-    {
-    	players.add(p);
     }
     
     public Vector<Player> getPlayers() 
@@ -42,7 +34,7 @@ class PlayerSignIn
     
     public Player NextPlayer() 
     {
-    	return players.get((currPossition++) % players.size());
+    	return players.get(currPossition = (currPossition + 1) % players.size());
     }
     
     public void Commands(String command)
@@ -64,14 +56,14 @@ class PlayerSignIn
     
     void FinishSignIn() {
     	if(players.size() < 2)
-			display.SendMessage(Game.lang1.English[18]);
+			display.SendMessage(Language.English[18]);
 		else
             Game.StartGame();
     }
     
     void CheckPlayersInGame(){
     	if(players.isEmpty())
-			display.SendMessage(Game.lang1.English[19]);
+			display.SendMessage(Language.English[19]);
 		for(Player p : players) {
 			display.SendMessage(p.GetPlayerName() + " is playing " + p.GetCharacterName());
 		}
@@ -89,20 +81,20 @@ class PlayerSignIn
     	}
     	
     	if(i == characters.size()) 
-    		display.SendMessage(Game.lang1.English[20]);
+    		display.SendMessage(Language.English[20]);
     }
     
     void addPlayer(String command) {
     	String[] playerEnteries = command.split("\\s+");
 		
 		if(playerEnteries.length != 2) {
-			display.SendMessage(Game.lang1.English[21]);
+			display.SendMessage(Language.English[21]);
 		}
 		else if(Game.DoseCharacterExist(playerEnteries[1]) == false) {
-			display.SendMessage(Game.lang1.English[22]);
+			display.SendMessage(Language.English[22]);
 		}
 		else if(players.size() >= 6) {
-			display.SendMessage(Game.lang1.English[23]);
+			display.SendMessage(Language.English[23]);
 		}
 		else if(Game.GetCharacter(playerEnteries[1]).HasPlayer()) {
 			display.SendMessage("Someone is already playing " + playerEnteries[1]);
@@ -110,10 +102,10 @@ class PlayerSignIn
 		else {
 			PlayerObject p = Game.GetCharacter(playerEnteries[1]);
 			players.add(new Player(playerEnteries[0] ,p));
-            strength++;
+            playerCount++;
 			display.SendMessage(playerEnteries[0] + " Is playing " + playerEnteries[1]);	
 			return;
 		}
-		display.SendMessage(Game.lang1.English[24]);
+		display.SendMessage(Language.English[24]);
     }
 }

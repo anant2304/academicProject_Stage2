@@ -6,9 +6,7 @@ import Sigurd.BoardObjects.*;
  * 
  * @author Adrian
  *
- * Team: Sigurd
- * Student Numbers:
- * 16751195, 16202907, 16375246
+ *         Team: Sigurd Student Numbers: 16751195, 16202907, 16375246
  */
 
 public class Room {
@@ -27,8 +25,8 @@ public class Room {
         this.roomCentrePos = roomCentrePos;
         players = new PlayerObject[6];
         weapons = new WeaponObject[6];
-        
-        for(Door d : this.doors)
+
+        for (Door d : this.doors)
             d.SetRoom(this);
     }
 
@@ -48,6 +46,8 @@ public class Room {
     }
 
     public Room GetPassageRoom() {
+        if (HasPassage() == false)
+            throw new IllegalStateException("Getting passage of room with no passage");
         return passageRoom;
     }
 
@@ -74,28 +74,22 @@ public class Room {
     }
 
     public void AddObject(BoardObject o) {
-        if (o.getClass() == PlayerObject.class) {
-            PlayerObject p = (PlayerObject) o;
-
-            int i = -1;
-            while (players[++i] != null && i < 5) ;
-
-            if (players[i] != null)
-                throw new IllegalStateException("More than 6 players in room");
-            players[i] = p;
-        } else if (o.getClass() == WeaponObject.class) {
-            WeaponObject w = (WeaponObject) o;
-
-            int i = -1;
-            while (weapons[++i] != null && i < 5)
-                ;
-
-            if (weapons[i] != null)
-                throw new IllegalStateException("More than 6 weapons in room");
-            weapons[i] = w;
-        }else {
+        BoardObject[] arr;
+        if (o.getClass() == PlayerObject.class)
+            arr = players;
+        else if (o.getClass() == WeaponObject.class)
+            arr = weapons;
+        else {
             throw new IllegalArgumentException("Argument not player or weapon");
         }
+        
+        int i = -1;
+        while (arr[++i] != null && i < 5) ;
+
+        if (arr[i] != null)
+            throw new IllegalStateException("More than 6 of same object in room");
+        arr[i] = o;
+            
     }
 
     public void RemoveObject(BoardObject o) {
@@ -103,17 +97,17 @@ public class Room {
             weapons[GetWeaponIndex((WeaponObject) o)] = null;
         } else if (o.getClass() == PlayerObject.class) {
             players[GetPlayerIndex((PlayerObject) o)] = null;
-        }else {
+        } else {
             throw new IllegalArgumentException("Argument not player or weapon");
         }
     }
 
     public Coordinates GetObjectPosition(BoardObject o) {
         if (o.getClass() == PlayerObject.class) {
-        return roomCentrePos.add(new Coordinates(PLAYER_OFFSETS[GetPlayerIndex((PlayerObject) o)]));
+            return roomCentrePos.add(new Coordinates(PLAYER_OFFSETS[GetPlayerIndex((PlayerObject) o)]));
         } else if (o.getClass() == WeaponObject.class) {
-        return roomCentrePos.add(new Coordinates(WEAPON_OFFSETS[GetWeaponIndex((WeaponObject) o)]));
-        }else {
+            return roomCentrePos.add(new Coordinates(WEAPON_OFFSETS[GetWeaponIndex((WeaponObject) o)]));
+        } else {
             throw new IllegalArgumentException("Argument not player or weapon");
         }
     }
