@@ -275,6 +275,8 @@ public class Game {
             board.SetRoom(p.GetPlayerObject().GetRoom());
         board.GetBoardPanel().repaint();
         
+        display.SendMessage(Language.English[3]+"\n");
+        display.SendMessage(Language.English[43]+"\n");
         if(turnStack.size()>1)
         {
             display.clearScreen();
