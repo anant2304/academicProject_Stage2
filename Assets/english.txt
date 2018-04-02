@@ -38,5 +38,9 @@ You have already rolled your dice
 You cannot roll your dice at this time
 Turn Over
 GAME BEGINS
+type in \"help\" to see cheat/testing commands
+type in \”notes\” to see all the game details
+type in \”passage\” to take passage
+type in \”log\” to read all the questions and replies
 
 

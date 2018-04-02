@@ -278,6 +278,8 @@ public class Game {
         if(turnStack.size()>1)
         {
             display.clearScreen();
+            display.SendMessage(Language.English[3]+"\n");
+            display.SendMessage(Language.English[43]+"\n");
         }
         display.SendMessage(turnStack.peek().GetPlayer().GetPlayerName() + " its your turn, you are " + turnStack.peek().GetPlayer().GetCharacterName());
     }
@@ -335,12 +337,15 @@ public class Game {
      * */
     public static void PassCommand(String com) {
         
-        if(com.equals(""));//ignore empty strings
+        if(com.equalsIgnoreCase(""));//ignore empty strings
         else if(com.charAt(0) == '#') {
             Commands(com);
         }
-        else if(com.equals("help")) {
+        else if(com.equalsIgnoreCase("help")) {
             DisplayHelp();
+        }
+        else if(com.equalsIgnoreCase("log")) {
+            DisplayLog();
         }
         else if(IsGameOver() == true) {
             System.exit(0);
@@ -413,5 +418,9 @@ public class Game {
                 display.SendMessage(Language.English[i]+"\n");
             }
         }
+    }
+    public static void DisplayLog()
+    {
+        
     }
 }
