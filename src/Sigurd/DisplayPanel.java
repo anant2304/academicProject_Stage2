@@ -29,7 +29,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     
     public DisplayPanel() //constructor to set the display panel
     {
-        this.setLayout(new BorderLayout(10,10)); 
+        this.setLayout(new BorderLayout(10,10));
         this.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
         tpane.setEditable(false);
         StyleConstants.setAlignment(set, StyleConstants.ALIGN_CENTER);
@@ -38,11 +38,11 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         tpane.setBackground(Color.gray);
         DefaultCaret c=(DefaultCaret)tpane.getCaret();
         c.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        pane=new JScrollPane(tpane); 
+        pane=new JScrollPane(tpane);
         pane.setPreferredSize( new Dimension(363,632));
         add(pane);
         
-        style = text1.addStyle("defualt", null);        
+        style = text1.addStyle("defualt", null);
         
         SendMessage("GAME BEGINS");
     }
@@ -50,13 +50,13 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     {
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in)); //for taking console input as a test
         DisplayPanel panel=new DisplayPanel();
-        String st=br.readLine(); 
+        String st=br.readLine();
         for(int i=0;i<100;i++) //testing the code whether multiple inputs can be added to the panel
         {
             panel.SendMessage(st); //calling the sendMessage function
         }
         panel.SendError(st);
-        JFrame frame=new JFrame(); //creating a new JFrame for testing 
+        JFrame frame=new JFrame(); //creating a new JFrame for testing
         frame.setBackground(Color.red);
         frame.add(panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,9 +70,9 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
             StyleConstants.setForeground(style, Color.black);
             text1.insertString(text1.getLength(), str+"\n\n", style);
         }
-        catch(Exception exe) 
-        { 
-            System.out.println(exe); 
+        catch(Exception exe)
+        {
+            System.out.println(exe);
         }
     }
     public void SendDevMessage(String str)
@@ -89,9 +89,13 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     }
     
     public void SendError(String str) {
-    	StyleConstants.setForeground(style, Color.white);
-    	SendMessage(str);
-    	StyleConstants.setForeground(style, Color.black);
+        StyleConstants.setForeground(style, Color.white);
+        SendMessage(str);
+        StyleConstants.setForeground(style, Color.black);
+    }
+    public void clearScreen()
+    {
+        tpane.setText("");
     }
 }
 

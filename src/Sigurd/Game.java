@@ -6,13 +6,12 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
+import BoardObjects.*;
 import Cards.Card;
 import Cards.Deck;
 
 import java.util.*;
 import java.util.Map.Entry;
-
-import Sigurd.BoardObjects.*;
 
 /**
  * Servers an an entry point and ties the different classes together.
@@ -28,7 +27,7 @@ public class Game {
     private static PlayerSignIn playerSign;
     private static Deck deck;
     private static Stack<Turn> turnStack = new Stack<Turn>();
-
+    
     private static Map<String,PlayerObject> characterMap = new HashMap<String,PlayerObject>();
     private static Map<String,WeaponObject> weaponMap = new HashMap<String,WeaponObject>();
     private static boolean isGameOver;
@@ -56,12 +55,12 @@ public class Game {
         CreateWindow();
         PlacePlayers();
         PlaceWeapons();
-
+        
         deck = new Deck();//must come after placeing players and weaponss
         
         
         command.TakeFocus();//would be in create window but some issue causes it to work only half the time, here it always works
-    
+        
         
         for(int i=0;i<4;i++)
         {
@@ -84,7 +83,7 @@ public class Game {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
         window.setLayout(new BorderLayout());
-                
+        
         window.add(command, BorderLayout.SOUTH);
         window.add(board.GetBoardPanel(), BorderLayout.CENTER);
         window.add(display, BorderLayout.EAST);
@@ -105,15 +104,20 @@ public class Game {
     /**
      * @Summary called by the PlayerSignIn class to progress the game into a playable state
      */
-    public static void StartGame() {        
+    public static void StartGame() {
         display.SendMessage(Language.English[4]+"\n");
         RollForEach();
         DealCards();
         NextTurn();
     }
-
+    
     private static void RollForEach()
     {
+        if(turn[0]==0)
+        {
+            display.clearScreen();
+        }
+        
         for(int i=0;i<playerSign.playerCount;i++)
         {
             if(turn[i]!=-1)
@@ -156,7 +160,14 @@ public class Game {
         if(c==playerSign.playerCount-1)
         {
             display.SendMessage(playerSign.players.get(pos).GetPlayerName()+" got the highest roll of "+max+" \n");
-            playerSign.currPossition = pos;
+            if(pos==0)
+            {
+		            		playerSign.currPossition=playerSign.playerCount-1;
+            }
+            else
+            {
+                playerSign.currPossition=pos-1;
+            }
         }
         else
         {
@@ -183,40 +194,40 @@ public class Game {
             c.SetCanEveryOneSee();
         }
     }
-
+    
     private static void EndGame() {
-    	  isGameOver = true;  	
-    	  display.SendMessage("The Game is over\nThe winner is :");
-    	  display.SendMessage("enter any command to exit the game");
+        isGameOver = true;
+        display.SendMessage("The Game is over\nThe winner is :");
+        display.SendMessage("enter any command to exit the game");
     }
     
-
+    
     /**
      * @Summary creates and places all the players onto the board
      */
     private static void PlacePlayers() {
-    	for(String s : Reasource.GetCharacterData()) {
-    		PlayerObject character = ParsePlayerLine(s);
-    		characterMap.put(character.GetObjectName(),character); 
+        for(String s : Reasource.GetCharacterData()) {
+            PlayerObject character = ParsePlayerLine(s);
+            characterMap.put(character.GetObjectName(),character);
             board.AddMovable(character);
-    	}
+        }
     }
     
-	private static PlayerObject ParsePlayerLine(String line) {
-		String[] temp = line.split("\\s+");
-
-		return new PlayerObject(new Coordinates(temp[1]), Color.decode(temp[2]), temp[0]); 
-	}
-	  
+    private static PlayerObject ParsePlayerLine(String line) {
+        String[] temp = line.split("\\s+");
+        
+        return new PlayerObject(new Coordinates(temp[1]), Color.decode(temp[2]), temp[0]);
+    }
+    
     /**
      * @Summary creates and places all weapons onto the board
      */
     private static void PlaceWeapons() {
-    	for(String s : Reasource.GetWeaponData()) {
-    		WeaponObject weapon = ParseWeaponLine(s);
-    		weaponMap.put(weapon.GetObjectName(),weapon);
+        for(String s : Reasource.GetWeaponData()) {
+            WeaponObject weapon = ParseWeaponLine(s);
+            weaponMap.put(weapon.GetObjectName(),weapon);
             board.AddMovable(weapon);
-    	}
+        }
         Room[] rooms = board.GetRooms();
         int i = 0;
         for(Entry<String, WeaponObject> e : weaponMap.entrySet())
@@ -228,9 +239,9 @@ public class Game {
     }
     
     public static WeaponObject ParseWeaponLine(String line) {
-    	String[] temp = line.split("\\s+");
-    	
-		return new WeaponObject(new Coordinates(temp[1].trim()),temp[0].charAt(0),temp[0].trim()); 
+        String[] temp = line.split("\\s+");
+        
+        return new WeaponObject(new Coordinates(temp[1].trim()),temp[0].charAt(0),temp[0].trim());
     }
     
     /**
@@ -245,13 +256,13 @@ public class Game {
      * @Summary creates a new turn with the next player
      */
     public static void NextTurn() {
-    	Player temp;
-    	do {
-    	   temp = playerSign.NextPlayer();
-    	   if(temp.IsOutOfGame() == false)
-    		   NewTurn(temp);
-    	   else
-    		   display.SendMessage(temp.GetPlayerName() + " is out of the game");
+        Player temp;
+        do {
+            temp = playerSign.NextPlayer();
+            if(temp.IsOutOfGame() == false)
+                NewTurn(temp);
+            else
+                display.SendMessage(temp.GetPlayerName() + " is out of the game");
     	   }while(temp.IsOutOfGame());
     }
     
@@ -263,6 +274,11 @@ public class Game {
         if(newTurn.CanLeaveRoom())
             board.SetRoom(p.GetPlayerObject().GetRoom());
         board.GetBoardPanel().repaint();
+        
+        if(turnStack.size()>1)
+        {
+            display.clearScreen();
+        }
         display.SendMessage(turnStack.peek().GetPlayer().GetPlayerName() + " its your turn, you are " + turnStack.peek().GetPlayer().GetCharacterName());
     }
     
@@ -302,7 +318,7 @@ public class Game {
     }
     
     public static Collection<WeaponObject> GetAllWeapons(){
-    	return weaponMap.values();    	
+        return weaponMap.values();
     }
     
     public static Iterator<? extends Card> GetCards(Class<? extends Card> c)
@@ -311,7 +327,7 @@ public class Game {
     }
     
     public static boolean IsGameOver() {
-    	return isGameOver;
+        return isGameOver;
     }
     
     /**
@@ -327,7 +343,7 @@ public class Game {
             DisplayHelp();
         }
         else if(IsGameOver() == true) {
-        	System.exit(0);
+            System.exit(0);
         }
         else if(isGameStarted()==false){
             playerSign.Commands(com);
@@ -344,38 +360,38 @@ public class Game {
     private static void Commands(String com) {
         display.SendDevMessage(com);
         switch(com) {
-        case "#exit" :
-            System.exit(0);
-            break;
-        case "#steps100" :
-            turnStack.peek().SetStepsLeft(100);
-            break;
-        case "#cheat" :
-            Card[] envelope = deck.GetEnvelope();
-            display.SendMessage("The murder was committed by: " + envelope[0].getName()
-                                + "\nWith the weapon: "         + envelope[1].getName()
-                                + "\nIn the room: "             + envelope[2].getName());
-            break;
-        case "#end" :
-        	EndGame();
-        	break;
-        case "#knockout" : 
-        	if(isGameStarted() == true) {
-        		turnStack.peek().GetPlayer().KnockOutOfGame();
-        		display.SendMessage("knockout : " + turnStack.peek().GetPlayer().GetPlayerName());
-        	}
-        	break;
-        case "#help" :
-            display.SendMessage(
-                    "These are cheat/testing comands, not to be used in a normal game\n"
-                    + "type in \"#steps100\" to set your current steps to 100\n"
-                    + "type in \"#cheat\" to inspect the murder envelope\n"
-                    + "type in \"#exit\" to quit the game\n "
-                    );
-            break;
-        default :
-        	display.SendMessage("no sutch dev command");
-        	break;
+            case "#exit" :
+                System.exit(0);
+                break;
+            case "#steps100" :
+                turnStack.peek().SetStepsLeft(100);
+                break;
+            case "#cheat" :
+                Card[] envelope = deck.GetEnvelope();
+                display.SendMessage("The murder was committed by: " + envelope[0].getName()
+                                    + "\nWith the weapon: "         + envelope[1].getName()
+                                    + "\nIn the room: "             + envelope[2].getName());
+                break;
+            case "#end" :
+                EndGame();
+                break;
+            case "#knockout" :
+                if(isGameStarted() == true) {
+                    turnStack.peek().GetPlayer().KnockOutOfGame();
+                    display.SendMessage("knockout : " + turnStack.peek().GetPlayer().GetPlayerName());
+                }
+                break;
+            case "#help" :
+                display.SendMessage(
+                                    "These are cheat/testing comands, not to be used in a normal game\n"
+                                    + "type in \"#steps100\" to set your current steps to 100\n"
+                                    + "type in \"#cheat\" to inspect the murder envelope\n"
+                                    + "type in \"#exit\" to quit the game\n "
+                                    );
+                break;
+            default :
+                display.SendMessage("no sutch dev command");
+                break;
         }
     }
     
