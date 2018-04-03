@@ -6,9 +6,9 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
-import BoardObjects.*;
 import Cards.Card;
 import Cards.Deck;
+import Sigurd.BoardObjects.*;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -189,8 +189,6 @@ public class Game {
         while(deck.IsEmpty() == false)
         {
             Card c = deck.DrawCard();
-            for(Player p : players)
-                p.GiveCard(c);
             c.SetCanEveryOneSee();
         }
     }

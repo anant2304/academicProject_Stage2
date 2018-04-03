@@ -10,14 +10,16 @@ public class Player {
 
     private final String playerName;
     private final PlayerObject playerObject;
-    private final Set<Card> playerCards;
+    private final Set<Card> ownedCards;
+    private final Set<Card> seenCards;
     
     private boolean isOutOfGame;
 
     Player(String name, PlayerObject o){
         playerName = name;
         playerObject = o;
-        playerCards = new HashSet<Card>();
+        ownedCards = new HashSet<Card>();
+        seenCards = new HashSet<Card>();
         isOutOfGame = false;
         
         o.SetPlayer();
@@ -45,12 +47,29 @@ public class Player {
     
     public void GiveCard(Card c)
     {
-        playerCards.add(c);
+        ownedCards.add(c);
+    }
+    
+    public void SeeCard(Card c)
+    {
+        if(HasCard(c))
+            throw new IllegalArgumentException("Trying to see a card you own: " + c.getName());
+        if(c.CanEveryOneSee())
+            throw new IllegalArgumentException("Trying to see a card everyone can see: " + c.getName());
+        if(c.IsInEnvelope())
+            throw new IllegalArgumentException("Trying to see a card form the envelope: " + c.getName());
+        
+        seenCards.add(c);
     }
     
     public boolean HasCard(Card c)
     {
-        return playerCards.contains(c);
+        return ownedCards.contains(c);
+    }
+    
+    public boolean HasSeenCard(Card c)
+    {
+        return seenCards.contains(c);
     }
     
     public boolean IsOutOfGame() {

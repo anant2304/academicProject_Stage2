@@ -23,6 +23,7 @@ public class Turn {
     private boolean canRoll;
     private int stepsLeft;
     private boolean hasEneteredRoom;
+    private boolean askingQuestion;
 
     public Turn(Player player) {
         dice1 = dice2 = 0;
@@ -43,13 +44,13 @@ public class Turn {
     public void Commands(String command) {
 
         // If the player is in a room, check if the input was a number.
-        if (turnPlayerObject.IsInRoom() && command.length() == 1 && Character.isDigit(command.toCharArray()[0]))
+       if (turnPlayerObject.IsInRoom() && command.length() == 1 && Character.isDigit(command.toCharArray()[0]))
             MoveOutOfRoom(Integer.parseInt(command));
 
         // Check if the input is a movable direction.
         else if (MOVE_DIRECTIONS.contains(command))
             MoveInDirection(command);
-
+        
         else {
 
             switch (command) {
@@ -64,6 +65,9 @@ public class Turn {
                 break;
             case "passage":
                 MoveThroughPassage();
+                break;
+            case "question":
+                
                 break;
             case "notes":
                 ShowNotes();
@@ -225,7 +229,11 @@ public class Turn {
             Card c = cards.next();
             char displayChar;
             if(turnPlayer.HasCard(c)) // Check if player has card
-                displayChar = c.CanEveryOneSee()?'A':'X';
+                displayChar = 'X';
+            else if(turnPlayer.HasSeenCard(c))
+                displayChar = 'V';
+            else if (c.CanEveryOneSee())
+                displayChar = 'A';
             else
                 displayChar = ' ';
             

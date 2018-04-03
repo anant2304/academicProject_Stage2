@@ -22,4 +22,9 @@ public abstract class Card {
 	public boolean CanEveryOneSee() {
 		return canEveryOneSee;
 	}
+	
+	public boolean IsInEnvelope()
+	{
+	    return isInEnvelope;
+	}
 }
