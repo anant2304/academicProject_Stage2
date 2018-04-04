@@ -33,9 +33,6 @@ public class Game {
     private static boolean isGameOver;
     
     
-    static int[] turn= {0,0,0,0,0,0};
-    static int c=0;
-    static int d01,d02,max,pos;
     
     static Random rand=new Random(System.currentTimeMillis());
     
@@ -113,61 +110,42 @@ public class Game {
     
     private static void RollForEach()
     {
+        int[] turn= {0,0,0,0,0,0};
         if(turn[0]==0)
         {
             display.clearScreen();
         }
-        
+
+        int max=0;
+        int pos=0;
         for(int i=0;i<playerSign.playerCount;i++)
         {
             if(turn[i]!=-1)
             {
-                d01=rand.nextInt(6)+1;
-                d02=rand.nextInt(6)+1;
+                int d01=rand.nextInt(6)+1;
+                int d02=rand.nextInt(6)+1;
                 turn[i]=d01+d02;
+                display.SendMessage(playerSign.players.get(i) + " "+ d01 + ", " + d02 +"\n");
+                if(turn[i]>max)
+                {
+                    max=turn[i];
+                    pos=i;
+                }
             }
         }
-        display.SendMessage(Language.English[5]+"\n");
-        for(int i=0;i<playerSign.playerCount;i++)
-        {
-            if(turn[i]!=-1)
-            {
-                display.SendMessage(playerSign.players.get(i).GetPlayerName()+" "+ turn[i]+"\n");
-            }
-        }
-        max=turn[0];
-        pos=0;
-        for(int i=0;i<playerSign.playerCount;i++)
-        {
-            if(turn[i]>max)
-            {
-                max=turn[i];
-                pos=i;
-            }
-        }
-        for(int i=0;i<playerSign.playerCount;i++)
-        {
+
+        int c=0;
+        for (int i = 0; i < turn.length; i++) {
             if(turn[i]!=max)
             {
                 turn[i]=-1;
-            }
-        }
-        for(int i=0;i<playerSign.playerCount;i++)
-        {
-            if(turn[i]!=max)
                 c++;
-        }
+            }
+        } 
         if(c==playerSign.playerCount-1)
         {
-            display.SendMessage(playerSign.players.get(pos).GetPlayerName()+" got the highest roll of "+max+" \n");
-            if(pos==0)
-            {
-		            		playerSign.currPossition=playerSign.playerCount-1;
-            }
-            else
-            {
-                playerSign.currPossition=pos-1;
-            }
+            display.SendMessage(playerSign.players.get(pos) + " got the highest roll of "+max+" \n");
+            playerSign.currPossition = (playerSign.playerCount + pos - 1) % playerSign.playerCount;
         }
         else
         {
@@ -268,7 +246,7 @@ public class Game {
      * @Summary ends the last turn and starts a new one
      */
     public static void NewTurn(Player p) {
-        Turn newTurn = turnStack.push(new Turn(p));
+        Turn newTurn = turnStack.push(new Turn(p, playerSign.players));
         if(newTurn.CanLeaveRoom())
             board.SetRoom(p.GetPlayerObject().GetRoom());
         board.GetBoardPanel().repaint();

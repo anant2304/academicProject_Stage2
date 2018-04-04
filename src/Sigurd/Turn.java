@@ -23,15 +23,16 @@ public class Turn {
     private boolean canRoll;
     private int stepsLeft;
     private boolean hasEneteredRoom;
-    private boolean askingQuestion;
+    private Question turnQuestion;
 
-    public Turn(Player player) {
+    public Turn(Player player, Iterable<Player> allPlayers) {
         dice1 = dice2 = 0;
         stepsLeft = 0;
         turnPlayer = player;
         turnPlayerObject = turnPlayer.GetPlayerObject();
         hasEneteredRoom = false;
         canRoll = true;
+        turnQuestion = new Question(player, allPlayers);
     }
     
     
