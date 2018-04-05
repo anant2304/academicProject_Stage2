@@ -6,7 +6,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
-import Cards.Card;
+import Cards.*;
 import Cards.Deck;
 import Sigurd.BoardObjects.*;
 import javafx.print.PageLayout;
@@ -256,11 +256,11 @@ public class Game {
         board.GetBoardPanel().repaint();
         
         display.SendMessage("type in \\\"help\\\" at any time to receive help \n");
-        display.SendMessage("type in \\”passage\\” to take passage \n");
+        display.SendMessage("type in \\â€�passage\\â€� to take passage \n");
         if (turnStack.size() > 1) {
             display.clearScreen();
             display.SendMessage("type in \\\"help\\\" at any time to receive help \n");
-            display.SendMessage("type in \\”passage\\” to take passage \n");
+            display.SendMessage("type in \\â€�passage\\â€� to take passage \n");
         }
         display.SendMessage(turnStack.peek().GetPlayer().GetPlayerName() + " its your turn, you are "
                             + turnStack.peek().GetPlayer().GetCharacterName());
@@ -329,11 +329,14 @@ public class Game {
         return isGameOver;
     }
     
+    public static boolean CompareToEnvelope(PlayerCard character, WeaponCard weapon, RoomCard room) {
+    	return deck.CompareToEnvelope(character,weapon,room);
+    }
+    
     /**
      * @Summary Takes a command and passes it to the correct command method in
      *          some class
-     */
-    public static void PassCommand(String com) {
+     */    public static void PassCommand(String com) {
         
         if (com.equalsIgnoreCase(""))
             ;// ignore empty strings
