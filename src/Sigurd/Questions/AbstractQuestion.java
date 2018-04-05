@@ -131,7 +131,7 @@ public abstract class AbstractQuestion {
     }
 
     protected void Activate() {
-        if (canAsk == false)
+        if (CanAsk() == false)
             throw new IllegalStateException("Asking question when not allowed to");
         canAsk = false;
         isActive = true;

@@ -22,4 +22,7 @@ public class Assertion extends AbstractQuestion {
 		}
 	}
 
+	public void Activate() {
+		super.Activate();
+	}
 }
