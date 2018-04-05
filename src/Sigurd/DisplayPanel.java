@@ -2,6 +2,7 @@ package Sigurd;
 
 import java.util.*;
 import java.io.*;
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.*;
@@ -26,6 +27,8 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     SimpleAttributeSet set=new SimpleAttributeSet();
     StyledDocument text1=tpane.getStyledDocument();
     Style style;
+    List<String> qList = new ArrayList<String>();
+    List<String> aList = new ArrayList<String>();
     
     public DisplayPanel() //constructor to set the display panel
     {
@@ -96,7 +99,13 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     public void clearScreen()
     {
         tpane.setText("");
-    }  
+    }
+    
+    public void log(String str1, String str2)
+    {
+        qList.add(str1);
+        aList.add(str2);
+    }
     
 }
 

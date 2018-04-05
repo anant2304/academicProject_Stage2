@@ -416,8 +416,18 @@ public class Game {
         }
     }
     
-    public static void DisplayLog() {
-        
+    public static void DisplayLog()
+    {
+        display.SendMessage("The previous questions were: ");
+        for(String s: display.qList)
+        {
+            display.SendMessage(s);
+        }
+        display.SendMessage("The previous answers were: ");
+        for(String s: display.aList)
+        {
+            display.SendMessage(s);
+        }
     }
 }
 
