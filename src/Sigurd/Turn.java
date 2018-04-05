@@ -4,6 +4,7 @@ import java.util.*;
 
 import Cards.*;
 import Sigurd.BoardObjects.*;
+import Sigurd.Questions.Assertion;
 import Sigurd.Questions.Question;
 
 /**
@@ -22,6 +23,7 @@ public class Turn {
     private int stepsLeft;
     private boolean hasEneteredRoom;
     private Question turnQuestion;
+    private Assertion turnAssertion;
     
     public Turn(Player player, Iterable<Player> allPlayers) {
         dice1 = dice2 = 0;
@@ -31,6 +33,7 @@ public class Turn {
         hasEneteredRoom = false;
         canRoll = true;
         turnQuestion = new Question(player, allPlayers);
+        turnAssertion = new Assertion(player);
     }
     
     /**
@@ -41,9 +44,12 @@ public class Turn {
     public void Commands(String command) {
         
         DisplayMessage(command);
+                
+        if(turnAssertion.IsActive())
+        	turnAssertion.Commands(command);
         
         // If the player is asking a question, pass on the input
-        if (turnQuestion.IsActive())
+        else if (turnQuestion.IsActive())
             turnQuestion.Commands(command);
         
         // If the player is in a room, check if the input was a number.
@@ -78,6 +84,10 @@ public class Turn {
                 case "cheat":
                     DisplayMessage("You're not allowed to cheat.\n" + "Type #cheat if you want to ruin all the fun.");
                     break;
+                case "accuse":
+                	if(turnAssertion.CanAsk() == true)
+                		turnAssertion.Activate();
+                	break;
                 default:
                     DisplayError("That is not a valid command.");
                     break;

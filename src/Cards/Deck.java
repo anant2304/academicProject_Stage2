@@ -167,6 +167,20 @@ public class Deck {
 		else throw new RuntimeException("Tryed to get cards with an incorect type in deck"); 
 	}
 	
+    public boolean CompareToEnvelope(Card character, Card weapon, Card room) {
+    	Card[] envelope = GetEnvelope();
+    	if(envelope[0].equals(character) == false) {
+    		return false;
+    	}
+    	if(envelope[1].equals(weapon) == false) {
+    		return false;
+    	}
+    	if(envelope[2].equals(room) == false) {
+    		return false;
+    	}
+    	return false;
+    }
+	
 	
 	public static void main(String[] args) {
 		Deck deck = new Deck();
