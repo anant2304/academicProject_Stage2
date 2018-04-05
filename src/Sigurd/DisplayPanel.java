@@ -96,6 +96,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     public void clearScreen()
     {
         tpane.setText("");
-    }
+    }  
+    
 }
 
