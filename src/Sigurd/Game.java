@@ -102,55 +102,57 @@ public class Game {
      * @Summary called by the PlayerSignIn class to progress the game into a playable state
      */
     public static void StartGame() {
+        display.clearScreen();
         display.SendMessage(Language.English[4]+"\n");
-        RollForEach();
+        RollToStart(null);
         DealCards();
         NextTurn();
     }
     
-    private static void RollForEach()
+    private static void RollToStart(int[] lastRolls)
     {
-        int[] turn= {0,0,0,0,0,0};
-        if(turn[0]==0)
-        {
-            display.clearScreen();
-        }
-
-        int max=0;
+        int[] rolls = {0, 0, 0, 0, 0, 0};
+        int maxRoll=0;
         int pos=0;
+        if(lastRolls == null)
+            lastRolls = rolls;
+        
+        // Roll for everyone who hasn't rolled and store the max.
         for(int i=0;i<playerSign.playerCount;i++)
         {
-            if(turn[i]!=-1)
+            if(lastRolls[i]!=-1)
             {
                 int d01=rand.nextInt(6)+1;
                 int d02=rand.nextInt(6)+1;
-                turn[i]=d01+d02;
+                rolls[i]=d01+d02;
                 display.SendMessage(playerSign.players.get(i) + " "+ d01 + ", " + d02 +"\n");
-                if(turn[i]>max)
+                if(rolls[i]>maxRoll)
                 {
-                    max=turn[i];
+                    maxRoll=rolls[i];
                     pos=i;
                 }
             }
         }
 
-        int c=0;
-        for (int i = 0; i < turn.length; i++) {
-            if(turn[i]!=max)
-            {
-                turn[i]=-1;
-                c++;
-            }
+        // Count how many players got the max roll and remove others form rolling.
+        int count=0;
+        for (int i = 0; i < rolls.length; i++) {
+            if(rolls[i]!=maxRoll)
+                rolls[i]=-1;
+            else
+                count++;
         } 
-        if(c==playerSign.playerCount-1)
+        
+        // Roll again of more than one player got the max roll
+        if(count == 1)
         {
-            display.SendMessage(playerSign.players.get(pos) + " got the highest roll of "+max+" \n");
+            display.SendMessage(playerSign.players.get(pos) + " got the highest roll of "+maxRoll+" \n");
             playerSign.currPossition = (playerSign.playerCount + pos - 1) % playerSign.playerCount;
         }
         else
         {
             display.SendMessage(Language.English[6]+"\n");
-            RollForEach();
+            RollToStart(rolls);
         }
     }
     
@@ -269,8 +271,20 @@ public class Game {
         return turnStack.peek();
     }
     
-    public static boolean DoseCharacterExist(String name) {
+    public static boolean DoesCharacterExist(String name) {
         return characterMap.containsKey(name);
+    }
+    
+    public static boolean DoesWeaponExist(String name) {
+        return weaponMap.containsKey(name);
+    }
+    
+    public static boolean DoesRoomExist(String name) {
+        for (Room room : board.GetRooms()) {
+            if(room.GetName().equals(name))
+                return true;
+        }
+        return false;
     }
     
     public static PlayerObject GetCharacter(String name) {
@@ -279,6 +293,10 @@ public class Game {
     
     public static Collection<PlayerObject> GetAllCharcters() {
         return characterMap.values();
+    }
+
+    public static Collection<WeaponObject> GetAllWeapons(){
+        return weaponMap.values();
     }
     
     /**
@@ -297,13 +315,14 @@ public class Game {
         return board;
     }
     
-    public static Collection<WeaponObject> GetAllWeapons(){
-        return weaponMap.values();
-    }
     
     public static Iterator<? extends Card> GetCards(Class<? extends Card> c)
     {
         return deck.GetAllCards(c);
+    }
+
+    public static <E extends Card> E GetCard(String name, Class<E> c ) {
+        return deck.GetCard(name, c);
     }
     
     public static boolean IsGameOver() {
@@ -384,9 +403,18 @@ public class Game {
     private static void DisplayHelp(){
         if(isGameStarted())
         {
+            if(turnStack.peek().IsAskingQuestion() == false)
+            {
             for(int i=7;i<13;i++)
             {
                 display.SendMessage(Language.English[i]+"\n");
+            }
+            }
+            else {
+                display.SendMessage("Input the card type that you are prompted for\n" 
+                                  + "Type \"characters\" to see a list of all characters\n"
+                                  + "Type \"weapons\" to see a list of weapons\n"
+                                  + "Type \"rooms\" to see a list of rooms\n");
             }
         }
         else

@@ -39,6 +39,7 @@ class PlayerSignIn
     
     public void Commands(String command)
     {
+        Game.GetDisplay().SendMessage(command);
     	switch(command) {
     	case "done" :
     		FinishSignIn();
@@ -90,7 +91,7 @@ class PlayerSignIn
 		if(playerEnteries.length != 2) {
 			display.SendMessage(Language.English[21]);
 		}
-		else if(Game.DoseCharacterExist(playerEnteries[1]) == false) {
+		else if(Game.DoesCharacterExist(playerEnteries[1]) == false) {
 			display.SendMessage(Language.English[22]);
 		}
 		else if(players.size() >= 6) {

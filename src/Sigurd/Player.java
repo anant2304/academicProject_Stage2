@@ -1,9 +1,13 @@
 package Sigurd;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import Cards.Card;
+import Cards.PlayerCard;
+import Cards.RoomCard;
+import Cards.WeaponCard;
 import Sigurd.BoardObjects.PlayerObject;
 
 public class Player {
@@ -78,5 +82,43 @@ public class Player {
 
     public void KnockOutOfGame() {
     	isOutOfGame = true;
+    }
+    
+    public String GetNotes(Iterator<? extends Card> players, Iterator<? extends Card> weapons, Iterator<? extends Card> rooms)
+    {
+        StringBuilder sb = new StringBuilder(String.format("%-30s \n", "Notes: " + this));
+        sb.append(String.format("%-30s \n", "X: You have this card."));
+        sb.append(String.format("%-30s \n", "V: You have seen this card."));
+        sb.append(String.format("%-30s \n\n", "A: Everyone sees this card."));
+
+        sb.append(String.format("%-30s \n", "Players"));
+        sb.append(GetCardNotesFromIterator(players));
+
+        sb.append(String.format("%-30s\n", "Weapons"));
+        sb.append(GetCardNotesFromIterator(weapons));
+
+        sb.append(String.format("%-30s\n", "Rooms"));
+        sb.append(GetCardNotesFromIterator(rooms));
+        
+        return sb.toString().trim();
+    }
+
+    private String GetCardNotesFromIterator(Iterator<? extends Card> cards) {
+        StringBuilder sb = new StringBuilder();
+        while (cards.hasNext()) {
+            Card c = cards.next();
+            char displayChar;
+            if (HasCard(c)) // Check if player has card
+                displayChar = 'X';
+            else if (HasSeenCard(c))
+                displayChar = 'V';
+            else if (c.CanEveryOneSee())
+                displayChar = 'A';
+            else
+                displayChar = ' ';
+
+            sb.append(String.format("%-30s%c\n", c.getName(), displayChar));
+        }
+        return sb.toString();
     }
 }

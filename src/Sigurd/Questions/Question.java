@@ -1,24 +1,17 @@
-package Sigurd;
+package Sigurd.Questions;
 
 import java.util.Iterator;
+import Sigurd.*;
 import java.util.Stack;
 
 import Cards.*;
 
-public class Question {
-    private Player asker;
+public class Question extends AbstractQuestion {
     private Stack<Player> playersToAsk;
-    private boolean isBeingAsked;
-    private boolean canAsk;
-    private PlayerCard character;
-    private WeaponCard weapon;
-    private RoomCard room;
     
-    Question(Player player, Iterable<Player> allPlayers)
+    public Question(Player player, Iterable<Player> allPlayers)
     {
-        asker = player;
-        isBeingAsked = false;
-        canAsk = true;
+        super(player);
         SetupPlayersToAsk(allPlayers);
     }
     
@@ -38,15 +31,11 @@ public class Question {
         Player p;
         while (it.hasNext() && (p = it.next()) != asker) playersToAsk.push(p);
     }
-
-    boolean IsBeingAsked()
-    {
-        return isBeingAsked;
-    }
     
-    boolean CanAsk()
+    public void StartAskingQuestion(Room r)
     {
-        return canAsk;
+        room = Game.GetCard(r.GetName(), RoomCard.class);
+        Activate();
     }
     
     @Override
@@ -56,5 +45,12 @@ public class Question {
                 character.getName() + " in the " + 
                 room.getName() + " with the " + 
                 weapon.getName();
+    }
+
+    @Override
+    protected void DoneWithInput() {
+        Game.GetDisplay().SendMessage(this.toString());
+        // TODO continue with question
+        Deactivate();
     }
 }

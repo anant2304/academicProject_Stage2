@@ -133,19 +133,20 @@ public class Deck {
 		return deck.size() == 0;
 	}
 	
-	public Card getCard(String name, Class<? extends Card> typeOfCard ) {
-		Card temp;
+	@SuppressWarnings("unchecked")
+    public <E extends Card> E GetCard(String name, Class<E> typeOfCard ) {
+		E temp;
 		
 		if(typeOfCard == PlayerCard.class && playerCards != null && playerCards.isEmpty() == false) {
-			if((temp = playerCards.get(name)) != null)
+			if((temp = (E) playerCards.get(name)) != null)
 				return temp;
 		}
 		else if(typeOfCard == RoomCard.class && roomCards != null && roomCards.isEmpty() == false) {
-			if((temp = roomCards.get(name)) != null)
+			if((temp = (E) roomCards.get(name)) != null)
 				return temp;			
 		}
 		else if(typeOfCard == WeaponCard.class && weaponCards != null && weaponCards.isEmpty() == false) {
-			if((temp = weaponCards.get(name)) != null)
+			if((temp = (E) weaponCards.get(name)) != null)
 				return temp;			
 		}
 		else throw new RuntimeException("Tryed to get a card with an incorect type in deck");
@@ -174,7 +175,7 @@ public class Deck {
         System.out.println(deck.IsEmpty());
         System.out.println(deck.Size());
         System.out.println(deck.IsEmpty());
-        System.out.println(deck.getCard("p2",PlayerCard.class).getName());
+        System.out.println(deck.GetCard("p2",PlayerCard.class).getName());
         
 		while(!deck.IsEmpty())
 	        System.out.println(deck.DrawCard().getName());
