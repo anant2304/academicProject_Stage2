@@ -9,6 +9,7 @@ import javax.swing.*;
 import Cards.Card;
 import Cards.Deck;
 import Sigurd.BoardObjects.*;
+import javafx.print.PageLayout;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -195,10 +196,18 @@ public class Game {
     
     private static void EndGame() {
         isGameOver = true;
-        display.SendMessage("The Game is over\nThe winner is :");
+        display.SendMessage("The Game is over\nThe winner is : " + turnStack.peek().GetPlayer().GetPlayerName());
         display.SendMessage("enter any command to exit the game");
     }
-    
+
+    private static boolean IsLastPlayer() {
+        int inGame = 0;
+        for(Player temp : playerSign.getPlayers()) {
+            if(temp.IsOutOfGame() == false)
+                inGame++;
+    	   }
+        return inGame < 2;
+    }
     
     /**
      * @Summary creates and places all the players onto the board
@@ -269,6 +278,11 @@ public class Game {
      */
     public static void NewTurn(Player p) {
         Turn newTurn = turnStack.push(new Turn(p));
+        if(IsLastPlayer()) {
+        	EndGame();
+        	return;
+        	}
+        
         if(newTurn.CanLeaveRoom())
             board.SetRoom(p.GetPlayerObject().GetRoom());
         board.GetBoardPanel().repaint();
