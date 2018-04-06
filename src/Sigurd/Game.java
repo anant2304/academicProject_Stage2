@@ -330,31 +330,31 @@ public class Game {
     }
     
     public static boolean CompareToEnvelope(PlayerCard character, WeaponCard weapon, RoomCard room) {
-    	return deck.CompareToEnvelope(character,weapon,room);
+        return deck.CompareToEnvelope(character,weapon,room);
     }
     
     /**
      * @Summary Takes a command and passes it to the correct command method in
      *          some class
      */    public static void PassCommand(String com) {
-        
-        if (com.equalsIgnoreCase(""))
-            ;// ignore empty strings
-        else if (com.charAt(0) == '#') {
-            Commands(com);
-        } else if (com.equalsIgnoreCase("help")) {
-            DisplayHelp();
-        } else if (com.equalsIgnoreCase("log")) {
-            DisplayLog();
-        } else if (IsGameOver() == true) {
-            System.exit(0);
-        } else if (isGameStarted() == false) {
-            playerSign.Commands(com);
-        } else {
-            turnStack.peek().Commands(com);// commands in the turn class
-            board.GetBoardPanel().repaint();
-        }
-    }
+         
+         if (com.equalsIgnoreCase(""))
+             ;// ignore empty strings
+         else if (com.charAt(0) == '#') {
+             Commands(com);
+         } else if (com.equalsIgnoreCase("help")) {
+             DisplayHelp();
+         } else if (com.equalsIgnoreCase("log")) {
+             DisplayLog();
+         } else if (IsGameOver() == true) {
+             System.exit(0);
+         } else if (isGameStarted() == false) {
+             playerSign.Commands(com);
+         } else {
+             turnStack.peek().Commands(com);// commands in the turn class
+             board.GetBoardPanel().repaint();
+         }
+     }
     
     /**
      * @Summary exicutes developer commands for debuging purposes
@@ -405,16 +405,16 @@ public class Game {
             } else {
                 display.SendMessage("Input the card type that you are prompted for\n"
                                     + "Type \"characters\" to see a list of all characters\n"
-                                    + "Type \"weapons\" to see a list of weapons\n" 
+                                    + "Type \"weapons\" to see a list of weapons\n"
                                     + "Type \"rooms\" to see a list of rooms\n");
             }
         } else {
             
             display.SendMessage("type in a name then press enter or return to add it to the game\r\n" +
                                 "type in \"players\" to see who is currently in the game\r\n" +
-                                "type in \"characters\" to see unclaimed characters\r\n" + 
-                                "if you have entered everyone's name type \"done\" to start the game\r\n" + 
-                                "type in \"#exit\" to abort the game\r\n" + 
+                                "type in \"characters\" to see unclaimed characters\r\n" +
+                                "if you have entered everyone's name type \"done\" to start the game\r\n" +
+                                "type in \"#exit\" to abort the game\r\n" +
                                 "you must have at least 2 players to play");
             
         }
@@ -422,13 +422,8 @@ public class Game {
     
     public static void DisplayLog()
     {
-        display.SendMessage("The previous questions were: ");
-        for(String s: display.qList)
-        {
-            display.SendMessage(s);
-        }
-        display.SendMessage("The previous answers were: ");
-        for(String s: display.aList)
+        display.SendMessage("The previous questions and answers were: ");
+        for(String s: display.qaList)
         {
             display.SendMessage(s);
         }
