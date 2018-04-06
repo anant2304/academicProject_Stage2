@@ -254,13 +254,13 @@ public class Game {
         if (newTurn.CanLeaveRoom())
             board.SetRoom(p.GetPlayerObject().GetRoom());
         board.GetBoardPanel().repaint();
-
-        display.SendMessage("type in \\\"help\\\" at any time to receive help \n");
-        display.SendMessage("type in \\â€�passage\\â€� to take passage \n");
+        
+        display.SendMessage("type in \"help\" at any time to receive help \n");
+        display.SendMessage("type in \"passage\" to take passage \n");
         if (turnStack.size() > 1) {
             display.clearScreen();
-            display.SendMessage("type in \\\"help\\\" at any time to receive help \n");
-            display.SendMessage("type in \\â€�passage\\â€� to take passage \n");
+            display.SendMessage("type in \"help\" at any time to receive help \n");
+            display.SendMessage("type in \"passage\" to take passage \n");
         }
         display.SendMessage(turnStack.peek().GetPlayer().GetPlayerName() + " its your turn, you are "
                 + turnStack.peek().GetPlayer().GetCharacterName());
@@ -356,7 +356,6 @@ public class Game {
             board.GetBoardPanel().repaint();
         }
     }
-
     /**
      * @Summary exicutes developer commands for debuging purposes
      */
@@ -417,23 +416,22 @@ public class Game {
                         + "type in a name then press enter or return to add it to the game");
             }
         } else {
-
-            display.SendMessage("type in a name then press enter or return to add it to the game\r\n"
-                    + "type in \\\"players\\\" to see who is currently in the game\r\n"
-                    + "type in \\\"characters\\\" to see unclaimed characters\r\n"
-                    + "if you have entered everyone's name type \\\"done\\\" to start the game\r\n"
-                    + "type in \\\"#exit\\\" to abort the game\r\n" + "you must have at least 2 players to play");
-
+            
+            display.SendMessage("type in a name then press enter or return to add it to the game\r\n" +
+                                "type in \"players\" to see who is currently in the game\r\n" +
+                                "type in \"characters\" to see unclaimed characters\r\n" +
+                                "if you have entered everyone's name type \"done\" to start the game\r\n" +
+                                "type in \"#exit\" to abort the game\r\n" +
+                                "you must have at least 2 players to play");
+            
         }
     }
-
-    public static void DisplayLog() {
-        display.SendMessage("The previous questions were: ");
-        for (String s : display.qList) {
-            display.SendMessage(s);
-        }
-        display.SendMessage("The previous answers were: ");
-        for (String s : display.aList) {
+    
+    public static void DisplayLog()
+    {
+        display.SendMessage("The previous questions and answers were: ");
+        for(String s: display.qaList)
+        {
             display.SendMessage(s);
         }
     }

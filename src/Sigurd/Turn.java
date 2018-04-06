@@ -187,7 +187,7 @@ public class Turn {
         } else if (turnPlayerObject.GetRoom().HasPassage() == false) {
             DisplayError("The current room has no passages\n");
         } else if (hasEneteredRoom) {
-            DisplayError("Language.English[32]\n");
+            DisplayError("You cannot enter a passage if you entered a room this turn\n");
         } else {
             turnPlayerObject.MoveToRoom(turnPlayerObject.GetRoom().GetPassageRoom());
             Game.GetBoard().ResetRoom();

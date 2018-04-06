@@ -27,8 +27,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     SimpleAttributeSet set=new SimpleAttributeSet();
     StyledDocument text1=tpane.getStyledDocument();
     Style style;
-    List<String> qList = new ArrayList<String>();
-    List<String> aList = new ArrayList<String>();
+    List<String> qaList = new ArrayList<String>();
     
     public DisplayPanel() //constructor to set the display panel
     {
@@ -100,11 +99,9 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     {
         tpane.setText("");
     }
-    
-    public void log(String str1, String str2)
+    public void log(String str1)
     {
-        qList.add(str1);
-        aList.add(str2);
+        qaList.add(str1);
     }
     
 }
