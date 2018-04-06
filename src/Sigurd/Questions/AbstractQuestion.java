@@ -6,7 +6,6 @@ import Sigurd.*;
 public abstract class AbstractQuestion {
 
     private boolean isActive;
-    private boolean doneAsking;
     protected Player asker;
     protected boolean canAsk;
 
@@ -34,19 +33,24 @@ public abstract class AbstractQuestion {
     }
 
     public boolean HasBeenAsked() {
-        return isActive || doneAsking;
+        return isActive || IsDoneAsking();
     }
     
-    protected boolean HasCharacter() {
+    public boolean HasCharacter() {
         return character != null;
     }
     
-    protected boolean HasWeapon() {
+    public boolean HasWeapon() {
         return weapon != null;
     }
     
-    protected boolean HasRoom() {
+    public boolean HasRoom() {
         return room != null;
+    }
+    
+    public boolean IsDoneAsking()
+    {
+        return HasRoom() && HasCharacter() && HasWeapon();
     }
     
     public void Commands(String command) {
@@ -64,6 +68,9 @@ public abstract class AbstractQuestion {
             Game.GetDisplay().SendMessage("The possible rooms are:");
             PrintNames(Reasource.GetRoomNames());
             break;
+        case "notes":
+            Game.GetDisplay().SendMessage(asker.GetNotes());
+            break;
         default:
             helperCommand = false;
             break;
@@ -72,7 +79,7 @@ public abstract class AbstractQuestion {
         if (helperCommand == false) {
             TakeCardInput(command);
         }
-        if (doneAsking == false)
+        if (IsDoneAsking() == false)
             DisplayInputPrompt();
     }
 
@@ -113,7 +120,6 @@ public abstract class AbstractQuestion {
 
     private void ValidInput() {
         if (HasCharacter() && HasRoom() && HasWeapon()) {
-            doneAsking = true;
             DoneWithInput();
         }
     }
@@ -135,7 +141,6 @@ public abstract class AbstractQuestion {
             throw new IllegalStateException("Asking question when not allowed to");
         canAsk = false;
         isActive = true;
-        doneAsking = false;
         DisplayInputPrompt();
     }
 
@@ -143,8 +148,9 @@ public abstract class AbstractQuestion {
         if (isActive == false)
             throw new IllegalStateException("Question is not active");
         isActive = false;
-        doneAsking = true;
     }
 
     protected abstract void DoneWithInput();
 }
+    
+    

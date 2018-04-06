@@ -1,6 +1,5 @@
 package Sigurd.Questions;
 
-import Cards.Deck;
 import Sigurd.Game;
 import Sigurd.Player;
 

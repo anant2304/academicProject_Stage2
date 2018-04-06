@@ -11,7 +11,7 @@ public class PlayerCard extends Card {
 		myPlayerObject = player;
 	}
 	
-	public PlayerObject getPlayer() {
+	public PlayerObject getPlayerObject() {
 		return myPlayerObject;
 	}
 }

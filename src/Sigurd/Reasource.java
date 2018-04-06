@@ -8,6 +8,7 @@ public class Reasource {
 	private static List<String> characterCach;
 	private static List<String> roomCach;
 	private static List<String> weaponCach;
+	public static final String BASEMENTNAME = "basement";
 
 	private Reasource() {}
 
@@ -55,7 +56,14 @@ public class Reasource {
 	 * @return a list of names of all the rooms in the rooms txt 
 	 */
 	public static List<String> GetRoomNames(){
-		return GetNamesFromData(GetRoomData());
+	    List<String> roomNames = GetNamesFromData(GetRoomData());
+	    for (String string : roomNames) {
+            String[] roomNameParts = string.split("_");
+            string = roomNameParts[0];
+            for (int i = 1; i < roomNameParts.length; i++)
+                string += " " + roomNameParts[i];
+        }
+		return roomNames;
 	}
 	
 	/**

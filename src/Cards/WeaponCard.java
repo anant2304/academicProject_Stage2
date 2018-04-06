@@ -11,7 +11,7 @@ public class WeaponCard extends Card {
 		myWeaponObject = weapon;
 	}
 	
-	public WeaponObject getWeaonp() {
+	public WeaponObject getWeapon() {
 		return myWeaponObject;
 	}
 

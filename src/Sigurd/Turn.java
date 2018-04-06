@@ -2,7 +2,6 @@ package Sigurd;
 
 import java.util.*;
 
-import Cards.*;
 import Sigurd.BoardObjects.*;
 import Sigurd.Questions.Assertion;
 import Sigurd.Questions.Question;
@@ -79,14 +78,14 @@ public class Turn {
                     StartAskingQuestion();
                     break;
                 case "notes":
-                    ShowNotes();
+                    DisplayMessage(turnPlayer.GetNotes());
                     break;
                 case "cheat":
                     DisplayMessage("You're not allowed to cheat.\n" + "Type #cheat if you want to ruin all the fun.");
                     break;
                 case "accuse":
-                	if(turnAssertion.CanAsk() == true)
-                		turnAssertion.Activate();
+                	if(turnAssertion.CanAsk() == true)// TODO Display an error if fails
+                		turnAssertion.Activate(); 
                 	break;
                 default:
                     DisplayError("That is not a valid command.");
@@ -134,12 +133,7 @@ public class Turn {
         
         if (Game.GetBoard().IsPositionMovable(turnPlayerObject.GetCoordinates(), movingToCo)) {
             if (Game.GetBoard().IsDoor(movingToCo)) {
-                // Moves player into room, and adds the player to the room
-                // object.
-                turnPlayerObject.MoveToRoom(Game.GetBoard().GetDoorRoom(movingToCo));
-                hasEneteredRoom = true;
-                DisplayMessage(turnPlayer + " entered the " + turnPlayerObject.GetRoom().GetName());
-                turnQuestion.SetCanAsk();
+                EnterRoom(Game.GetBoard().GetDoorRoom(movingToCo));
             } else {
                 // Moves a player along the board grid.
                 turnPlayerObject.Move(positionChange);
@@ -150,6 +144,18 @@ public class Turn {
         } else {
             DisplayError(turnPlayer + " cannot move in direction " + dir);
         }
+    }
+    
+    private void EnterRoom(Room r)
+    {
+        turnPlayerObject.MoveToRoom(r);
+        hasEneteredRoom = true;
+        DisplayMessage(turnPlayer + " entered the " + turnPlayerObject.GetRoom().GetName());
+        
+        if(r.GetName().equals(Reasource.BASEMENTNAME))
+            turnAssertion.SetCanAsk();
+        else
+            turnQuestion.SetCanAsk();
     }
     
     private void MoveOutOfRoom(int exit) {
@@ -227,11 +233,6 @@ public class Turn {
         canRoll = false;
     }
     
-    private void ShowNotes() {
-        DisplayMessage(
-                       turnPlayer.GetNotes(Game.GetCards(PlayerCard.class), Game.GetCards(WeaponCard.class), Game.GetCards(RoomCard.class)));
-    }
-    
     private void EndTurn() {
         Game.GetDisplay().SendMessage("Turn Over\n");
         Game.NextTurn();
@@ -249,6 +250,12 @@ public class Turn {
     {
         // TODO look at this after question is finished
         return turnQuestion.IsActive() && !turnQuestion.HasBeenAsked();
+    }    
+    
+    public boolean IsRespondingToQuestion()
+    {
+        // TODO look at this after question is finished
+        return turnQuestion.IsActive() && turnQuestion.IsDoneAsking();
     }
     
     /**

@@ -5,9 +5,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import Cards.Card;
-import Cards.PlayerCard;
-import Cards.RoomCard;
-import Cards.WeaponCard;
+import Cards.*;
 import Sigurd.BoardObjects.PlayerObject;
 
 public class Player {
@@ -84,23 +82,23 @@ public class Player {
     	isOutOfGame = true;
     }
     
-    public String GetNotes(Iterator<? extends Card> players, Iterator<? extends Card> weapons, Iterator<? extends Card> rooms)
+    public String GetNotes()
     {
         StringBuilder sb = new StringBuilder(String.format("%-30s \n", "Notes: " + this));
-        sb.append(String.format("%-30s \n", "X: You have this card."));
-        sb.append(String.format("%-30s \n", "V: You have seen this card."));
-        sb.append(String.format("%-30s \n\n", "A: Everyone sees this card."));
+        sb.append(String.format("%-30s \n", "\t\t\tX: You have this card."));
+        sb.append(String.format("%-30s \n", "\t\t\tV: You have seen this card."));
+        sb.append(String.format("%-30s \n", "\t\t\tA: Everyone sees this card."));
 
-        sb.append(String.format("%-30s \n", "Players"));
-        sb.append(GetCardNotesFromIterator(players));
+        sb.append(String.format("\n%-30s", "Players"));
+        sb.append(GetCardNotesFromIterator(Game.GetCards(PlayerCard.class)));
 
-        sb.append(String.format("%-30s\n", "Weapons"));
-        sb.append(GetCardNotesFromIterator(weapons));
+        sb.append(String.format("\n%-30s", "Weapons"));
+        sb.append(GetCardNotesFromIterator(Game.GetCards(WeaponCard.class)));
 
-        sb.append(String.format("%-30s\n", "Rooms"));
-        sb.append(GetCardNotesFromIterator(rooms));
+        sb.append(String.format("\n%-30s", "Rooms"));
+        sb.append(GetCardNotesFromIterator(Game.GetCards(RoomCard.class)));
         
-        return sb.toString().trim();
+        return sb.toString();
     }
 
     private String GetCardNotesFromIterator(Iterator<? extends Card> cards) {
@@ -117,7 +115,7 @@ public class Player {
             else
                 displayChar = ' ';
 
-            sb.append(String.format("%-30s%c\n", c.getName(), displayChar));
+            sb.append(String.format("\n%-30s%c", "\t\t\t" + c.getName(), displayChar));
         }
         return sb.toString();
     }

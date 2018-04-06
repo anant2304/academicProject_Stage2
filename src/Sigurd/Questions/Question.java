@@ -9,10 +9,13 @@ import Cards.*;
 public class Question extends AbstractQuestion {
     private Stack<Player> playersToAsk;
     
+    private Card answerCard;
+    
     public Question(Player player, Iterable<Player> allPlayers)
     {
         super(player);
         SetupPlayersToAsk(allPlayers);
+        answerCard = null;
     }
     
     private void SetupPlayersToAsk(Iterable<Player> players) {
@@ -39,18 +42,122 @@ public class Question extends AbstractQuestion {
     }
     
     @Override
+    public void Commands(String command) {
+        if(HasBeenAnswered() || IsNoAnswer()){
+            EndQuestion();
+        } 
+        else if(IsDoneAsking() == false) {
+            super.Commands(command);
+        } 
+        else if(playersToAsk.isEmpty()) {
+            throw new IllegalStateException("There are no more players to ask");
+        } 
+        else {
+            if(command.equals("notes"))
+                Game.GetDisplay().SendMessage(playersToAsk.peek().GetNotes());
+            
+            else if(command.equals("done"))
+                AskNextPlayer();
+            
+            else if(HasQuestionCard()){
+                
+                Card shownCard = null;
+                if(command.equals(character.getName()))
+                    shownCard = character;
+                else if(command.equals(weapon.getName()))
+                    shownCard = weapon;
+                else if(command.equals(room.getName()))
+                    shownCard = room;
+                
+                if(shownCard != null && playersToAsk.peek().HasCard(shownCard) && shownCard.CanEveryOneSee() == false)
+                    ValidAnswer(shownCard);
+                else
+                    Game.GetDisplay().SendMessage("That is not one of the cards that was asked about\n"
+                            + "Please input the name of the card you want to display.");
+            }
+        }
+    }
+
+    private boolean HasQuestionCard() {
+        return playersToAsk.peek().HasCard(character) || 
+                playersToAsk.peek().HasCard(weapon)   ||
+                playersToAsk.peek().HasCard(room);
+    }
+
+    public boolean HasBeenAnswered()
+    {
+        return answerCard != null;
+    }
+    
+    private void AskNextPlayer() {
+        if(HasQuestionCard()) {
+            Game.GetDisplay().SendMessage("You own at least one card that was asked about\n"
+                    + "Please input the name of the card you want to display.");
+        }
+        else {
+            playersToAsk.pop();
+            if(playersToAsk.isEmpty())
+                NoPlayerHasCard();
+            else
+                PromptPlayer();
+        }
+    }
+
+    
+
+    private void ValidAnswer(Card shownCard) {
+        answerCard = shownCard;
+        Game.GetDisplay().clearScreen();
+        Game.GetDisplay().SendMessage(playersToAsk.peek() + " answered the question\n"
+                 + asker + " can enter any input to see the card that was answered");
+        
+    }
+    
+    private void NoPlayerHasCard() {
+        if(IsNoAnswer() == false)
+            throw new IllegalStateException("Players still might have one of the cards");
+        
+        Game.GetDisplay().clearScreen();
+        Game.GetDisplay().SendMessage("No players had the card that was entered\n" 
+                                 + asker + " can enter any input to continue their turn");
+    }
+    
+    private boolean IsNoAnswer() {
+        return HasBeenAnswered() == false && playersToAsk.isEmpty();
+    }
+
+    private void EndQuestion() {
+        Game.GetDisplay().clearScreen();
+        if(HasBeenAnswered())
+            Game.GetDisplay().SendMessage(playersToAsk.peek() + " showed you the card " + answerCard.getName());
+        else if(IsNoAnswer())
+            Game.GetDisplay().SendMessage("No one had any of the cards you asked for");
+        asker.SeeCard(answerCard);
+        Deactivate();
+    }
+
+    
+    @Override
+    protected void DoneWithInput() {
+        character.getPlayerObject().MoveToRoom(room.getRoom());
+        weapon.getWeapon().MoveToRoom(room.getRoom());
+        
+        PromptPlayer();
+    }
+    
+    private void PromptPlayer() {
+        Game.GetDisplay().clearScreen();
+        Game.GetDisplay().SendMessage(this.toString());
+        Game.GetDisplay().SendMessage("It is " + playersToAsk.peek() + "'s turn to answer\n"
+                + "Input \"help\" for help");
+    }
+    
+    @Override
     public String toString()
     {
         return asker + " aksked if it was " + 
                 character.getName() + " in the " + 
                 room.getName() + " with the " + 
                 weapon.getName();
-    }
-
-    @Override
-    protected void DoneWithInput() {
-        Game.GetDisplay().SendMessage(this.toString());
-        // TODO continue with question
-        Deactivate();
     }
 }

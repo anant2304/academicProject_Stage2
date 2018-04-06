@@ -79,7 +79,7 @@ public class Board {
 
     private void LoadRooms() {
     	List<String> lines = Reasource.GetRoomData();
-        rooms = new Room[lines.size()];
+        rooms = new Room[lines.size() + 1];
         doorPositions = new HashMap<Coordinates, Door>();
         
             int roomIndex = 0;
@@ -107,7 +107,7 @@ public class Board {
                 rooms[roomIndex] = new Room(roomName, doorCoordinates, roomCentrePosition);
 
                 for (Door c : doorCoordinates)
-                    doorPositions.put((Coordinates) c, c);
+                    doorPositions.put(c, c);
 
                 roomIndex++;
             }
@@ -118,6 +118,11 @@ public class Board {
 
             rooms[2].SetPassageRoom(rooms[7]);
             rooms[7].SetPassageRoom(rooms[2]);
+            
+            // Hardcoding the basement
+            Door d = new Door("d12,16");
+            doorPositions.put(d, d);
+            rooms[roomIndex] = new Room(Reasource.BASEMENTNAME, new Door[] {d}, new Coordinates(12, 13));
     }
     
     public Room[] GetRooms()

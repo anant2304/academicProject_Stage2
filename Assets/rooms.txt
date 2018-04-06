@@ -7,4 +7,3 @@ Study			u17,21					21,23
 Hall			r14,20|u12,18|u11,18	12,21
 Lounge			u6,19					4,22
 Dining_Room		d6,15|r7,12				4,12
-Basement		d12,16					12,13

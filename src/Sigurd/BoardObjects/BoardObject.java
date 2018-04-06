@@ -67,6 +67,8 @@ public abstract class BoardObject {
     }
 
     public void MoveToRoom(Room r) {
+        if(room == r)
+            return;
         if(room != null)
             LeaveRoom();
         room = r;
