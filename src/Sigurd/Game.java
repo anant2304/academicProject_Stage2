@@ -406,7 +406,8 @@ public class Game {
             } else if (turnStack.peek().IsRespondingToQuestion()) {
                 display.SendMessage("Input the name of a card you own that was asked for\n"
                         + "If you do not own any cards that were asked for, type \"done\"\n"
-                        + "Type \"notes\" to see the cards that you own\n");
+                        + "Type \"notes\" to see the cards that you own\n"
+                        + "Type \"question\" if you want to see the question again");
             } else {
                 display.SendMessage("type in \"roll\" to roll your dice \n"
                         + "type in u, d, l or r to move up, down, left, or right respectively \n"

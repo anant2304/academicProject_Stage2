@@ -59,6 +59,9 @@ public class Question extends AbstractQuestion {
             else if(command.equals("done"))
                 AskNextPlayer();
             
+            else if(command.equals("question"))
+                Game.GetDisplay().SendMessage(this.toString());
+            
             else if(HasQuestionCard()){
                 
                 Card shownCard = null;
@@ -75,6 +78,9 @@ public class Question extends AbstractQuestion {
                     Game.GetDisplay().SendMessage("That is not one of the cards that was asked about\n"
                             + "Please input the name of the card you want to display.");
             }
+            else
+                Game.GetDisplay().SendMessage("That is not one of the cards that was asked about\n"
+                        + "If you do not have any of the cards, type \"done\" to go to the next player");
         }
     }
 
@@ -92,7 +98,7 @@ public class Question extends AbstractQuestion {
     private void AskNextPlayer() {
         if(HasQuestionCard()) {
             Game.GetDisplay().SendMessage("You own at least one card that was asked about\n"
-                    + "Please input the name of the card you want to display.");
+                    + "Please input the name of the card you want to show.");
         }
         else {
             playersToAsk.pop();
@@ -128,11 +134,13 @@ public class Question extends AbstractQuestion {
 
     private void EndQuestion() {
         Game.GetDisplay().clearScreen();
-        if(HasBeenAnswered())
+        if(HasBeenAnswered()) {
             Game.GetDisplay().SendMessage(playersToAsk.peek() + " showed you the card " + answerCard.getName());
+            asker.SeeCard(answerCard);
+        }
         else if(IsNoAnswer())
             Game.GetDisplay().SendMessage("No one had any of the cards you asked for");
-        asker.SeeCard(answerCard);
+        Game.GetDisplay().log(this + "\n" + (HasBeenAnswered()?playersToAsk.peek():"nobody") + " showed a card");
         Deactivate();
     }
 
@@ -143,6 +151,11 @@ public class Question extends AbstractQuestion {
         weapon.getWeapon().MoveToRoom(room.getRoom());
         
         PromptPlayer();
+    }
+    
+    public void ResetCanAsk()
+    {
+        canAsk = false;
     }
     
     private void PromptPlayer() {

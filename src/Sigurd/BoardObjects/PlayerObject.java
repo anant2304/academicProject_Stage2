@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import Sigurd.Coordinates;
+import Sigurd.Room;
 
 /**
  * Players that are displayed to the screen.
@@ -16,6 +17,8 @@ import Sigurd.Coordinates;
 public class PlayerObject extends BoardObject {
 
     private boolean hasPlayer = false;
+    
+    private boolean hasBeenMoved = false;
     
     
     /**
@@ -47,6 +50,22 @@ public class PlayerObject extends BoardObject {
         if(hasPlayer)
             throw new IllegalStateException(GetObjectName() + " has a player");
         hasPlayer = true;
+    }
+    
+    public boolean HasMovedAfterLastTurn()
+    {
+        return hasBeenMoved;
+    }
+    
+    public void ResetHasMoved()
+    {
+        hasBeenMoved = false;
+    }
+    
+    @Override
+    public void MoveToRoom(Room r) {
+        super.MoveToRoom(r);
+        hasBeenMoved = true;
     }
 
     /**

@@ -16,23 +16,26 @@ public class Turn {
     private Player turnPlayer;
     private PlayerObject turnPlayerObject;
     private static final Set<String> MOVE_DIRECTIONS = new HashSet<String>(
-                                                                           Arrays.asList(new String[] { "u", "d", "l", "r" }));
-    private int dice1, dice2;
+                           Arrays.asList(new String[] { "u", "d", "l", "r" }));
+    
     private boolean canRoll;
+    private boolean hasRolled;
     private int stepsLeft;
     private boolean hasEneteredRoom;
     private Question turnQuestion;
     private Assertion turnAssertion;
     
     public Turn(Player player, Iterable<Player> allPlayers) {
-        dice1 = dice2 = 0;
         stepsLeft = 0;
         turnPlayer = player;
         turnPlayerObject = turnPlayer.GetPlayerObject();
         hasEneteredRoom = false;
         canRoll = true;
+        hasRolled = false;
         turnQuestion = new Question(player, allPlayers);
         turnAssertion = new Assertion(player);
+        if(turnPlayerObject.HasMovedAfterLastTurn())
+            turnQuestion.SetCanAsk();
     }
     
     /**
@@ -140,6 +143,7 @@ public class Turn {
                 DisplayMessage(turnPlayer + " moved in direction: " + dir);
                 stepsLeft--;
                 DisplayMessage(turnPlayer + " has " + stepsLeft + " steps left to move.");
+                turnQuestion.ResetCanAsk();
             }
         } else {
             DisplayError(turnPlayer + " cannot move in direction " + dir);
@@ -163,7 +167,7 @@ public class Turn {
         
         if (hasEneteredRoom)
             DisplayError("You have already entered a room on this turn.\n");
-        else if (dice1 == 0)
+        else if (hasRolled == false)
             DisplayError("You need to roll the dice before you can move.\n");
         
         else if (exit < 1 || playerObject.GetRoom().GetDoors().length < exit)
@@ -194,7 +198,7 @@ public class Turn {
             DisplayMessage(turnPlayer + " took a secret passage to the " + turnPlayerObject.GetRoom().GetName());
             hasEneteredRoom = true;
             canRoll = false;
-            dice1 = 1;
+            turnQuestion.SetCanAsk();
         }
     }
     
@@ -212,7 +216,7 @@ public class Turn {
     }
     
     private void RollDice() {
-        if (canRoll == false && dice1 == 0) {
+        if (hasRolled) {
             DisplayError("You have already rolled your dice\n");
             return;
         }
@@ -220,17 +224,19 @@ public class Turn {
             DisplayError("You cannot roll your dice at this time\n");
             return;
         }
+        int d1, d2;
         
         Random rand = new Random();
-        dice1 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
+        d1 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
         // numbers for the die results
-        dice2 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
+        d2 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
         // numbers for the die results
-        Game.GetDisplay().SendMessage("Die 1 gives: " + dice1 + "\n" + "Die 2 gives: " + dice2 + "\n" + turnPlayer
-                                      + " gets " + (dice1 + dice2) + " moves" + "\n");
-        stepsLeft = dice1 + dice2;
+        stepsLeft = d1 + d2;
+        Game.GetDisplay().SendMessage("Die 1 gives: " + d1 + "\n" + "Die 2 gives: " + d2 + "\n" + turnPlayer
+                                      + " gets " + stepsLeft + " moves" + "\n");
         
         canRoll = false;
+        hasRolled = true;
     }
     
     private void EndTurn() {
@@ -280,7 +286,6 @@ public class Turn {
      * @param quantaty
      */
     public void SetStepsLeft(int quantaty) {
-        dice1 = 1;
         stepsLeft = quantaty;
     }
 }
