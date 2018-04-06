@@ -255,12 +255,12 @@ public class Game {
             board.SetRoom(p.GetPlayerObject().GetRoom());
         board.GetBoardPanel().repaint();
         
-        display.SendMessage("type in \\\"help\\\" at any time to receive help \n");
-        display.SendMessage("type in \\â€�passage\\â€� to take passage \n");
+        display.SendMessage("type in \"help\" at any time to receive help \n");
+        display.SendMessage("type in \"passage\" to take passage \n");
         if (turnStack.size() > 1) {
             display.clearScreen();
-            display.SendMessage("type in \\\"help\\\" at any time to receive help \n");
-            display.SendMessage("type in \\â€�passage\\â€� to take passage \n");
+            display.SendMessage("type in \"help\" at any time to receive help \n");
+            display.SendMessage("type in \"passage\" to take passage \n");
         }
         display.SendMessage(turnStack.peek().GetPlayer().GetPlayerName() + " its your turn, you are "
                             + turnStack.peek().GetPlayer().GetCharacterName());
@@ -405,15 +405,16 @@ public class Game {
             } else {
                 display.SendMessage("Input the card type that you are prompted for\n"
                                     + "Type \"characters\" to see a list of all characters\n"
-                                    + "Type \"weapons\" to see a list of weapons\n" + "Type \"rooms\" to see a list of rooms\n");
+                                    + "Type \"weapons\" to see a list of weapons\n" 
+                                    + "Type \"rooms\" to see a list of rooms\n");
             }
         } else {
             
             display.SendMessage("type in a name then press enter or return to add it to the game\r\n" +
-                                "type in \\\"players\\\" to see who is currently in the game\r\n" +
-                                "type in \\\"characters\\\" to see unclaimed characters\r\n" + 
-                                "if you have entered everyone's name type \\\"done\\\" to start the game\r\n" + 
-                                "type in \\\"#exit\\\" to abort the game\r\n" + 
+                                "type in \"players\" to see who is currently in the game\r\n" +
+                                "type in \"characters\" to see unclaimed characters\r\n" + 
+                                "if you have entered everyone's name type \"done\" to start the game\r\n" + 
+                                "type in \"#exit\" to abort the game\r\n" + 
                                 "you must have at least 2 players to play");
             
         }

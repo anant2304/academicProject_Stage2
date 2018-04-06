@@ -95,7 +95,7 @@ class PlayerSignIn
             display.SendMessage("the character entered is not recognised\n");
         }
         else if(players.size() >= 6) {
-            display.SendMessage("You may only have up to six players\\nEnter \\\"done\\\" to start the game\n");
+            display.SendMessage("You may only have up to six players\nEnter \"done\" to start the game\n");
         }
         else if(Game.GetCharacter(playerEnteries[1]).HasPlayer()) {
             display.SendMessage("Someone is already playing " + playerEnteries[1]);
