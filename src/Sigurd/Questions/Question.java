@@ -41,7 +41,7 @@ public class Question extends AbstractQuestion {
     @Override
     public String toString()
     {
-        return asker + " aksked if it was " + 
+        return asker + " asked if it was " + 
                 character.getName() + " in the " + 
                 room.getName() + " with the " + 
                 weapon.getName();
