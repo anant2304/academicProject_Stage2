@@ -56,6 +56,9 @@ public abstract class AbstractQuestion {
     public void Commands(String command) {
         boolean helperCommand = true;
         switch (command) {
+        case "help":
+            DisplayHelp();
+            break;
         case "characters":
             Game.GetDisplay().SendMessage("The possible characters are:");
             PrintNames(Reasource.GetCharacterNames());
@@ -81,6 +84,14 @@ public abstract class AbstractQuestion {
         }
         if (IsDoneAsking() == false)
             DisplayInputPrompt();
+    }
+
+    private void DisplayHelp() {
+
+        Game.GetDisplay().SendMessage("Input the card type that you are prompted for\n"
+                + "Type \"characters\" to see a list of all characters\n"
+                + "Type \"weapons\" to see a list of weapons\n" 
+                + "Type \"rooms\" to see a list of rooms\n");
     }
 
     private void TakeCardInput(String command) {

@@ -50,11 +50,23 @@ class PlayerSignIn
             case "characters" :
                 CheckCharactersLeft();
                 break;
+            case "help":
+                DisplayHelp();
+                break;
             default :
                 addPlayer(command);
         }
     }
     
+    private void DisplayHelp() {
+        display.SendMessage("type in a pair of names then press enter or return to add it to the game\r\n" +
+                "type in \"players\" to see who is currently in the game\r\n" +
+                "type in \"characters\" to see unclaimed characters\r\n" +
+                "if you have entered everyone's name type \"done\" to start the game\r\n" +
+                "type in \"#exit\" to abort the game\r\n" +
+                "you must have at least 2 players to play");
+    }
+
     void FinishSignIn() {
         if(players.size() < 2)
             display.SendMessage("you must have at least 2 players to play\n");
@@ -104,7 +116,7 @@ class PlayerSignIn
             PlayerObject p = Game.GetCharacter(playerEnteries[1]);
             players.add(new Player(playerEnteries[0] ,p));
             playerCount++;
-            display.SendMessage(playerEnteries[0] + " Is playing " + playerEnteries[1]);	
+            display.SendMessage(playerEnteries[0] + " is playing " + playerEnteries[1]);	
             return;
         }
         display.SendMessage("Please enter in the form \n[Player Name] [Character Name]\n");

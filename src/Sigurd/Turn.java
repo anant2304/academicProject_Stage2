@@ -16,15 +16,15 @@ public class Turn {
     private Player turnPlayer;
     private PlayerObject turnPlayerObject;
     private static final Set<String> MOVE_DIRECTIONS = new HashSet<String>(
-                           Arrays.asList(new String[] { "u", "d", "l", "r" }));
-    
+            Arrays.asList(new String[] { "u", "d", "l", "r" }));
+
     private boolean canRoll;
     private boolean hasRolled;
     private int stepsLeft;
     private boolean hasEneteredRoom;
     private Question turnQuestion;
     private Assertion turnAssertion;
-    
+
     public Turn(Player player, Iterable<Player> allPlayers) {
         stepsLeft = 0;
         turnPlayer = player;
@@ -34,69 +34,86 @@ public class Turn {
         hasRolled = false;
         turnQuestion = new Question(player, allPlayers);
         turnAssertion = new Assertion(player);
-        if(turnPlayerObject.HasMovedAfterLastTurn())
+        if (turnPlayerObject.HasMovedAfterLastTurn())
             turnQuestion.SetCanAsk();
     }
-    
+
     /**
      * Do an action based on a sting input.
      *
      * @param command
      */
     public void Commands(String command) {
-        
+
         DisplayMessage(command);
-                
-        if(turnAssertion.IsActive())
-        	turnAssertion.Commands(command);
-        
+
+        if (turnAssertion.IsActive())
+            turnAssertion.Commands(command);
+
         // If the player is asking a question, pass on the input
         else if (turnQuestion.IsActive())
             turnQuestion.Commands(command);
-        
+
         // If the player is in a room, check if the input was a number.
         else if (turnPlayerObject.IsInRoom() && command.length() == 1 && Character.isDigit(command.toCharArray()[0]))
             MoveOutOfRoom(Integer.parseInt(command));
-        
+
         // Check if the input is a movable direction.
         else if (MOVE_DIRECTIONS.contains(command))
             MoveInDirection(command);
-        
+
         else {
-            
+
             switch (command) {
-                case "quit": // Quit the game
-                    System.exit(0);
-                    break;
-                case "done":
-                    EndTurn();
-                    break;
-                case "roll":
-                    RollDice();
-                    break;
-                case "passage":
-                    MoveThroughPassage();
-                    break;
-                case "question":
-                    StartAskingQuestion();
-                    break;
-                case "notes":
-                    DisplayMessage(turnPlayer.GetNotes());
-                    break;
-                case "cheat":
-                    DisplayMessage("You're not allowed to cheat.\n" + "Type #cheat if you want to ruin all the fun.");
-                    break;
-                case "accuse":
-                	if(turnAssertion.CanAsk() == true)// TODO Display an error if fails
-                		turnAssertion.Activate(); 
-                	break;
-                default:
-                    DisplayError("That is not a valid command.");
-                    break;
+            case "help":
+                DisplayHelp();
+                break;
+            case "roll":
+                RollDice();
+                break;
+            case "passage":
+                MoveThroughPassage();
+                break;
+            case "notes":
+                DisplayMessage(turnPlayer.GetNotes());
+                break;
+            case "question":
+                StartAskingQuestion();
+                break;
+            case "accuse":
+                if (turnAssertion.CanAsk() == true)// TODO Display an error if
+                                                   // fails
+                    turnAssertion.Activate();
+                break;
+            case "cheat":
+                DisplayMessage("You're not allowed to cheat.\n" + "Type #cheat if you want to ruin all the fun.");
+                break;
+            case "done":
+                Game.NextTurn();
+                break;
+            case "quit":
+                turnPlayer.KnockOutOfGame();
+                Game.NextTurn();
+                break;
+            default:
+                DisplayError("That is not a valid command.");
+                break;
             }
         }
     }
-    
+
+    private void DisplayHelp() {
+        DisplayMessage("Type in \"roll\" to roll your dice \n"
+                + "Type in u, d, l or r to move up, down, left, or right respectively \n"
+                + "If you are in a room at the start of your turn, after "
+                + "rolling type the number corresponding to an exit to leave "
+                + "or type \"passage\" to use a secret passage\n" + "Type \"notes\" to see the cards that you own\n"
+                + "If you have just entered a room, type in \"question\" to question the other players"
+                + "If you have just entered the basement, type in \"accuse\" to try to solve the murder"
+                + "Type in \"done\" to end your turn \n" + "Type in \"quit\" to leave the game \n"
+                + "Type in \"#help\" to see cheat commands\n");
+    }
+
     private void MoveInDirection(String dir) {
         if (canRoll) {
             DisplayError("You need to roll the dice before you can move.\n");
@@ -116,24 +133,24 @@ public class Turn {
         }
         Coordinates positionChange;
         switch (dir) {
-            case "u":
-                positionChange = Coordinates.UP;
-                break;
-            case "d":
-                positionChange = Coordinates.DOWN;
-                break;
-            case "l":
-                positionChange = Coordinates.LEFT;
-                break;
-            case "r":
-                positionChange = Coordinates.RIGHT;
-                break;
-            default:
-                throw new IllegalArgumentException("Move dir must be a string in the set {u, d, l, r}.\n");
+        case "u":
+            positionChange = Coordinates.UP;
+            break;
+        case "d":
+            positionChange = Coordinates.DOWN;
+            break;
+        case "l":
+            positionChange = Coordinates.LEFT;
+            break;
+        case "r":
+            positionChange = Coordinates.RIGHT;
+            break;
+        default:
+            throw new IllegalArgumentException("Move dir must be a string in the set {u, d, l, r}.\n");
         }
-        
+
         Coordinates movingToCo = turnPlayerObject.GetCoordinates().add(positionChange);
-        
+
         if (Game.GetBoard().IsPositionMovable(turnPlayerObject.GetCoordinates(), movingToCo)) {
             if (Game.GetBoard().IsDoor(movingToCo)) {
                 EnterRoom(Game.GetBoard().GetDoorRoom(movingToCo));
@@ -149,30 +166,29 @@ public class Turn {
             DisplayError(turnPlayer + " cannot move in direction " + dir);
         }
     }
-    
-    private void EnterRoom(Room r)
-    {
+
+    private void EnterRoom(Room r) {
         turnPlayerObject.MoveToRoom(r);
         hasEneteredRoom = true;
         DisplayMessage(turnPlayer + " entered the " + turnPlayerObject.GetRoom().GetName());
-        
-        if(r.GetName().equals(Reasource.BASEMENTNAME))
+
+        if (r.GetName().equals(Reasource.BASEMENTNAME))
             turnAssertion.SetCanAsk();
         else
             turnQuestion.SetCanAsk();
     }
-    
+
     private void MoveOutOfRoom(int exit) {
         PlayerObject playerObject = turnPlayer.GetPlayerObject();
-        
+
         if (hasEneteredRoom)
             DisplayError("You have already entered a room on this turn.\n");
         else if (hasRolled == false)
             DisplayError("You need to roll the dice before you can move.\n");
-        
+
         else if (exit < 1 || playerObject.GetRoom().GetDoors().length < exit)
             DisplayError("Please enter a valid door number\n");
-        
+
         else {
             Room playerRoom = playerObject.GetRoom();
             playerObject.LeaveRoom();
@@ -183,9 +199,9 @@ public class Turn {
             DisplayMessage(turnPlayer + " has " + stepsLeft + " steps left to move.");
         }
     }
-    
+
     private void MoveThroughPassage() {
-        
+
         if (turnPlayerObject.IsInRoom() == false) {
             DisplayError("You cannot take a passage while not in a room\n");
         } else if (turnPlayerObject.GetRoom().HasPassage() == false) {
@@ -201,20 +217,20 @@ public class Turn {
             turnQuestion.SetCanAsk();
         }
     }
-    
+
     private void StartAskingQuestion() {
-        if(turnPlayerObject.IsInRoom() == false)
+        if (turnPlayerObject.IsInRoom() == false)
             DisplayError("You need to be in a room to ask a question.");
         else if (turnQuestion.HasBeenAsked())
             DisplayError("You have allready asked a question this turn");
         else if (turnQuestion.CanAsk() == false)
             DisplayError("You can only ask a question if you are in a room that you did not enter on your last turn");
-        else if(turnQuestion.IsActive())
+        else if (turnQuestion.IsActive())
             DisplayError("You are currently asking a question.");
         else
             turnQuestion.StartAskingQuestion(turnPlayerObject.GetRoom());
     }
-    
+
     private void RollDice() {
         if (hasRolled) {
             DisplayError("You have already rolled your dice\n");
@@ -225,45 +241,38 @@ public class Turn {
             return;
         }
         int d1, d2;
-        
+
         Random rand = new Random();
         d1 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
         // numbers for the die results
         d2 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
         // numbers for the die results
         stepsLeft = d1 + d2;
-        Game.GetDisplay().SendMessage("Die 1 gives: " + d1 + "\n" + "Die 2 gives: " + d2 + "\n" + turnPlayer
-                                      + " gets " + stepsLeft + " moves" + "\n");
-        
+        Game.GetDisplay().SendMessage("Die 1 gives: " + d1 + "\n" + "Die 2 gives: " + d2 + "\n" + turnPlayer + " gets "
+                + stepsLeft + " moves" + "\n");
+
         canRoll = false;
         hasRolled = true;
     }
-    
-    private void EndTurn() {
-        Game.GetDisplay().SendMessage("Turn Over\n");
-        Game.NextTurn();
-    }
-    
+
     public Player GetPlayer() {
         return turnPlayer;
     }
-    
+
     public boolean CanLeaveRoom() {
         return (hasEneteredRoom == false && turnPlayerObject.IsInRoom());
     }
-    
-    public boolean IsAskingQuestion()
-    {
+
+    public boolean IsAskingQuestion() {
         // TODO look at this after question is finished
         return turnQuestion.IsActive() && !turnQuestion.HasBeenAsked();
-    }    
-    
-    public boolean IsRespondingToQuestion()
-    {
+    }
+
+    public boolean IsRespondingToQuestion() {
         // TODO look at this after question is finished
         return turnQuestion.IsActive() && turnQuestion.IsDoneAsking();
     }
-    
+
     /**
      * Displays a message to the display panel. Should potentially be moved to
      * the Game class.
@@ -271,7 +280,7 @@ public class Turn {
     private void DisplayMessage(String string) {
         Game.GetDisplay().SendMessage(string);
     }
-    
+
     /**
      * Displays an error to the display panel. Should potentially be moved to
      * the Game class.
@@ -279,7 +288,7 @@ public class Turn {
     private void DisplayError(String string) {
         Game.GetDisplay().SendError(string);
     }
-    
+
     /**
      * @Summary sets the number of remaing steps in this turn to 100, to be used
      *          for debuing

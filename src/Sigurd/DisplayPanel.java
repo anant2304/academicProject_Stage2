@@ -5,13 +5,7 @@ import java.io.*;
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.*;
-import java.awt.Color;
-import javax.swing.JPanel;
 import javax.swing.text.*;
-import javax.swing.border.Border;
-import javax.swing.BorderFactory;
-import javax.swing.text.Style;
 /**
  * Panel that displays inputs back to the user.
  * @author Anant Shaw
@@ -27,7 +21,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     SimpleAttributeSet set=new SimpleAttributeSet();
     StyledDocument text1=tpane.getStyledDocument();
     Style style;
-    List<String> qaList = new ArrayList<String>();
+    List<String> logList = new ArrayList<String>();
     
     public DisplayPanel() //constructor to set the display panel
     {
@@ -99,9 +93,9 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     {
         tpane.setText("");
     }
-    public void log(String str1)
+    public void log(String logMessage)
     {
-        qaList.add(str1);
+        logList.add(logMessage);
     }
     
 }

@@ -9,7 +9,6 @@ import javax.swing.*;
 import Cards.*;
 import Cards.Deck;
 import Sigurd.BoardObjects.*;
-import javafx.print.PageLayout;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -141,7 +140,7 @@ public class Game {
 
         // Roll again of more than one player got the max roll
         if (count == 1) {
-            display.SendMessage(playerSign.players.get(pos) + " got the highest roll of " + maxRoll + " \n");
+            display.SendMessage(playerSign.players.get(pos) + " got the highest roll of " + maxRoll);
             playerSign.currPossition = (playerSign.playerCount + pos - 1) % playerSign.playerCount;
         } else {
             display.SendMessage("Rolling again for tied players: \n");
@@ -255,12 +254,10 @@ public class Game {
             board.SetRoom(p.GetPlayerObject().GetRoom());
         board.GetBoardPanel().repaint();
         
-        display.SendMessage("type in \"help\" at any time to receive help \n");
-        display.SendMessage("type in \"passage\" to take passage \n");
+        display.SendMessage("type in \"help\" at any time to receive help");
         if (turnStack.size() > 1) {
             display.clearScreen();
-            display.SendMessage("type in \"help\" at any time to receive help \n");
-            display.SendMessage("type in \"passage\" to take passage \n");
+            display.SendMessage("type in \"help\" at any time to receive help");
         }
         display.SendMessage(turnStack.peek().GetPlayer().GetPlayerName() + " its your turn, you are "
                 + turnStack.peek().GetPlayer().GetCharacterName());
@@ -342,15 +339,12 @@ public class Game {
 
         if (IsGameOver() == true)
             System.exit(0);
-        else if (command.equals("")) {}// ignore empty strings
         else if (command.charAt(0) == '#') {
             TestCommands(command);
-        } else if (command.equalsIgnoreCase("help")) {
-            DisplayHelp();
-        } else if (command.equalsIgnoreCase("log")) {
-            DisplayLog();
         } else if (isGameStarted() == false) {
             playerSign.Commands(command);
+        } else if (command.equalsIgnoreCase("log")) {
+            DisplayLog();
         } else {
             turnStack.peek().Commands(command);// commands in the turn class
             board.GetBoardPanel().repaint();
@@ -392,46 +386,11 @@ public class Game {
             break;
         }
     }
-
-    /**
-     * @Summary Dispalys a context sensitive help menu to the display pannel
-     */
-    private static void DisplayHelp() {
-        if (isGameStarted()) {
-            if (turnStack.peek().IsAskingQuestion()) {
-                display.SendMessage("Input the card type that you are prompted for\n"
-                        + "Type \"characters\" to see a list of all characters\n"
-                        + "Type \"weapons\" to see a list of weapons\n" + "Type \"rooms\" to see a list of rooms\n");
-
-            } else if (turnStack.peek().IsRespondingToQuestion()) {
-                display.SendMessage("Input the name of a card you own that was asked for\n"
-                        + "If you do not own any cards that were asked for, type \"done\"\n"
-                        + "Type \"notes\" to see the cards that you own\n"
-                        + "Type \"question\" if you want to see the question again");
-            } else {
-                display.SendMessage("type in \"roll\" to roll your dice \n"
-                        + "type in u, d, l or r to move up, down, left, or right respectively \n"
-                        + "if you are in a room at the start of your turn, after rolling type the number corresponding to an exit to leave \n"
-                        + "type in \"done\" to end your turn \n" + "type in \"quit\" to close down the game \n"
-                        + "type in \"#exit\" if something goes wrong \n"
-                        + "type in a name then press enter or return to add it to the game");
-            }
-        } else {
-            
-            display.SendMessage("type in a name then press enter or return to add it to the game\r\n" +
-                                "type in \"players\" to see who is currently in the game\r\n" +
-                                "type in \"characters\" to see unclaimed characters\r\n" +
-                                "if you have entered everyone's name type \"done\" to start the game\r\n" +
-                                "type in \"#exit\" to abort the game\r\n" +
-                                "you must have at least 2 players to play");
-            
-        }
-    }
     
     public static void DisplayLog()
     {
         display.SendMessage("The previous questions and answers were: ");
-        for(String s: display.qaList)
+        for(String s: display.logList)
         {
             display.SendMessage(s);
         }
