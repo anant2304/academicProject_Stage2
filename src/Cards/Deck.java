@@ -163,16 +163,6 @@ public class Deck {
     }
 
     public boolean CompareToEnvelope(Card character, Card weapon, Card room) {
-        Card[] envelope = GetEnvelope();
-        if (envelope[0].equals(character) == false) {
-            return false;
-        }
-        if (envelope[1].equals(weapon) == false) {
-            return false;
-        }
-        if (envelope[2].equals(room) == false) {
-            return false;
-        }
-        return false;
+        return envelope[0].equals(character) && envelope[1].equals(weapon) && envelope[2].equals(room);
     }
 }

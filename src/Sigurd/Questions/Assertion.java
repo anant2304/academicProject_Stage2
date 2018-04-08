@@ -12,13 +12,17 @@ public class Assertion extends AbstractQuestion {
 	@Override
 	protected void DoneWithInput() {
 		if(Game.CompareToEnvelope(character, weapon, room) == true) {
-			Game.IsGameOver();
+            Game.GetDisplay().SendMessage("Correct Guess, you win the game");
+			Game.EndGame();
 		}
 		else {
 			asker.KnockOutOfGame();
 			Game.GetDisplay().SendMessage("Incorecct Guess, you are out of the game");
-			Deactivate();
+            Game.GetDisplay().log(asker + " made an incorrect accusation\n"
+                    + asker + " though it was " + character.getName() 
+                    + " in the " + room.getName() + " with the " + weapon.getName());
 		}
+        Deactivate();
 	}
 
 	public void Activate() {

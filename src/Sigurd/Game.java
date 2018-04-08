@@ -162,7 +162,7 @@ public class Game {
         }
     }
 
-    private static void EndGame() {
+    public static void EndGame() {
         isGameOver = true;
         display.SendMessage("The Game is over\nThe winner is : " + turnStack.peek().GetPlayer());
         display.SendMessage("enter any command to exit the game");
@@ -339,7 +339,7 @@ public class Game {
 
         if (IsGameOver() == true)
             System.exit(0);
-        else if (command.charAt(0) == '#') {
+        else if (command.length() > 0 && command.charAt(0) == '#') {
             TestCommands(command);
         } else if (isGameStarted() == false) {
             playerSign.Commands(command);

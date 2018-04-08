@@ -81,9 +81,7 @@ public class Turn {
                 StartAskingQuestion();
                 break;
             case "accuse":
-                if (turnAssertion.CanAsk() == true)// TODO Display an error if
-                                                   // fails
-                    turnAssertion.Activate();
+                MakeAccuastion();
                 break;
             case "cheat":
                 DisplayMessage("You're not allowed to cheat.\n" + "Type #cheat if you want to ruin all the fun.");
@@ -103,15 +101,15 @@ public class Turn {
     }
 
     private void DisplayHelp() {
-        DisplayMessage("Type in \"roll\" to roll your dice \n"
-                + "Type in u, d, l or r to move up, down, left, or right respectively \n"
+        DisplayMessage("Type \"roll\" to roll your dice \n"
+                + "Type, d, l or r to move up, down, left, or right respectively \n"
                 + "If you are in a room at the start of your turn, after "
-                + "rolling type the number corresponding to an exit to leave "
+                + "rolling, type the number corresponding to an exit to leave, "
                 + "or type \"passage\" to use a secret passage\n" + "Type \"notes\" to see the cards that you own\n"
-                + "If you have just entered a room, type in \"question\" to question the other players"
-                + "If you have just entered the basement, type in \"accuse\" to try to solve the murder"
-                + "Type in \"done\" to end your turn \n" + "Type in \"quit\" to leave the game \n"
-                + "Type in \"#help\" to see cheat commands\n");
+                + "If you have just entered a room, type \"question\" to question the other players\n"
+                + "If you have just entered the basement, type \"accuse\" to try to solve the murder\n"
+                + "Type \"done\" to end your turn \n" + "Type \"quit\" to leave the game \n"
+                + "Type \"#help\" to see cheat commands\n");
     }
 
     private void MoveInDirection(String dir) {
@@ -227,8 +225,24 @@ public class Turn {
             DisplayError("You can only ask a question if you are in a room that you did not enter on your last turn");
         else if (turnQuestion.IsActive())
             DisplayError("You are currently asking a question.");
-        else
+        else {
             turnQuestion.StartAskingQuestion(turnPlayerObject.GetRoom());
+            canRoll = false;
+            stepsLeft = 0;
+        }
+    }
+
+
+    private void MakeAccuastion() {
+        if(turnAssertion.CanAsk() == false)
+            DisplayError("You can only make an accusation after you have entered the basement");
+        else if (turnAssertion.IsActive())
+            DisplayError("You are currently making an accusation.");
+        else {
+            turnAssertion.Activate();
+            canRoll = false;
+            stepsLeft = 0;
+        }
     }
 
     private void RollDice() {
@@ -261,16 +275,6 @@ public class Turn {
 
     public boolean CanLeaveRoom() {
         return (hasEneteredRoom == false && turnPlayerObject.IsInRoom());
-    }
-
-    public boolean IsAskingQuestion() {
-        // TODO look at this after question is finished
-        return turnQuestion.IsActive() && !turnQuestion.HasBeenAsked();
-    }
-
-    public boolean IsRespondingToQuestion() {
-        // TODO look at this after question is finished
-        return turnQuestion.IsActive() && turnQuestion.IsDoneAsking();
     }
 
     /**
