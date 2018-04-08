@@ -8,10 +8,10 @@ import java.awt.*;
 import javax.swing.text.*;
 /**
  * Panel that displays inputs back to the user.
- * @author Anant Shaw
  * Team: Sigurd
  * Student Numbers:
  * 16751195, 16202907, 16375246
+ * @author Anant Shaw
  */
 @SuppressWarnings("serial")
 public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itself
@@ -22,7 +22,6 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     StyledDocument styledDocument;
     Style style;
     List<String> logList;
-    private final int MAX_LINE_LENGTH = 40;
     
     public DisplayPanel() //constructor to set the display panel
     {
@@ -41,8 +40,8 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         textPane.setParagraphAttributes(attribureSet, true);
         textPane.setOpaque(true);
         textPane.setBackground(Color.gray);
-        DefaultCaret c=(DefaultCaret)textPane.getCaret();
-        c.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        ((DefaultCaret) textPane.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        
         scrollPane.setPreferredSize( new Dimension(363,632));
         add(scrollPane);
         
@@ -70,13 +69,10 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     
     public void SendMessage(String str)
     {
-        try
-        {
+        try{
             styledDocument.insertString(styledDocument.getLength(), str + "\n\n", style);
-        }
-        catch(Exception exe)
-        {
-            System.out.println(exe);
+        } catch(Exception exe){
+            exe.printStackTrace();
         }
     }
     
@@ -92,14 +88,15 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         SendMessage(str);
         StyleConstants.setForeground(style, Color.black);
     }
+    
     public void clearScreen()
     {
         textPane.setText("");
     }
+    
     public void log(String logMessage)
     {
         logList.add(logMessage);
     }
-    
 }
 

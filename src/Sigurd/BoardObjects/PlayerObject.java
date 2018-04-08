@@ -9,25 +9,19 @@ import Sigurd.Coordinates;
 import Sigurd.Room;
 
 /**
- * Players that are displayed to the screen.
- * 
- * @author Peter Major Team: Sigurd Student Numbers: 16751195, 16202907,
- *         16375246
+ * Objects on the screen that are controlled by players
+ * Also referred to as characters
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg, Peter Major
  */
 public class PlayerObject extends BoardObject {
 
     private boolean hasPlayer = false;
-    
     private boolean hasBeenMoved = false;
     
     
-    /**
-     * @Summary Creates a player represented on the board with a colored circle
-     * @param _x
-     * @param _y
-     * @param c
-     * @param _playerName
-     */
     public PlayerObject(Coordinates co, Color c, String _objectName) {
         super(co, (Image) null, _objectName);
 
@@ -47,8 +41,8 @@ public class PlayerObject extends BoardObject {
     
     public void SetPlayer()
     {
-        if(hasPlayer)
-            throw new IllegalStateException(GetObjectName() + " has a player");
+        if(HasPlayer())
+            throw new IllegalStateException(GetObjectName() + " allready has a player");
         hasPlayer = true;
     }
     
@@ -72,6 +66,6 @@ public class PlayerObject extends BoardObject {
      * moves the currently controlled player in the given direction
      */
     public void Move(Coordinates c) {
-        MoveTo(GetCoordinates().add(c));
+        MoveTo(GetCoordinates().Add(c));
     }
 }

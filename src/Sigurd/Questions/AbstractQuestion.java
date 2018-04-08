@@ -2,7 +2,13 @@ package Sigurd.Questions;
 
 import Cards.*;
 import Sigurd.*;
-
+/**
+ * Abstract superclass for questions and assertions
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg
+ */
 public abstract class AbstractQuestion {
 
     private boolean isActive;
@@ -27,8 +33,7 @@ public abstract class AbstractQuestion {
         return canAsk;
     }
     
-    public void SetCanAsk()
-    {
+    public void SetCanAsk() {
         canAsk = true;
     }
 
@@ -36,19 +41,19 @@ public abstract class AbstractQuestion {
         return isActive || IsDoneAsking();
     }
     
-    public boolean HasCharacter() {
+    protected boolean HasCharacter() {
         return character != null;
     }
     
-    public boolean HasWeapon() {
+    protected boolean HasWeapon() {
         return weapon != null;
     }
     
-    public boolean HasRoom() {
+    protected boolean HasRoom() {
         return room != null;
     }
     
-    public boolean IsDoneAsking()
+    protected boolean IsDoneAsking()
     {
         return HasRoom() && HasCharacter() && HasWeapon();
     }

@@ -1,15 +1,15 @@
 package Sigurd;
 
 /**
- * @author Adrian
- * 
- *  * Team: Sigurd
+ * Door position on the board
+ * Team: Sigurd
  * Student Numbers:
  * 16751195, 16202907, 16375246
- * */
+ * @author Adrian Wennberg
+ */
 
 public class Door extends Coordinates {
-    private Coordinates outside;
+    private Coordinates outsidePosition;
     private Room room;
 
     public Door(String s) {
@@ -20,23 +20,23 @@ public class Door extends Coordinates {
                     "Coordnate string must be of format \"dx,y\" " + "where d is a letter, and x and y are integers");
         switch (c) {
         case 'u':
-            outside = Coordinates.UP;
+            outsidePosition = Coordinates.UP;
             break;
         case 'd':
-            outside = Coordinates.DOWN;
+            outsidePosition = Coordinates.DOWN;
             break;
         case 'l':
-            outside = Coordinates.LEFT;
+            outsidePosition = Coordinates.LEFT;
             break;
         case 'r':
-            outside = Coordinates.RIGHT;
+            outsidePosition = Coordinates.RIGHT;
             break;
         default:
             throw new IllegalArgumentException(
                     "Coordnate string must be of format \"dx,y\" " + "where d is a letter, and x and y are integers");
         }
         
-        outside = outside.add(this);
+        outsidePosition = outsidePosition.Add(this);
     }
     
     public void SetRoom(Room r)
@@ -55,12 +55,6 @@ public class Door extends Coordinates {
     
     public Coordinates GetOutside()
     {
-        return outside;
+        return outsidePosition;
     }
-    
-    public boolean HasOutside(Coordinates co)
-    {
-        return (outside.getCol() == co.getCol() && outside.getRow() == co.getRow());
-    }
-
 }

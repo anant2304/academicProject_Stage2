@@ -2,12 +2,11 @@
 package Sigurd;
 
 /**
- * 
- * @author Adrian
- *
- *Team: Sigurd
+ * Coordinates on the board
+ * Team: Sigurd
  * Student Numbers:
  * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg
  */
 
 public class Coordinates {
@@ -24,18 +23,19 @@ public class Coordinates {
         this.col = col;
         this.row = row;
     }
+    
     /**
-     *  Constructor that takes in a string of the form "row,col".
+     * Constructor that takes in a string of the form "row,col" i.e. "3,4".
      */
     Coordinates(String s)
     {
-        String[] cooArray = s.trim().split(",");
-        if(cooArray.length != 2)
+        String[] coArray = s.trim().split(",");
+        if(coArray.length != 2)
             throw new IllegalArgumentException("Coordnate string must be of format x,y where x and y are ints");
        
         try {
-            col = Integer.parseInt(cooArray[0]);
-            row = Integer.parseInt(cooArray[1]);
+            col = Integer.parseInt(coArray[0]);
+            row = Integer.parseInt(coArray[1]);
         }
         catch(NumberFormatException e)
         {
@@ -43,18 +43,19 @@ public class Coordinates {
         }
     }
 
-    public Coordinates add(Coordinates coordinates) {
-        return new Coordinates(col + coordinates.getCol(), row + coordinates.getRow());
+    public Coordinates Add(Coordinates coordinates) {
+        return new Coordinates(col + coordinates.GetCol(), row + coordinates.GetRow());
     }
 
-    public int getRow() {
+    public int GetRow() {
         return row;
     }
 
-    public int getCol() {
+    public int GetCol() {
         return col;
     }
     
+    @Override
     public boolean equals(Object o)
     {
         if(o == null)
@@ -67,7 +68,8 @@ public class Coordinates {
         
         return (co.col == col && co.row == row); 
     }
-    
+
+    @Override
     public int hashCode()
     {
         return col * 30 + row;

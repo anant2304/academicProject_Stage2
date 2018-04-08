@@ -2,7 +2,13 @@ package Sigurd.Questions;
 
 import Sigurd.Game;
 import Sigurd.Player;
-
+/**
+ * Assertion or accusation that are made to win the game
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Peter Major
+ */
 public class Assertion extends AbstractQuestion {
 
 	public Assertion(Player p) {
@@ -17,10 +23,10 @@ public class Assertion extends AbstractQuestion {
 		}
 		else {
 			asker.KnockOutOfGame();
-			Game.GetDisplay().SendMessage("Incorecct Guess, you are out of the game"
+			Game.GetDisplay().SendMessage("Incorecct Guess, you are out of the game\n"
 					+ "Please enter done to finish your turn");
             Game.GetDisplay().log(asker + " made an incorrect accusation\n"
-                    + asker + " though it was " + character.getName() 
+                    + asker + " thought it was " + character.getName() 
                     + " in the " + room.getName() + " with the " + weapon.getName());
 		}
         Deactivate();

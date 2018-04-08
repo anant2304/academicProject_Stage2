@@ -9,8 +9,10 @@ import javax.swing.*;
 import Sigurd.BoardObjects.BoardObject;
 
 /**
- * @author Adrian Wennberg Team: Sigurd Student Numbers: 16751195, 16202907,
- *         16375246
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg
  */
 public class Board {
     private static final String BOARD_PATH = "/Layout.txt";
@@ -23,7 +25,6 @@ public class Board {
 
     /**
      * Testing the board display
-     * 
      * @param args
      */
     public static void main(String[] args) {
@@ -39,9 +40,6 @@ public class Board {
         frame.setVisible(true);
     }
 
-    /**
-     * Constructor to create the initial board.
-     */
     public Board() {
         boardObjectList = new LinkedList<>();
         panel = new BoardPanel();
@@ -87,7 +85,7 @@ public class Board {
                 
                 String[] lineParts = lines.get(roomIndex).split("\\s+");
                 if(lineParts.length != 3)
-                    throw new RuntimeException("Invalid number of parts in room data line.");
+                    throw new IllegalStateException("Invalid number of parts in room data line.");
                 
 
                 String[] roomNameParts = lineParts[0].split("_");
@@ -132,9 +130,9 @@ public class Board {
 
     public boolean IsPositionMovable(Coordinates current, Coordinates movingTo) 
     {
-        boolean validX = movingTo.getCol() >= 0 && movingTo.getCol() < boardArray.length;
-        boolean validY = movingTo.getRow() >= 0 && movingTo.getRow() < boardArray[0].length;
-        return validX && validY && (boardArray[movingTo.getCol()][movingTo.getRow()] || (IsDoor(movingTo) && doorPositions.get(movingTo).HasOutside(current)));
+        boolean validX = movingTo.GetCol() >= 0 && movingTo.GetCol() < boardArray.length;
+        boolean validY = movingTo.GetRow() >= 0 && movingTo.GetRow() < boardArray[0].length;
+        return validX && validY && (boardArray[movingTo.GetCol()][movingTo.GetRow()] || (IsDoor(movingTo) && doorPositions.get(movingTo).GetOutside().equals(current)));
     }
 
     public boolean IsDoor(Coordinates co) 
@@ -144,6 +142,8 @@ public class Board {
 
     public Room GetDoorRoom(Coordinates co) 
     {
+        if(IsDoor(co) == false)
+            throw new IllegalArgumentException("Coordinates is not a door.");
         return doorPositions.get(co).GetRoom();
     }
 
@@ -171,9 +171,7 @@ public class Board {
 
     /**
      * A JPanel that displays the game board.
-     * 
      * @author Adrian Wennberg
-     * 
      */
     @SuppressWarnings("serial")
     private class BoardPanel extends JPanel {
@@ -225,8 +223,8 @@ public class Board {
             g2d.translate(CORNER_X, CORNER_Y);
             for (BoardObject m : boardObjectList) {
                 if (m.GetImage() != null)
-                    g2d.drawImage(m.GetImage(), m.GetCoordinates().getCol() * CELL_SIZE,
-                            m.GetCoordinates().getRow() * CELL_SIZE, this);
+                    g2d.drawImage(m.GetImage(), m.GetCoordinates().GetCol() * CELL_SIZE,
+                            m.GetCoordinates().GetRow() * CELL_SIZE, this);
                 else {
                     System.err.println("WARNNING : No image found for : " + m.GetObjectName());
                 }
@@ -242,7 +240,7 @@ public class Board {
             Door[] doors = r.GetDoors();
             for (int i = 0; i < doors.length; i++) {
                 Coordinates outsideDoor = doors[i].GetOutside();
-                g2d.drawString(" " + (i + 1), outsideDoor.getCol() * CELL_SIZE, (1 + outsideDoor.getRow()) * CELL_SIZE);
+                g2d.drawString(" " + (i + 1), outsideDoor.GetCol() * CELL_SIZE, (1 + outsideDoor.GetRow()) * CELL_SIZE);
             }
         }
     }

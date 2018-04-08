@@ -6,25 +6,24 @@ import Sigurd.BoardObjects.PlayerObject;
 import java.util.Collection;
 
 /**
- * @author Anant 
- * 
+ * Questions that are asked to the other players in the game
  * Team: Sigurd
  * Student Numbers:
- * 16751195, 16202907, 16375246 
+ * 16751195, 16202907, 16375246
+ * @author Anant Shaw
  */
 
-/*  Class PlayerSignIn  */
 class PlayerSignIn
 {
     Vector<Player> players = new Vector<Player>();
     DisplayPanel display;
-    int currPossition;
+    int currentPlayer;
     public int playerCount;
     
     public PlayerSignIn()
     {
         display= Game.GetDisplay();
-        currPossition = 0;
+        currentPlayer = 0;
     }
     
     public Vector<Player> getPlayers()
@@ -34,7 +33,7 @@ class PlayerSignIn
     
     public Player NextPlayer()
     {
-        return players.get(currPossition = (currPossition + 1) % players.size());
+        return players.get(currentPlayer = (currentPlayer + 1) % players.size());
     }
     
     public void Commands(String command)
@@ -69,7 +68,7 @@ class PlayerSignIn
 
     void FinishSignIn() {
         if(players.size() < 2)
-            display.SendError("you must have at least 2 players to play");
+            display.SendError("You must have at least 2 players to play");
         else
             Game.StartGame();
     }
@@ -104,7 +103,7 @@ class PlayerSignIn
             display.SendError("Incorrect number of elements entered");
         }
         else if(Game.DoesCharacterExist(playerEnteries[1]) == false) {
-            display.SendError("the character entered is not recognised");
+            display.SendError("Yhe character entered is not recognised");
         }
         else if(players.size() >= 6) {
             display.SendError("You may only have up to six players\nEnter \"done\" to start the game");

@@ -14,10 +14,11 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * Servers an an entry point and ties the different classes together.
+ * Servers an an entry point and ties the game together. 
+ * Team: Sigurd Student
+ * Numbers: 16751195, 16202907, 16375246
  * 
- * @author Peter Major Team: Sigurd Student Numbers: 16751195, 16202907,
- *         16375246
+ * @author Adiran Wennberg, Peter Major
  */
 public class Game {
     private static CommandPanel command;
@@ -25,7 +26,7 @@ public class Game {
     private static DisplayPanel display;
     private static PlayerSignIn playerSign;
     private static Deck deck;
-    private static Stack<Turn> turnStack = new Stack<Turn>();
+    private static Stack<Turn> turnStack;
 
     private static Map<String, PlayerObject> characterMap = new HashMap<String, PlayerObject>();
     private static Map<String, WeaponObject> weaponMap = new HashMap<String, WeaponObject>();
@@ -33,35 +34,23 @@ public class Game {
 
     static Random rand = new Random(System.currentTimeMillis());
 
-    /**
-     * @Summary the main that runs the game
-     */
     public static void main(String[] args) {
-        command = new CommandPanel();
-        display = new DisplayPanel();
-        board = new Board();
-        playerSign = new PlayerSignIn();
-        isGameOver = false;
-
         CreateWindow();
         PlacePlayers();
         PlaceWeapons();
+
+        playerSign = new PlayerSignIn();
+        turnStack = new Stack<Turn>();
+        deck = new Deck();
+        isGameOver = false;
+
         board.GetBoardPanel().repaint();
 
-        deck = new Deck();// must come after placeing players and weaponss
+        command.TakeFocus();
 
-        command.TakeFocus();// would be in create window but some issue causes
-        // it to work only half the time, here it always
-        // works
-
-        display.SendMessage("Enter the names of the players in the form [Player Name] [Character Name] "
-                + "\nWhen you are finished type in \"done\" to start the game" + "\n"
+        display.SendMessage("Enter the names of the players in the form [Player Name] [Character Name]\n"
+                + "When you are finished type in \"done\" to start the game\n"
                 + "Type \"help\" at any time to receive help\n");
-
-        // the game now waits for input, first that input is passed to the
-        // PlayerSignIn class,
-        // after the game has started it is then passed to each respective turn
-        // object as they are taken
     }
 
     /**
@@ -76,18 +65,21 @@ public class Game {
     @SuppressWarnings("static-access")
     private static void CreateWindow() {
         JFrame window = new JFrame();
+        window.setTitle("Cluedo SIGURD!");
         window.setDefaultCloseOperation(window.EXIT_ON_CLOSE);
         window.setLayout(new BorderLayout());
 
+        command = new CommandPanel();
+        display = new DisplayPanel();
+        board = new Board();
         window.add(command, BorderLayout.SOUTH);
         window.add(board.GetBoardPanel(), BorderLayout.CENTER);
         window.add(display, BorderLayout.EAST);
 
-        window.setResizable(false); // makes the frame non-resizable
+        window.setResizable(false);
         window.pack();
         window.setVisible(true);
 
-        // sets the currser to the command line when the game window is opened
         window.addWindowListener(new WindowAdapter() {
             public void windowOpened(WindowEvent e) {
                 command.TakeFocus();
@@ -96,9 +88,90 @@ public class Game {
     }
 
     /**
-     * @Summary called by the PlayerSignIn class to progress the game into a
-     *          playable state
+     * @Summary creates and places all the players onto the board
      */
+    private static void PlacePlayers() {
+        for (String s : Reasource.GetCharacterData()) {
+            String[] temp = s.split("\\s+");
+            PlayerObject character = new PlayerObject(new Coordinates(temp[1]), Color.decode(temp[2]), temp[0]);
+
+            characterMap.put(character.GetObjectName(), character);
+            board.AddMovable(character);
+        }
+    }
+
+    /**
+     * @Summary creates and places all weapons onto the board
+     */
+    private static void PlaceWeapons() {
+        for (String s : Reasource.GetWeaponData()) {
+            String[] temp = s.split("\\s+");
+            WeaponObject weapon = new WeaponObject(new Coordinates(temp[1].trim()), temp[0].charAt(0), temp[0].trim());
+
+            weaponMap.put(weapon.GetObjectName(), weapon);
+            board.AddMovable(weapon);
+        }
+
+        Room[] rooms = board.GetRooms();
+        int i = 0;
+
+        for (Entry<String, WeaponObject> e : weaponMap.entrySet()) {
+            e.getValue().MoveToRoom(rooms[i++]);
+            if (i % 3 == 2)
+                i++;
+        }
+    }
+
+    public static void Commands(String command) {
+
+        if (IsGameOver() == true)
+            System.exit(0);
+        else if (command.length() > 0 && command.charAt(0) == '#') {
+            TestCommands(command);
+        } else if (HasGameStarted() == false) {
+            playerSign.Commands(command);
+        } else if (command.equalsIgnoreCase("log")) {
+            DisplayLog();
+        } else {
+            turnStack.peek().Commands(command);// commands in the turn class
+            board.GetBoardPanel().repaint();
+        }
+    }
+
+    private static void TestCommands(String command) {
+        display.SendDevMessage(command);
+        switch (command) {
+        case "#exit":
+            System.exit(0);
+            break;
+        case "#steps100":
+            turnStack.peek().SetStepsLeft(100);
+            break;
+        case "#cheat":
+            Card[] envelope = deck.GetEnvelope();
+            display.SendMessage("The murder was committed by: " + envelope[0].getName() + "\nWith the weapon: "
+                    + envelope[1].getName() + "\nIn the room: " + envelope[2].getName());
+            break;
+        case "#end":
+            EndGame();
+            break;
+        case "#knockout":
+            if (HasGameStarted() == true) {
+                turnStack.peek().GetPlayer().KnockOutOfGame();
+                display.SendMessage("knockout : " + turnStack.peek().GetPlayer().GetPlayerName());
+            }
+            break;
+        case "#help":
+            display.SendMessage("These are cheat/testing comands, not to be used in a normal game\n"
+                    + "type in \"#steps100\" to set your current steps to 100\n"
+                    + "type in \"#cheat\" to inspect the murder envelope\n" + "type in \"#exit\" to quit the game\n ");
+            break;
+        default:
+            display.SendMessage("no sutch dev command");
+            break;
+        }
+    }
+
     public static void StartGame() {
         display.clearScreen();
         display.SendMessage("Rolling for each player:");
@@ -141,7 +214,7 @@ public class Game {
         // Roll again of more than one player got the max roll
         if (count == 1) {
             display.SendMessage(playerSign.players.get(pos) + " got the highest roll of " + maxRoll + "\n");
-            playerSign.currPossition = (playerSign.playerCount + pos - 1) % playerSign.playerCount;
+            playerSign.currentPlayer = (playerSign.playerCount + pos - 1) % playerSign.playerCount;
         } else {
             display.SendMessage("Rolling again for tied players:");
             RollToStart(rolls);
@@ -164,8 +237,9 @@ public class Game {
 
     public static void EndGame() {
         isGameOver = true;
-        display.SendMessage("The Game is over\nThe winner is : " + turnStack.peek().GetPlayer());
-        display.SendMessage("enter any command to exit the game");
+        display.SendMessage("The Game is over\n"
+                + "The winner is : " + turnStack.peek().GetPlayer());
+        display.SendMessage("Enter any command to exit the game");
     }
 
     private static boolean IsLastPlayer() {
@@ -178,50 +252,9 @@ public class Game {
     }
 
     /**
-     * @Summary creates and places all the players onto the board
-     */
-    private static void PlacePlayers() {
-        for (String s : Reasource.GetCharacterData()) {
-            PlayerObject character = ParsePlayerLine(s);
-            characterMap.put(character.GetObjectName(), character);
-            board.AddMovable(character);
-        }
-    }
-
-    private static PlayerObject ParsePlayerLine(String line) {
-        String[] temp = line.split("\\s+");
-
-        return new PlayerObject(new Coordinates(temp[1]), Color.decode(temp[2]), temp[0]);
-    }
-
-    /**
-     * @Summary creates and places all weapons onto the board
-     */
-    private static void PlaceWeapons() {
-        for (String s : Reasource.GetWeaponData()) {
-            WeaponObject weapon = ParseWeaponLine(s);
-            weaponMap.put(weapon.GetObjectName(), weapon);
-            board.AddMovable(weapon);
-        }
-        Room[] rooms = board.GetRooms();
-        int i = 0;
-        for (Entry<String, WeaponObject> e : weaponMap.entrySet()) {
-            e.getValue().MoveToRoom(rooms[i++]);
-            if (i % 3 == 2)
-                i++;
-        }
-    }
-
-    public static WeaponObject ParseWeaponLine(String line) {
-        String[] temp = line.split("\\s+");
-
-        return new WeaponObject(new Coordinates(temp[1].trim()), temp[0].charAt(0), temp[0].trim());
-    }
-
-    /**
      * @Summary returns whether there has been a turn yet
      */
-    public static boolean isGameStarted() {
+    public static boolean HasGameStarted() {
         return (!turnStack.isEmpty());
     }
 
@@ -230,20 +263,17 @@ public class Game {
      */
     public static void NextTurn() {
         Player temp;
-        do {
-            temp = playerSign.NextPlayer();
-            if (temp.IsOutOfGame() == false)
-                NewTurn(temp);
-            else
-                display.SendMessage(temp.GetPlayerName() + " is out of the game");
-        } while (temp.IsOutOfGame());
+        while ((temp = playerSign.NextPlayer()).IsOutOfGame())
+            display.SendMessage(temp.GetPlayerName() + " is out of the game");
+
+        NewTurn(temp);
     }
 
     /**
      * @Summary ends the last turn and starts a new one
      */
     public static void NewTurn(Player p) {
-        
+
         Turn newTurn = turnStack.push(new Turn(p, playerSign.players));
         if (IsLastPlayer()) {
             EndGame();
@@ -253,7 +283,7 @@ public class Game {
         if (newTurn.CanLeaveRoom())
             board.SetRoom(p.GetPlayerObject().GetRoom());
         board.GetBoardPanel().repaint();
-        
+
         display.SendMessage("type in \"help\" at any time to receive help");
         if (turnStack.size() > 1) {
             display.clearScreen();
@@ -261,13 +291,6 @@ public class Game {
         }
         display.SendMessage(turnStack.peek().GetPlayer().GetPlayerName() + " its your turn, you are "
                 + turnStack.peek().GetPlayer().GetCharacterName());
-    }
-
-    /**
-     * @Summary returns a reference to the current turn
-     */
-    public static Turn CurrentTurn() {
-        return turnStack.peek();
     }
 
     public static boolean DoesCharacterExist(String name) {
@@ -298,18 +321,10 @@ public class Game {
         return weaponMap.values();
     }
 
-    /**
-     * @Summary returns the dispaly panel
-     * @return
-     */
     public static DisplayPanel GetDisplay() {
         return display;
     }
 
-    /**
-     * @summary returns the board, witch you can get the board panel from
-     * @return
-     */
     public static Board GetBoard() {
         return board;
     }
@@ -330,68 +345,9 @@ public class Game {
         return deck.CompareToEnvelope(character, weapon, room);
     }
 
-    /**
-     * @Summary Takes a command and passes it to the correct command method in
-     *          some class
-     */
-
-    public static void Commands(String command) {
-
-        if (IsGameOver() == true)
-            System.exit(0);
-        else if (command.length() > 0 && command.charAt(0) == '#') {
-            TestCommands(command);
-        } else if (isGameStarted() == false) {
-            playerSign.Commands(command);
-        } else if (command.equalsIgnoreCase("log")) {
-            DisplayLog();
-        } else {
-            turnStack.peek().Commands(command);// commands in the turn class
-            board.GetBoardPanel().repaint();
-        }
-    }
-    /**
-     * @Summary exicutes developer commands for debuging purposes
-     */
-    private static void TestCommands(String command) {
-        display.SendDevMessage(command);
-        switch (command) {
-        case "#exit":
-            System.exit(0);
-            break;
-        case "#steps100":
-            turnStack.peek().SetStepsLeft(100);
-            break;
-        case "#cheat":
-            Card[] envelope = deck.GetEnvelope();
-            display.SendMessage("The murder was committed by: " + envelope[0].getName() + "\nWith the weapon: "
-                    + envelope[1].getName() + "\nIn the room: " + envelope[2].getName());
-            break;
-        case "#end":
-            EndGame();
-            break;
-        case "#knockout":
-            if (isGameStarted() == true) {
-                turnStack.peek().GetPlayer().KnockOutOfGame();
-                display.SendMessage("knockout : " + turnStack.peek().GetPlayer().GetPlayerName());
-            }
-            break;
-        case "#help":
-            display.SendMessage("These are cheat/testing comands, not to be used in a normal game\n"
-                    + "type in \"#steps100\" to set your current steps to 100\n"
-                    + "type in \"#cheat\" to inspect the murder envelope\n" + "type in \"#exit\" to quit the game\n ");
-            break;
-        default:
-            display.SendMessage("no sutch dev command");
-            break;
-        }
-    }
-    
-    public static void DisplayLog()
-    {
+    public static void DisplayLog() {
         display.SendMessage("The previous questions and answers were: ");
-        for(String s: display.logList)
-        {
+        for (String s : display.logList) {
             display.SendMessage(s);
         }
     }

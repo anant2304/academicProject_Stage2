@@ -6,10 +6,10 @@ import Sigurd.Room;
 
 /**
  * Abstract superclass for objects that will be displayed on the board.
- * @author Adrian Wennberg, Peter Major
  * Team: Sigurd
  * Student Numbers:
  * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg, Peter Major
  */
 public abstract class BoardObject {
 	private String name;
@@ -17,13 +17,6 @@ public abstract class BoardObject {
 	private Image image;
 	private Room room;
     
-	/**
-	 * 
-	 * @param x        Start X position on the board grid.
-	 * @param y        Start Y position on the board grid.
-	 * @param image    Image to display on the board.
-	 * @param name     Name that the board object is identified by.
-	 */
     protected BoardObject(Coordinates co, Image image, String name)
     {
     	this.name = name;
@@ -31,33 +24,20 @@ public abstract class BoardObject {
         this.image = image;
     }
     
-    /**
-     * Sets the Image to be displayed.
-     * @param image
-     */
     protected void SetImage(Image image)
     {
         this.image = image;
     }
 
-    /**
-     * @return The current X position on the grid.
-     */
     public Coordinates GetCoordinates() 
     {
         return objectCoordanates;
     }
 
-    /**
-     * @return The Image that will be displayed on the board.
-     */
     public Image GetImage() {
         return image;
     }
     
-    /**
-     * @return The name of this object.
-     */
     public String GetObjectName() {
     	return name;
     }
@@ -69,7 +49,7 @@ public abstract class BoardObject {
     public void MoveToRoom(Room r) {
         if(room == r)
             return;
-        if(room != null)
+        if(IsInRoom())
             LeaveRoom();
         room = r;
         r.AddObject(this);

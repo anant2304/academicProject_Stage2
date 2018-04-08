@@ -5,10 +5,15 @@ import Sigurd.*;
 import java.util.Stack;
 
 import Cards.*;
-
+/**
+ * Questions that are asked to the other players in the game
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg
+ */
 public class Question extends AbstractQuestion {
     private Stack<Player> playersToAsk;
-
     private Card answerCard;
 
     public Question(Player player, Iterable<Player> allPlayers) {
@@ -44,7 +49,7 @@ public class Question extends AbstractQuestion {
 
     @Override
     public void Commands(String command) {
-        if (HasBeenAnswered() || IsNoAnswer()) {
+        if (HasBeenAnswered() || HasNoAnswer()) {
             EndQuestion();
         } else if (IsDoneAsking() == false) {
             super.Commands(command);
@@ -74,12 +79,12 @@ public class Question extends AbstractQuestion {
                     shownCard = Game.GetCard(command, RoomCard.class);
                 
                 if(shownCard == null)
-                    Game.GetDisplay().SendError(command + " is not a card or command\n" 
+                    Game.GetDisplay().SendError(command + " is not a valid card or command\n" 
                             + "Please input the name of the card you want to display.\n"
                             + "Type \"help\" to see availabe commands");
                 
                 else if (playersToAsk.peek().HasCard(shownCard) == false)
-                    Game.GetDisplay().SendError("You do not own that card\n"
+                    Game.GetDisplay().SendError("You do not own the card "+ command + " \n"
                             + "Type \"notes\" to see that cards that you own.");
                 
                 else if (shownCard != character && shownCard != weapon && shownCard != room)
@@ -131,7 +136,7 @@ public class Question extends AbstractQuestion {
     }
 
     private void NoPlayerHasCard() {
-        if (IsNoAnswer() == false)
+        if (HasNoAnswer() == false)
             throw new IllegalStateException("Players still might have one of the cards");
 
         Game.GetDisplay().clearScreen();
@@ -139,18 +144,20 @@ public class Question extends AbstractQuestion {
                 "No players had the card that was entered\n" + asker + " can enter any input to continue their turn");
     }
 
-    private boolean IsNoAnswer() {
+    private boolean HasNoAnswer() {
         return HasBeenAnswered() == false && playersToAsk.isEmpty();
     }
-
+    
     private void EndQuestion() {
         Game.GetDisplay().clearScreen();
         if (HasBeenAnswered()) {
             Game.GetDisplay().SendMessage(playersToAsk.peek() + " showed you the card " + answerCard.getName() 
-            							  + "please type in done to end your turn.");
+            							  + "\n Please type in \"done\" to end your turn.");
             asker.SeeCard(answerCard);
-        } else if (IsNoAnswer())
+            
+        } else if (HasNoAnswer())
             Game.GetDisplay().SendMessage("No one had any of the cards you asked for");
+        
         Game.GetDisplay().log(this + "\n" + (HasBeenAnswered() ? playersToAsk.peek() : "nobody") + " showed a card");
         Deactivate();
     }

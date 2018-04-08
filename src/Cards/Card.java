@@ -1,10 +1,16 @@
 package Cards;
-
+/**
+ * Abstract superclass for cards.
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg, Peter Major
+ */
 public abstract class Card {
 
 	private String name;
 	private boolean canEveryOneSee = false;
-	boolean isInEnvelope;
+	private boolean isInEnvelope;
 	
 	protected Card(String _name) {
 		name = _name;
@@ -18,6 +24,11 @@ public abstract class Card {
 	public void SetCanEveryOneSee() {
 		canEveryOneSee = true;
 	}
+	
+    public void PutInEnvelope()
+    {
+        isInEnvelope = true;
+    }
 	
 	public boolean CanEveryOneSee() {
 		return canEveryOneSee;

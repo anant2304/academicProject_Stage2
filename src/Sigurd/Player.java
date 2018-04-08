@@ -7,7 +7,13 @@ import java.util.Set;
 import Cards.Card;
 import Cards.*;
 import Sigurd.BoardObjects.PlayerObject;
-
+/**
+ * Stores information about the players.
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg
+ */
 public class Player {
 
     private final String playerName;
@@ -18,6 +24,8 @@ public class Player {
     private boolean isOutOfGame;
 
     Player(String name, PlayerObject o) {
+        if(o.HasPlayer())
+            throw new IllegalStateException("Two players have the same character");
         playerName = name;
         playerObject = o;
         ownedCards = new HashSet<Card>();

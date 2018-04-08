@@ -3,19 +3,19 @@ package Sigurd;
 import Sigurd.BoardObjects.*;
 
 /**
- * 
- * @author Adrian
- *
- *         Team: Sigurd Student Numbers: 16751195, 16202907, 16375246
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg
  */
 
 public class Room {
     private static final String[] PLAYER_OFFSETS = { "1,0", "1,-1", "2,-1", "2,0", "2,1", "1,1" };
     private static final String[] WEAPON_OFFSETS = { "-1,0", "-1,-1", "-2,-1", "-2,0", "-2,1", "-1,1" };
-    private Door[] doors;
-    private Coordinates roomCentrePos;
     private PlayerObject[] players;
     private WeaponObject[] weapons;
+    private Door[] doors;
+    private Coordinates roomCentrePos;
     private String name;
     private Room passageRoom;
 
@@ -35,7 +35,7 @@ public class Room {
     }
 
     public void SetPassageRoom(Room r) {
-        if (passageRoom != null)
+        if (HasPassage())
             throw new IllegalStateException("There is allready a passage from this room: " + name);
 
         passageRoom = r;
@@ -104,9 +104,9 @@ public class Room {
 
     public Coordinates GetObjectPosition(BoardObject o) {
         if (o.getClass() == PlayerObject.class) {
-            return roomCentrePos.add(new Coordinates(PLAYER_OFFSETS[GetPlayerIndex((PlayerObject) o)]));
+            return roomCentrePos.Add(new Coordinates(PLAYER_OFFSETS[GetPlayerIndex((PlayerObject) o)]));
         } else if (o.getClass() == WeaponObject.class) {
-            return roomCentrePos.add(new Coordinates(WEAPON_OFFSETS[GetWeaponIndex((WeaponObject) o)]));
+            return roomCentrePos.Add(new Coordinates(WEAPON_OFFSETS[GetWeaponIndex((WeaponObject) o)]));
         } else {
             throw new IllegalArgumentException("Argument not player or weapon");
         }

@@ -7,10 +7,11 @@ import Sigurd.Questions.Assertion;
 import Sigurd.Questions.Question;
 
 /**
- * Applies the actions a player does during their turn.
- * 
- * @author Adrian Wennberg Team: Sigurd Student Numbers: 16751195, 16202907,
- *         16375246
+ * The current turn in the game
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Adiran Wennberg
  */
 public class Turn {
     private Player turnPlayer;
@@ -29,24 +30,22 @@ public class Turn {
         stepsLeft = 0;
         turnPlayer = player;
         turnPlayerObject = turnPlayer.GetPlayerObject();
+        
         hasEneteredRoom = false;
         canRoll = true;
         hasRolled = false;
+        
         turnQuestion = new Question(player, allPlayers);
         turnAssertion = new Assertion(player);
         if (turnPlayerObject.HasMovedAfterLastTurn())
             turnQuestion.SetCanAsk();
     }
 
-    /**
-     * Do an action based on a sting input.
-     *
-     * @param command
-     */
     public void Commands(String command) {
 
         DisplayMessage("> " + command);
 
+        // If the player is making an assertion, pass on the input
         if (turnAssertion.IsActive())
             turnAssertion.Commands(command);
 
@@ -63,7 +62,6 @@ public class Turn {
             MoveInDirection(command);
 
         else {
-
             switch (command) {
             case "help":
                 DisplayHelp();
@@ -109,11 +107,11 @@ public class Turn {
                 + "If you have just entered a room, type \"question\" to question the other players\n"
                 + "If you have just entered the basement, type \"accuse\" to try to solve the murder\n"
                 + "Type \"done\" to end your turn \n" + "Type \"quit\" to leave the game \n"
-                + "Type \"#help\" to see cheat commands\n");
+                + "Type \"#help\" to see testing commands");
     }
 
     private void MoveInDirection(String dir) {
-        if (canRoll) {
+        if (hasRolled == false) {
             DisplayError("You need to roll the dice before you can move.\n");
             return;
         }
@@ -144,15 +142,19 @@ public class Turn {
             positionChange = Coordinates.RIGHT;
             break;
         default:
-            throw new IllegalArgumentException("Move dir must be a string in the set {u, d, l, r}.\n");
+            throw new IllegalArgumentException("Move direction must be a string in the set {u, d, l, r}.\n");
         }
 
-        Coordinates movingToCo = turnPlayerObject.GetCoordinates().add(positionChange);
+        Coordinates movingToCo = turnPlayerObject.GetCoordinates().Add(positionChange);
 
-        if (Game.GetBoard().IsPositionMovable(turnPlayerObject.GetCoordinates(), movingToCo)) {
-            if (Game.GetBoard().IsDoor(movingToCo)) {
+        if (Game.GetBoard().IsPositionMovable(turnPlayerObject.GetCoordinates(), movingToCo) == false)
+            DisplayError(turnPlayer + " cannot move in direction " + dir);
+
+        else {
+            if (Game.GetBoard().IsDoor(movingToCo))
                 EnterRoom(Game.GetBoard().GetDoorRoom(movingToCo));
-            } else {
+            
+            else {
                 // Moves a player along the board grid.
                 turnPlayerObject.Move(positionChange);
                 DisplayMessage(turnPlayer + " moved in direction: " + dir);
@@ -160,8 +162,6 @@ public class Turn {
                 DisplayMessage(turnPlayer + " has " + stepsLeft + " steps left to move.");
                 turnQuestion.ResetCanAsk();
             }
-        } else {
-            DisplayError(turnPlayer + " cannot move in direction " + dir);
         }
     }
 
@@ -180,12 +180,12 @@ public class Turn {
         PlayerObject playerObject = turnPlayer.GetPlayerObject();
 
         if (hasEneteredRoom)
-            DisplayError("You have already entered a room on this turn.\n");
+            DisplayError("You have already entered a room on this turn");
         else if (hasRolled == false)
-            DisplayError("You need to roll the dice before you can move.\n");
+            DisplayError("You need to roll the dice before you can move");
 
         else if (exit < 1 || playerObject.GetRoom().GetDoors().length < exit)
-            DisplayError("Please enter a valid door number\n");
+            DisplayError("Please enter a valid door number");
 
         else {
             Room playerRoom = playerObject.GetRoom();
@@ -194,18 +194,18 @@ public class Turn {
             turnPlayerObject.MoveTo(playerRoom.GetDoors()[exit - 1].GetOutside());
             stepsLeft--;
             DisplayMessage(turnPlayer + " left the " + playerRoom.GetName() + " through exit number " + exit);
-            DisplayMessage(turnPlayer + " has " + stepsLeft + " steps left to move.");
+            DisplayMessage(turnPlayer + " has " + stepsLeft + " steps left to move");
         }
     }
 
     private void MoveThroughPassage() {
 
         if (turnPlayerObject.IsInRoom() == false) {
-            DisplayError("You cannot take a passage while not in a room\n");
+            DisplayError("You cannot take a passage while not in a room");
         } else if (turnPlayerObject.GetRoom().HasPassage() == false) {
-            DisplayError("The current room has no passages\n");
+            DisplayError("The current room has no passages");
         } else if (hasEneteredRoom) {
-            DisplayError("You cannot enter a passage if you entered a room this turn\n");
+            DisplayError("You cannot use a passage if you entered a room this turn");
         } else {
             turnPlayerObject.MoveToRoom(turnPlayerObject.GetRoom().GetPassageRoom());
             Game.GetBoard().ResetRoom();
@@ -218,13 +218,17 @@ public class Turn {
 
     private void StartAskingQuestion() {
         if (turnPlayerObject.IsInRoom() == false)
-            DisplayError("You need to be in a room to ask a question.");
+            DisplayError("You need to be in a room to ask a question");
+        
         else if (turnQuestion.HasBeenAsked())
             DisplayError("You have allready asked a question this turn");
+        
         else if (turnQuestion.CanAsk() == false)
-            DisplayError("You can only ask a question if you are in a room that you did not enter on your last turn");
+            DisplayError("You can only ask a question if you are in a room that you did entered after your last turn");
+        
         else if (turnQuestion.IsActive())
-            DisplayError("You are currently asking a question.");
+            DisplayError("You are allready asking a question.");
+        
         else {
             turnQuestion.StartAskingQuestion(turnPlayerObject.GetRoom());
             canRoll = false;
@@ -236,8 +240,10 @@ public class Turn {
     private void MakeAccuastion() {
         if(turnAssertion.CanAsk() == false)
             DisplayError("You can only make an accusation after you have entered the basement");
+        
         else if (turnAssertion.IsActive())
-            DisplayError("You are currently making an accusation.");
+            DisplayError("You are allready making an accusation.");
+        
         else {
             turnAssertion.Activate();
             canRoll = false;
@@ -255,15 +261,14 @@ public class Turn {
             return;
         }
         int d1, d2;
-
         Random rand = new Random();
-        d1 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
-        // numbers for the die results
-        d2 = rand.nextInt((6 - 1) + 1) + 1; // creating randomly generated
-        // numbers for the die results
+        
+        d1 = rand.nextInt(6) + 1;
+        d2 = rand.nextInt(6) + 1;
+        
         stepsLeft = d1 + d2;
-        Game.GetDisplay().SendMessage("Die 1 gives: " + d1 + "\n" + "Die 2 gives: " + d2 + "\n" + turnPlayer + " gets "
-                + stepsLeft + " moves" + "\n");
+        Game.GetDisplay().SendMessage("Die 1 gives: " + d1 + "\n" + "Die 2 gives: " + d2 + "\n" + turnPlayer + " now has "
+                + stepsLeft + " steps to move" + "\n");
 
         canRoll = false;
         hasRolled = true;
@@ -277,28 +282,19 @@ public class Turn {
         return (hasEneteredRoom == false && turnPlayerObject.IsInRoom());
     }
 
-    /**
-     * Displays a message to the display panel. Should potentially be moved to
-     * the Game class.
-     */
     private void DisplayMessage(String string) {
         Game.GetDisplay().SendMessage(string);
     }
-
-    /**
-     * Displays an error to the display panel. Should potentially be moved to
-     * the Game class.
-     */
+    
     private void DisplayError(String string) {
         Game.GetDisplay().SendError(string);
     }
 
     /**
-     * @Summary sets the number of remaing steps in this turn to 100, to be used
-     *          for debuing
-     * @param quantaty
+     * Sets the number of remaining steps in this turn to the specified amount.
+     * To be used for debugging
      */
-    public void SetStepsLeft(int quantaty) {
-        stepsLeft = quantaty;
+    public void SetStepsLeft(int steps) {
+        stepsLeft = steps;
     }
 }

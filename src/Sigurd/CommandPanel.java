@@ -7,11 +7,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * @author Peter Major
- * @Summary contains a JPanel that contains the command line
+ * A JPanel that contains the command line
  * Team: Sigurd
  * Student Numbers:
  * 16751195, 16202907, 16375246
+ * @author Peter Major
  */
 public class CommandPanel extends JPanel {
 
@@ -68,7 +68,7 @@ public class CommandPanel extends JPanel {
 	}
 	
 	/**
-	 * testing main
+	 * Testing main
 	 * @param args
 	 */
 	public static void main(String[] args) {

@@ -10,19 +10,15 @@ import Sigurd.Coordinates;
 
 /**
  * Weapons that are displayed to the screen.
- * @author PeterMajor
  * Team: Sigurd
  * Student Numbers:
  * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg, Peter Major
  */
 public class WeaponObject extends BoardObject {
 
 	/**
 	 * @Summary Creates a weapon object represented the weapon on the map by a letter
-	 * @param _x
-	 * @param _y
-	 * @param testChar
-	 * @param _name
 	 */
     public WeaponObject(Coordinates co, Character Char, String _name) {
     	super(co,(Image)null,_name);

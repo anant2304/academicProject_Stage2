@@ -2,7 +2,13 @@ package Sigurd;
 
 import java.io.*;
 import java.util.*;
-
+/**
+ * Gets weapons, rooms, and characters form files.
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Peter Major
+ */
 public class Reasource {
 	
 	private static List<String> characterCach;

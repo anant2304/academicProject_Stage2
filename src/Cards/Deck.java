@@ -3,7 +3,13 @@ package Cards;
 import java.util.*;
 import Sigurd.*;
 import Sigurd.BoardObjects.*;
-
+/**
+ * Deck that holds all cards
+ * Team: Sigurd
+ * Student Numbers:
+ * 16751195, 16202907, 16375246
+ * @author Adrian Wennberg, Peter Major
+ */
 public class Deck {
 
     // only pass references to these cards, to have a card is to just have a
@@ -23,6 +29,31 @@ public class Deck {
         ShuffleDeck();
     }
 
+    private void FillCards() {
+        if (playerCards != null || weaponCards != null || roomCards != null)
+            throw new RuntimeException("Cards allready filled.");
+
+        playerCards = new HashMap<String, PlayerCard>();
+        roomCards = new HashMap<String, RoomCard>();
+        weaponCards = new HashMap<String, WeaponCard>();
+
+        Iterable<PlayerObject> characters = Game.GetAllCharcters();
+        Iterable<WeaponObject> weapons = Game.GetAllWeapons();
+        Room[] rooms = Game.GetBoard().GetRooms();
+
+        for (PlayerObject p : characters) 
+            playerCards.put(p.GetObjectName(), new PlayerCard(p.GetObjectName(), p));
+
+        for (WeaponObject w : weapons)
+            weaponCards.put(w.GetObjectName(), new WeaponCard(w.GetObjectName(), w));
+
+        // create a card for all rooms except basement
+        for (Room r : rooms) {
+            if (r.GetName().equals(Reasource.BASEMENTNAME) == false)
+                roomCards.put(r.GetName(), new RoomCard(r.GetName(), r));
+        }
+    }
+
     private void FillEnvelpoe() {
         if (envelope != null)
             throw new RuntimeException("Envelope allready filled.");
@@ -35,11 +66,7 @@ public class Deck {
         envelope[2] = GetEnvelopeCard(roomCards);
 
         for (Card c : envelope)
-            c.isInEnvelope = true;
-    }
-
-    public Card[] GetEnvelope() {
-        return envelope;
+            c.PutInEnvelope();
     }
 
     private Card GetEnvelopeCard(Map<String, ? extends Card> map) {
@@ -51,31 +78,9 @@ public class Deck {
         }
         return randCard;
     }
-
-    private void FillCards() {
-        if (playerCards != null || weaponCards != null || roomCards != null)
-            throw new RuntimeException("Cards allready filled.");
-
-        playerCards = new HashMap<String, PlayerCard>();
-        roomCards = new HashMap<String, RoomCard>();
-        weaponCards = new HashMap<String, WeaponCard>();
-
-        Collection<PlayerObject> characters = Game.GetAllCharcters();
-        Collection<WeaponObject> weapons = Game.GetAllWeapons();
-        Room[] rooms = Game.GetBoard().GetRooms();
-
-        for (PlayerObject p : characters) {
-            playerCards.put(p.GetObjectName(), new PlayerCard(p.GetObjectName(), p));
-        }
-
-        for (WeaponObject w : weapons) {
-            weaponCards.put(w.GetObjectName(), new WeaponCard(w.GetObjectName(), w));
-        }
-
-        for (Room r : rooms) {
-            if (r.GetName().equals(Reasource.BASEMENTNAME) == false)
-                roomCards.put(r.GetName(), new RoomCard(r.GetName(), r));
-        }
+    
+    public Card[] GetEnvelope() {
+        return envelope;
     }
 
     private void FillDeck() {
@@ -94,15 +99,15 @@ public class Deck {
             throw new RuntimeException("No cards found for" + ErrorPlaces);
 
         for (Card c : playerCards.values()) {
-            if (c.isInEnvelope != true)
+            if (c.IsInEnvelope() != true)
                 deck.push(c);
         }
         for (Card c : weaponCards.values()) {
-            if (c.isInEnvelope != true)
+            if (c.IsInEnvelope() != true)
                 deck.push(c);
         }
         for (Card c : roomCards.values()) {
-            if (c.isInEnvelope != true)
+            if (c.IsInEnvelope() != true)
                 deck.push(c);
         }
     }
@@ -119,9 +124,9 @@ public class Deck {
     }
 
     public Card DrawCard() {
-        if (IsEmpty() == false)
-            return deck.pop();
-        throw new IllegalStateException("No more cards");
+        if (IsEmpty())
+            throw new IllegalStateException("No more cards");
+        return deck.pop();
     }
 
     public int Size() {
@@ -129,7 +134,7 @@ public class Deck {
     }
 
     public boolean IsEmpty() {
-        return deck.size() == 0;
+        return deck.isEmpty();
     }
 
     @SuppressWarnings("unchecked")
