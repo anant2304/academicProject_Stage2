@@ -4,6 +4,11 @@ import java.util.*;
 import Sigurd.*;
 import Sigurd.BoardObjects.*;
 
+/** Team: Sigurd
+* Student Numbers:
+* 16751195, 16202907, 16375246
+*/
+
 public class Deck {
 
     // only pass references to these cards, to have a card is to just have a

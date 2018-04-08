@@ -3,6 +3,11 @@ package Sigurd.Questions;
 import Cards.*;
 import Sigurd.*;
 
+/** Team: Sigurd
+* Student Numbers:
+* 16751195, 16202907, 16375246
+*/
+
 public abstract class AbstractQuestion {
 
     private boolean isActive;

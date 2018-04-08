@@ -1,5 +1,10 @@
 package Cards;
 
+/** Team: Sigurd
+* Student Numbers:
+* 16751195, 16202907, 16375246
+*/
+
 public abstract class Card {
 
 	private String name;

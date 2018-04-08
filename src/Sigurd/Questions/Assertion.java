@@ -3,6 +3,11 @@ package Sigurd.Questions;
 import Sigurd.Game;
 import Sigurd.Player;
 
+/** Team: Sigurd
+* Student Numbers:
+* 16751195, 16202907, 16375246
+*/
+
 public class Assertion extends AbstractQuestion {
 
 	public Assertion(Player p) {

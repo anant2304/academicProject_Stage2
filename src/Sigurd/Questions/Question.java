@@ -6,6 +6,11 @@ import java.util.Stack;
 
 import Cards.*;
 
+/** Team: Sigurd
+* Student Numbers:
+* 16751195, 16202907, 16375246
+*/
+
 public class Question extends AbstractQuestion {
     private Stack<Player> playersToAsk;
 

@@ -8,6 +8,11 @@ import Cards.Card;
 import Cards.*;
 import Sigurd.BoardObjects.PlayerObject;
 
+/** Team: Sigurd
+* Student Numbers:
+* 16751195, 16202907, 16375246
+*/
+
 public class Player {
 
     private final String playerName;

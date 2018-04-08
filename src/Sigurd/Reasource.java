@@ -3,6 +3,11 @@ package Sigurd;
 import java.io.*;
 import java.util.*;
 
+/** Team: Sigurd
+* Student Numbers:
+* 16751195, 16202907, 16375246
+*/
+
 public class Reasource {
 	
 	private static List<String> characterCach;
