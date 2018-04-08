@@ -151,7 +151,7 @@ public class Question extends AbstractQuestion {
     private void EndQuestion() {
         Game.GetDisplay().clearScreen();
         if (HasBeenAnswered()) {
-            Game.GetDisplay().SendMessage(playersToAsk.peek() + " showed you the card " + answerCard.getName() 
+            Game.GetDisplay().SendMessage(playersToAsk.peek() + " showed you the card " + answerCard.getName() + "\n" 
             							  + "please type in done to end your turn.");
             asker.SeeCard(answerCard);
         } else if (IsNoAnswer())
