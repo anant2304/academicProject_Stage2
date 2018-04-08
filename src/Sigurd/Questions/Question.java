@@ -65,27 +65,28 @@ public class Question extends AbstractQuestion {
                 DisplayHelp();
                 break;
             default:
-                if (HasQuestionCard() == false)
-                    Game.GetDisplay().SendMessage("That is not one of the cards that was asked about\n"
-                            + "If you do not have any of the cards, type \"done\" to go to the next player");
+                Card shownCard = null;
+                if(Game.DoesCharacterExist(command))
+                    shownCard = Game.GetCard(command, PlayerCard.class);
+                else if(Game.DoesWeaponExist(command))
+                    shownCard = Game.GetCard(command, WeaponCard.class);
+                else if(Game.DoesRoomExist(command))
+                    shownCard = Game.GetCard(command, RoomCard.class);
                 
+                if(shownCard == null)
+                    Game.GetDisplay().SendError(command + " is not a card or command\n" 
+                            + "Please input the name of the card you want to display.\n"
+                            + "Type \"help\" to see availabe commands");
+                
+                else if (playersToAsk.peek().HasCard(shownCard) == false)
+                    Game.GetDisplay().SendError("You do not own that card\n"
+                            + "Type \"notes\" to see that cards that you own.");
+                
+                else if (shownCard != character && shownCard != weapon && shownCard != room)
+                    Game.GetDisplay().SendError("That is not one of the cards that was asked about\n"
+                            + "type \"question\" to see the question again");
                 else
-                {
-                    Card shownCard = null;
-                    if (command.equals(character.getName()))
-                        shownCard = character;
-                    else if (command.equals(weapon.getName()))
-                        shownCard = weapon;
-                    else if (command.equals(room.getName()))
-                        shownCard = room;
-
-                    if (shownCard != null && playersToAsk.peek().HasCard(shownCard)
-                            && shownCard.CanEveryOneSee() == false)
-                        ValidAnswer(shownCard);
-                    else
-                        Game.GetDisplay().SendMessage("That is not one of the cards that was asked about\n"
-                                + "Please input the name of the card you want to display.");
-                }
+                    ValidAnswer(shownCard);
                 break;
             }
         }
