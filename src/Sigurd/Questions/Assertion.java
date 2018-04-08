@@ -17,7 +17,8 @@ public class Assertion extends AbstractQuestion {
 		}
 		else {
 			asker.KnockOutOfGame();
-			Game.GetDisplay().SendMessage("Incorecct Guess, you are out of the game");
+			Game.GetDisplay().SendMessage("Incorecct Guess, you are out of the game"
+					+ "Please enter done to finish your turn");
             Game.GetDisplay().log(asker + " made an incorrect accusation\n"
                     + asker + " though it was " + character.getName() 
                     + " in the " + room.getName() + " with the " + weapon.getName());

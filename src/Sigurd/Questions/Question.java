@@ -82,6 +82,9 @@ public class Question extends AbstractQuestion {
                     if (shownCard != null && playersToAsk.peek().HasCard(shownCard)
                             && shownCard.CanEveryOneSee() == false)
                         ValidAnswer(shownCard);
+                    else if(playersToAsk.peek().HasCard(shownCard) == false)
+                    	Game.GetDisplay().SendMessage("You do not have that card."
+                    			+ "Please input the name of the card you want to display.");
                     else
                         Game.GetDisplay().SendMessage("That is not one of the cards that was asked about\n"
                                 + "Please input the name of the card you want to display.");
@@ -145,7 +148,8 @@ public class Question extends AbstractQuestion {
     private void EndQuestion() {
         Game.GetDisplay().clearScreen();
         if (HasBeenAnswered()) {
-            Game.GetDisplay().SendMessage(playersToAsk.peek() + " showed you the card " + answerCard.getName());
+            Game.GetDisplay().SendMessage(playersToAsk.peek() + " showed you the card " + answerCard.getName() 
+            							  + "please type in done to end your turn.");
             asker.SeeCard(answerCard);
         } else if (IsNoAnswer())
             Game.GetDisplay().SendMessage("No one had any of the cards you asked for");
