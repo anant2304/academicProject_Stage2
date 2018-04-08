@@ -45,7 +45,7 @@ public class Turn {
      */
     public void Commands(String command) {
 
-        DisplayMessage(command);
+        DisplayMessage("> " + command);
 
         if (turnAssertion.IsActive())
             turnAssertion.Commands(command);

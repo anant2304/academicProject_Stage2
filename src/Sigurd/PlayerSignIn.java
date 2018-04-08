@@ -39,7 +39,7 @@ class PlayerSignIn
     
     public void Commands(String command)
     {
-        Game.GetDisplay().SendMessage(command);
+        Game.GetDisplay().SendMessage("> " + command);
         switch(command) {
             case "done" :
                 FinishSignIn();
@@ -59,24 +59,24 @@ class PlayerSignIn
     }
     
     private void DisplayHelp() {
-        display.SendMessage("type in a pair of names then press enter or return to add it to the game\r\n" +
-                "type in \"players\" to see who is currently in the game\r\n" +
-                "type in \"characters\" to see unclaimed characters\r\n" +
-                "if you have entered everyone's name type \"done\" to start the game\r\n" +
-                "type in \"#exit\" to abort the game\r\n" +
-                "you must have at least 2 players to play");
+        display.SendMessage("Type a pair of names then press enter or return to add it to the game\n" +
+                "Type \"players\" to see who is currently in the game\n" +
+                "Type \"characters\" to see unclaimed characters\n" +
+                "If you have entered all the players type \"done\" to start the game\n" +
+                "Type \"#exit\" to abort the game\n" +
+                "You must have at least 2 players to play");
     }
 
     void FinishSignIn() {
         if(players.size() < 2)
-            display.SendMessage("you must have at least 2 players to play\n");
+            display.SendError("you must have at least 2 players to play");
         else
             Game.StartGame();
     }
     
     void CheckPlayersInGame(){
         if(players.isEmpty())
-            display.SendMessage("There are no players in the game yet\n");
+            display.SendMessage("There are no players in the game yet");
         for(Player p : players) {
             display.SendMessage(p.GetPlayerName() + " is playing " + p.GetCharacterName());
         }
@@ -94,23 +94,23 @@ class PlayerSignIn
         }
         
         if(i == characters.size())
-            display.SendMessage("There are no characters left unclaimed\n");
+            display.SendMessage("There are no characters left unclaimed");
     }
     
     void addPlayer(String command) {
         String[] playerEnteries = command.split("\\s+");
         
         if(playerEnteries.length != 2) {
-            display.SendMessage("Incorrect number of elements entered\n");
+            display.SendError("Incorrect number of elements entered");
         }
         else if(Game.DoesCharacterExist(playerEnteries[1]) == false) {
-            display.SendMessage("the character entered is not recognised\n");
+            display.SendError("the character entered is not recognised");
         }
         else if(players.size() >= 6) {
-            display.SendMessage("You may only have up to six players\nEnter \"done\" to start the game\n");
+            display.SendError("You may only have up to six players\nEnter \"done\" to start the game");
         }
         else if(Game.GetCharacter(playerEnteries[1]).HasPlayer()) {
-            display.SendMessage("Someone is already playing " + playerEnteries[1]);
+            display.SendError("Someone is already playing " + playerEnteries[1]);
         }
         else {
             PlayerObject p = Game.GetCharacter(playerEnteries[1]);
@@ -119,6 +119,6 @@ class PlayerSignIn
             display.SendMessage(playerEnteries[0] + " is playing " + playerEnteries[1]);	
             return;
         }
-        display.SendMessage("Please enter in the form \n[Player Name] [Character Name]\n");
+        display.SendMessage("Please enter in the form \n[Player Name] [Character Name]");
     }
 }

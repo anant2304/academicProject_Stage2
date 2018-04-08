@@ -16,29 +16,37 @@ import javax.swing.text.*;
 @SuppressWarnings("serial")
 public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itself
 {
-    JTextPane tpane=new JTextPane();//using JTextArea for the inputs to be scrollable
-    JScrollPane pane=new JScrollPane();
-    SimpleAttributeSet set=new SimpleAttributeSet();
-    StyledDocument text1=tpane.getStyledDocument();
+    JTextPane textPane;
+    JScrollPane scrollPane;
+    SimpleAttributeSet attribureSet;
+    StyledDocument styledDocument;
     Style style;
-    List<String> logList = new ArrayList<String>();
+    List<String> logList;
+    private final int MAX_LINE_LENGTH = 40;
     
     public DisplayPanel() //constructor to set the display panel
     {
+        textPane = new JTextPane();
+        attribureSet = new SimpleAttributeSet();
+        scrollPane = new JScrollPane(textPane);
+        styledDocument = textPane.getStyledDocument();
+        logList = new ArrayList<String>();
+        
         this.setLayout(new BorderLayout(10,10));
         this.setBorder(BorderFactory.createLineBorder(Color.BLACK,2));
-        tpane.setEditable(false);
-        StyleConstants.setAlignment(set, StyleConstants.ALIGN_CENTER);
-        tpane.setParagraphAttributes(set, true);
-        tpane.setOpaque(true);
-        tpane.setBackground(Color.gray);
-        DefaultCaret c=(DefaultCaret)tpane.getCaret();
-        c.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        pane=new JScrollPane(tpane);
-        pane.setPreferredSize( new Dimension(363,632));
-        add(pane);
+        textPane.setEditable(false);
+        StyleConstants.setAlignment(attribureSet, StyleConstants.ALIGN_LEFT);
+        textPane.setMargin(new Insets(10, 20, 20, 10));
         
-        style = text1.addStyle("defualt", null);
+        textPane.setParagraphAttributes(attribureSet, true);
+        textPane.setOpaque(true);
+        textPane.setBackground(Color.gray);
+        DefaultCaret c=(DefaultCaret)textPane.getCaret();
+        c.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        scrollPane.setPreferredSize( new Dimension(363,632));
+        add(scrollPane);
+        
+        style = styledDocument.addStyle("defualt", null);
         
         SendMessage("GAME BEGINS");
     }
@@ -59,17 +67,19 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
         frame.pack();
         frame.setVisible(true);
     }
-    public void SendMessage(String str) //function adds the string to the panel
+    
+    public void SendMessage(String str)
     {
         try
         {
-            text1.insertString(text1.getLength(), str+"\n", style);
+            styledDocument.insertString(styledDocument.getLength(), str + "\n\n", style);
         }
         catch(Exception exe)
         {
             System.out.println(exe);
         }
     }
+    
     public void SendDevMessage(String str)
     {
         StyleConstants.setForeground(style, Color.red);
@@ -84,7 +94,7 @@ public class DisplayPanel extends JPanel //class DisplayPanel acts a panel itsel
     }
     public void clearScreen()
     {
-        tpane.setText("");
+        textPane.setText("");
     }
     public void log(String logMessage)
     {

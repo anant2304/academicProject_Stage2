@@ -54,9 +54,9 @@ public class Game {
         // it to work only half the time, here it always
         // works
 
-        display.SendMessage("Enter the names of the players " + "\n" + "in the form [Player Name] [Character Name] "
-                + "\n" + "when you are finished type in \"done\" to start the game" + "\n"
-                + "type in \"help\" at any time to receive help\n");
+        display.SendMessage("Enter the names of the players in the form [Player Name] [Character Name] "
+                + "\nWhen you are finished type in \"done\" to start the game" + "\n"
+                + "Type \"help\" at any time to receive help\n");
 
         // the game now waits for input, first that input is passed to the
         // PlayerSignIn class,
@@ -101,7 +101,7 @@ public class Game {
      */
     public static void StartGame() {
         display.clearScreen();
-        display.SendMessage("Rolling for each player: \n");
+        display.SendMessage("Rolling for each player:");
         RollToStart(null);
         DealCards();
         NextTurn();
@@ -120,7 +120,7 @@ public class Game {
                 int d01 = rand.nextInt(6) + 1;
                 int d02 = rand.nextInt(6) + 1;
                 rolls[i] = d01 + d02;
-                display.SendMessage(playerSign.players.get(i) + " " + d01 + ", " + d02 + "\n");
+                display.SendMessage(playerSign.players.get(i) + " " + d01 + ", " + d02);
                 if (rolls[i] > maxRoll) {
                     maxRoll = rolls[i];
                     pos = i;
@@ -140,10 +140,10 @@ public class Game {
 
         // Roll again of more than one player got the max roll
         if (count == 1) {
-            display.SendMessage(playerSign.players.get(pos) + " got the highest roll of " + maxRoll);
+            display.SendMessage(playerSign.players.get(pos) + " got the highest roll of " + maxRoll + "\n");
             playerSign.currPossition = (playerSign.playerCount + pos - 1) % playerSign.playerCount;
         } else {
-            display.SendMessage("Rolling again for tied players: \n");
+            display.SendMessage("Rolling again for tied players:");
             RollToStart(rolls);
         }
     }

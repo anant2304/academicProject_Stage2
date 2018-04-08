@@ -82,17 +82,17 @@ public class Player {
 
     public String GetNotes() {
         StringBuilder sb = new StringBuilder(String.format("%-30s \n", "Notes: " + this));
-        sb.append(String.format("%-30s \n", "\t\t\tX: You have this card."));
-        sb.append(String.format("%-30s \n", "\t\t\tV: You have seen this card."));
-        sb.append(String.format("%-30s \n", "\t\t\tA: Everyone sees this card."));
+        sb.append("   X: You have this card.\n");
+        sb.append("   V: You have seen this card.\n");
+        sb.append("   A: Everyone sees this card.\n");
 
-        sb.append(String.format("\n%-30s", "Players"));
+        sb.append("\nPlayers");
         sb.append(GetCardNotesFromIterator(Game.GetCards(PlayerCard.class)));
 
-        sb.append(String.format("\n%-30s", "Weapons"));
+        sb.append("\nWeapons");
         sb.append(GetCardNotesFromIterator(Game.GetCards(WeaponCard.class)));
 
-        sb.append(String.format("\n%-30s", "Rooms"));
+        sb.append("\nRooms");
         sb.append(GetCardNotesFromIterator(Game.GetCards(RoomCard.class)));
 
         return sb.toString();
@@ -112,7 +112,7 @@ public class Player {
             else
                 displayChar = ' ';
 
-            sb.append(String.format("\n%-30s%c", "\t\t\t" + c.getName(), displayChar));
+            sb.append(String.format("\n   %-20s%c", c.getName(), displayChar));
         }
         return sb.toString();
     }
