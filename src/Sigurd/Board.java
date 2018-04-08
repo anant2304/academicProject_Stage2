@@ -9,10 +9,15 @@ import javax.swing.*;
 import Sigurd.BoardObjects.BoardObject;
 
 /**
+<<<<<<< HEAD
  * Team: Sigurd
  * Student Numbers:
  * 16751195, 16202907, 16375246
  * @author Adrian Wennberg
+=======
+ * @author Adrian Wennberg 
+ * Team: Sigurd Student Numbers: 16751195, 16202907, 16375246
+>>>>>>> 042b38af4b988e3325dd02f436054f2dd621e696
  */
 public class Board {
     private static final String BOARD_PATH = "/Layout.txt";

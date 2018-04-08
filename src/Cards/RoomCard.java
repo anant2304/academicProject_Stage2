@@ -1,6 +1,7 @@
 package Cards;
 
 import Sigurd.Room;
+
 /**
  * Cards for rooms
  * Team: Sigurd

@@ -3,8 +3,8 @@ package Sigurd.Questions;
 import java.util.Iterator;
 import Sigurd.*;
 import java.util.Stack;
-
 import Cards.*;
+
 /**
  * Questions that are asked to the other players in the game
  * Team: Sigurd
@@ -152,7 +152,7 @@ public class Question extends AbstractQuestion {
         Game.GetDisplay().clearScreen();
         if (HasBeenAnswered()) {
             Game.GetDisplay().SendMessage(playersToAsk.peek() + " showed you the card " + answerCard.getName() 
-            							  + "\n Please type in \"done\" to end your turn.");
+            							  + "\nPlease type in \"done\" to end your turn.");
             asker.SeeCard(answerCard);
             
         } else if (HasNoAnswer())

@@ -2,6 +2,7 @@ package Sigurd;
 
 import java.io.*;
 import java.util.*;
+
 /**
  * Gets weapons, rooms, and characters form files.
  * Team: Sigurd
