@@ -1,0 +1,6 @@
+Dagger		3,4
+LeadPipe	20,10
+Spanner		13,4
+Candlestick	11,20
+Pistol		4,11
+Rope		3,22
