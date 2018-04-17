@@ -220,7 +220,7 @@ public class Sigurd implements BotAPI {
     }
 
    
-
+	
     class CardAgent {
     	CardMatrix ourCardMatrix;
     	List<Question> questionList;
@@ -264,27 +264,19 @@ public class Sigurd implements BotAPI {
         		
         		if(alternator) {
         			currQ = new Question();
-        			map = new HashMap<String, String>();
-        			map.putAll(ParseAnouncment(s));
-        			currQ.myMatrix = ourCardMatrix;
-        			currQ.asker = playerIndexMap.get(map.get("firstPlayer"));
-        			currQ.cards.add(map.get("characterCard"));
-        			currQ.cards.add(map.get("weaponCard"));
-        			currQ.cards.add(map.get("roomCard"));
-        			currQ.ressponder = playerIndexMap.get(map.get("secondPlayer"));
+        			ParseAnouncment(s, currQ);
         		}else {
-        			map.putAll(ParseResponce(s));
-        			if(map.containsKey("cardShowen")) {
-        				currQ.cardShowen = map.get("cardShowen");
-        				ourCardMatrix.CardFound(playerIndexMap.get(map.get("showingPlayer")), map.get("cardShowen"));
-        			}
-        			if(map.get("showedCard").equals("true"))
+        			ParseResponce(s, currQ);
+        			if(currQ.cardWasShowen)
         				questionList.add(currQ);
         			else {
-        				ourCardMatrix.PlayerDoseNotHave(playerIndexMap.get(map.get("showingPlayer")), map.get("characterCard"));
-        				ourCardMatrix.PlayerDoseNotHave(playerIndexMap.get(map.get("showingPlayer")), map.get("weaponCard"));
-        				ourCardMatrix.PlayerDoseNotHave(playerIndexMap.get(map.get("showingPlayer")), map.get("roomCard"));
+        				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
+        				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
+        				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
         			}
+        			if(currQ.cardShowen != null)
+        				ourCardMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
+        				
         		}
         		alternator=!alternator;
             }
@@ -310,34 +302,31 @@ public class Sigurd implements BotAPI {
     	}
         
         
-    	java.util.Map<String, String> ParseAnouncment(String logMessage){
-    		java.util.Map<String, String> map = new HashMap<String,String>();
-    		
+    	void ParseAnouncment(String logMessage, Question q){
     		String[] part = logMessage.split(" ");
     		
     		System.out.println(logMessage);
     		
-    		map.put("firstPlayer", part[0]);
-    		map.put("secondPlayer", part[2]);
-    		map.put("characterCard", part[4]);
-    		map.put("weaponCard", part[7]);
-    		map.put("roomCard", part[10].substring(0, part[10].length()-1));//removeing full stop
+    		q.asker = playerIndexMap.get(part[0]);
+    		q.ressponder = playerIndexMap.get(part[2]);
+    		q.characterCard = part[4];
+    		q.weaponCard = part[7];
+    		q.roomCard = part[10].substring(0, part[10].length()-1);//removes full stop
     		
-    		return map;
     	}
 
-        java.util.Map<String,String> ParseResponce(String logMessage){
-    		java.util.Map<String, String> map = new HashMap<String,String>();
+        void ParseResponce(String logMessage, Question q){
     		String[] part = logMessage.split(" ");
     		
     		System.out.println(logMessage);
     		
-    		map.put("showingPlayer", part[0]);
-    		map.put("showedCard", part[1].equals("showed") ? "true":"false" );
-    		if(part[3].equals("card:"))
-    			map.put("cardShowen", part[4].substring(0, part[4].length()-1));
+		if(q.ressponder != playerIndexMap.get(part[0]))
+			throw new RuntimeException("tryed to parse the responce to the wrong quetion");
     		
-    		return map;
+		if(part[1].equals("showed"))
+			q.cardWasShowen = true;
+    	if(part[3].equals("card:"))
+    		q.cardShowen = part[4].substring(0, part[4].length()-1);//remoeing full stop
     	}
     	
     }
@@ -450,18 +439,17 @@ public class Sigurd implements BotAPI {
     }
 
     class Question {
-    	CardMatrix myMatrix;
-    	Collection<String> cards;
     	int asker;
     	int ressponder;
+    	String characterCard;
+    	String weaponCard;
+    	String roomCard;
+    	boolean cardWasShowen;
     	String cardShowen;
-    	
-    	Question() {
-    		cards = new ArrayList<String>();
-    	}
-    	
+    	    	
     	public String toString() {
-    		String temp = asker + " asked " + ressponder + " if they have " + cards;
+    		String temp = asker + " asked " + ressponder + " if they have " +  characterCard  
+    				+ ", " + weaponCard + ", " + roomCard;
     		if(cardShowen != null)
     			temp += ", they showed " + cardShowen;
     		return temp;
