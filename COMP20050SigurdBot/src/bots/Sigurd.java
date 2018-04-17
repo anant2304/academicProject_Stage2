@@ -7,6 +7,8 @@ import bots.CardMatrix.PlayerColum;
 import bots.CardMatrix.Position;
 import gameengine.*;
 import gameengine.Map;
+import gameengine.LogParser.CardMatrix;
+import gameengine.LogParser.Question;
 
 public class Sigurd implements BotAPI {
 
@@ -114,7 +116,11 @@ public class Sigurd implements BotAPI {
         CardAgent cardAgent;
 
         ControllerAgent() {
-            cardAgent = new CardAgent();
+        	Collection<String> allCards = new ArrayList<String>();
+        	allCards.addAll(Arrays.asList(Names.ROOM_CARD_NAMES));
+        	allCards.addAll(Arrays.asList(Names.SUSPECT_NAMES));
+        	allCards.addAll(Arrays.asList(Names.WEAPON_NAMES));
+            cardAgent = new CardAgent(log, allCards, playersInfo.numPlayers());
             pathfinder = new PathfinderAgent();
             
         }
@@ -213,17 +219,127 @@ public class Sigurd implements BotAPI {
         }
     }
 
-    
+   
+
     class CardAgent {
-
-        public CardAgent() {
-            // TODO Peter add card agent setup based on player information here
+    	CardMatrix ourCardMatrix;
+    	List<Question> questionList;
+    	Log log;
+    	int currlogPos;
+    	java.util.Map<String,Integer> playerIndexMap;
+    	
+        CardAgent(Log log, Collection<String> cards, int numOfPlayers ) {
+        	ourCardMatrix = new CardMatrix(cards, numOfPlayers);
+        	questionList = new ArrayList<Question>();
+        	this.log = log;
+        	playerIndexMap = new HashMap<String,Integer>();
+        	currlogPos = 1;
+        	FillPlayerIndexMap();
+        }
+        
+        void FillPlayerIndexMap() {
+        	int i = 0;
+        	for(String s : playersInfo.getPlayersNames())
+        		playerIndexMap.put(s, i++);
+        }
+        
+        void UpdateCards() {
+            ParseTheLog();
+            ParseTheQuestions();
+        }
+        
+        void ParseTheLog() {//TODO : parsethelog method dose alot
+        	Iterator<String> logIterator = log.iterator();
+        	boolean alternator = true;
+        	Question currQ = null;
+        	java.util.Map<String, String> map = null;
+        	int i = 0;
+        	
+        	while(logIterator.hasNext() && i++ < currlogPos)
+        		logIterator.next();
+        		
+        	while(logIterator.hasNext()) {
+        		String s = logIterator.next();
+        		currlogPos++;
+        		
+        		if(alternator) {
+        			currQ = new Question();
+        			map = new HashMap<String, String>();
+        			map.putAll(ParseAnouncment(s));
+        			currQ.myMatrix = ourCardMatrix;
+        			currQ.asker = playerIndexMap.get(map.get("firstPlayer"));
+        			currQ.cards.add(map.get("characterCard"));
+        			currQ.cards.add(map.get("weaponCard"));
+        			currQ.cards.add(map.get("roomCard"));
+        			currQ.ressponder = playerIndexMap.get(map.get("secondPlayer"));
+        		}else {
+        			map.putAll(ParseResponce(s));
+        			if(map.containsKey("cardShowen")) {
+        				currQ.cardShowen = map.get("cardShowen");
+        				ourCardMatrix.CardFound(playerIndexMap.get(map.get("showingPlayer")), map.get("cardShowen"));
+        			}
+        			if(map.get("showedCard").equals("true"))
+        				questionList.add(currQ);
+        			else {
+        				ourCardMatrix.PlayerDoseNotHave(playerIndexMap.get(map.get("showingPlayer")), map.get("characterCard"));
+        				ourCardMatrix.PlayerDoseNotHave(playerIndexMap.get(map.get("showingPlayer")), map.get("weaponCard"));
+        				ourCardMatrix.PlayerDoseNotHave(playerIndexMap.get(map.get("showingPlayer")), map.get("roomCard"));
+        			}
+        		}
+        		alternator=!alternator;
+            }
         }
 
-        public void UpdateCards() {
-            // TODO Peter add card agent logic here
+        void ParseTheQuestions() {
+        	boolean loop = true;
+        	while(loop) {
+        		loop = false;
+        		for(Question q : questionList)
+        			if(ParseQuestion(ourCardMatrix, q))
+        				loop = true;
+        	}
+        				
         }
+        
+        boolean ParseQuestion(CardMatrix matrix, Question q) {//returns true if it changed the card matrix and all Qs need re-checking
+    		//TODO : implement card parser
+    		
+    		
+    		
+    		return false;
+    	}
+        
+        
+    	java.util.Map<String, String> ParseAnouncment(String logMessage){
+    		java.util.Map<String, String> map = new HashMap<String,String>();
+    		
+    		String[] part = logMessage.split(" ");
+    		
+    		System.out.println(logMessage);
+    		
+    		map.put("firstPlayer", part[0]);
+    		map.put("secondPlayer", part[2]);
+    		map.put("characterCard", part[4]);
+    		map.put("weaponCard", part[7]);
+    		map.put("roomCard", part[10].substring(0, part[10].length()-1));//removeing full stop
+    		
+    		return map;
+    	}
 
+        java.util.Map<String,String> ParseResponce(String logMessage){
+    		java.util.Map<String, String> map = new HashMap<String,String>();
+    		String[] part = logMessage.split(" ");
+    		
+    		System.out.println(logMessage);
+    		
+    		map.put("showingPlayer", part[0]);
+    		map.put("showedCard", part[1].equals("showed") ? "true":"false" );
+    		if(part[3].equals("card:"))
+    			map.put("cardShowen", part[4].substring(0, part[4].length()-1));
+    		
+    		return map;
+    	}
+    	
     }
 
     class CardMatrix{
@@ -234,7 +350,7 @@ public class Sigurd implements BotAPI {
      		cardRow = new HashMap<String, CardRow>();
      		playerCol = new HashMap<Integer,PlayerColum>();
      		
-     		for(String s : cards)
+     		for(String s : cards) 
      			cardRow.put(s, new CardRow(s));
      		
     		for(int i = 0; i < numPlayers; i++) {
@@ -333,45 +449,26 @@ public class Sigurd implements BotAPI {
         	}
     }
 
-    class LogParser {
-    	
-    	java.util.Map<String,String> ParseResponce(String logMessage){
-		java.util.Map<String, String> map = new HashMap<String,String>();
-		String[] part = logMessage.split(" ");
-		
-		map.put("showingPlayer", part[0]);
-		map.put("showedCard", part[1].equals("showed") ? "true":"false" );
-		if(part[3].equals("card:"))
-			map.put("cardShowen", part[4]);
-		
-		return map;
-	}
-	
-		java.util.Map<String, String> ParseAnouncment(String logMessage){
-		java.util.Map<String, String> map = new HashMap<String,String>();
-		
-		String[] part = logMessage.split(" ");
-		
-		map.put("firstPlayer", part[0]);
-		map.put("secondPlayer", part[2]);
-		map.put("characterCard", part[4]);
-		map.put("weaponCard", part[7]);
-		map.put("roomCard", part[10].substring(0, part[10].length()-1));//removeing full stop
-		
-		return map;
-	}
-	}
-
     class Question {
     	CardMatrix myMatrix;
     	Collection<String> cards;
     	int asker;
     	int ressponder;
+    	String cardShowen;
     	
-    	Question(Collection<String> cards) {
-    		this.cards = cards;
+    	Question() {
+    		cards = new ArrayList<String>();
+    	}
+    	
+    	public String toString() {
+    		String temp = asker + " asked " + ressponder + " if they have " + cards;
+    		if(cardShowen != null)
+    			temp += ", they showed " + cardShowen;
+    		return temp;
     	}
     }
+
+	
 }
     
 
