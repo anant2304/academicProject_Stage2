@@ -7,9 +7,6 @@ import bots.CardMatrix.PlayerColum;
 import bots.CardMatrix.Position;
 import gameengine.*;
 import gameengine.Map;
-import gameengine.LogParser.CardMatrix;
-import gameengine.LogParser.Question;
-import gameengine.LogParser.QuestionParser;
 
 public class Sigurd implements BotAPI {
 
@@ -220,7 +217,6 @@ public class Sigurd implements BotAPI {
         }
     }
 
-   
 	
     class CardAgent {
     	CardMatrix ourCardMatrix;
@@ -263,7 +259,7 @@ public class Sigurd implements BotAPI {
         		
         	//iterate over what we have not seen yet
         	while(logIterator.hasNext()) {
-        		currQ = new Question();
+        		currQ = new Question(questionList);
         		currlogPos += 2;
         		
         		logMessage = logIterator.next();
@@ -280,12 +276,22 @@ public class Sigurd implements BotAPI {
         void ParseTheQuestions() {
         	boolean loop = true;
         	while(loop) {
+        		System.out.println("quesiton list loop");
         		loop = false;
         		for(Question currQ : questionList)
         			if(Qparser.ParseQuestion(currQ))
         				loop = true;
+        		DeleteTagedQuestions();
         	}
         				
+        }
+        
+        void DeleteTagedQuestions() {
+        	List<Question> temp = new ArrayList<Question>();
+        	temp.addAll(questionList);
+        	for(Question q : temp)
+        		if(q.tagForDeletion == true)
+        			questionList.remove(q);
         }
                 
     	void ParseAnouncment(String logMessage, Question q){
@@ -315,6 +321,74 @@ public class Sigurd implements BotAPI {
     		q.cardShowen = part[4].substring(0, part[4].length()-1);//remoeing full stop
     	}
     	
+        
+        class QuestionParser{
+    		CardMatrix ourCardMatrix;
+    		
+    		QuestionParser(CardMatrix ourCardMatrix){
+    			this.ourCardMatrix = ourCardMatrix;
+    		}
+    		
+    		boolean InishalLogMessageCheck(Question currQ){//returns weither the question should be stored for further checks
+    			if(currQ.cardShowen != null)
+    				ourCardMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
+    			else if(currQ.cardWasShowen)
+    				return true;
+    			else {
+    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
+    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
+    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
+    			}
+    			return false;
+    		}
+    		
+            boolean ParseQuestion(Question currQ) {//returns true if it changed the card matrix and all Qs need re-checking
+            	boolean hasChanged = false;
+            	
+            	if(AskerLogic(currQ))
+            		hasChanged = true;
+            	if(ResponderLogic(currQ))
+            		hasChanged = true;
+
+        		return hasChanged;
+        	}
+            
+            boolean AskerLogic(Question currQ) {
+            	boolean hasChanged = false;
+            	
+            	return hasChanged;
+            }
+            
+            boolean ResponderLogic(Question currQ) {
+            	boolean hasChanged = false;
+            	
+            	boolean HasCharacter = !ourCardMatrix.cardRow.get(currQ.characterCard).players.get(currQ.ressponder).crossedout;
+            	boolean HasWeapon  = !ourCardMatrix.cardRow.get(currQ.weaponCard).players.get(currQ.ressponder).crossedout;
+            	boolean HasRoom  = !ourCardMatrix.cardRow.get(currQ.roomCard).players.get(currQ.ressponder).crossedout;
+            	
+            	if(currQ.tagAllCardsChecked == false) {
+    	    		if(!HasCharacter && !HasRoom) {
+    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.weaponCard);
+    	    			hasChanged = true;
+    	    			currQ.tagAllCardsChecked = true;
+    	    		}
+    	    		else if(!HasRoom && !HasWeapon) {
+    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.characterCard);
+    	    			hasChanged = true;
+    	    			currQ.tagAllCardsChecked = true;
+    	    		}
+    	    		else if(!HasCharacter && !HasWeapon) {
+    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.roomCard);
+    	    			hasChanged = true;
+    	    			currQ.tagAllCardsChecked = true;
+    	    		}
+            	}
+        		
+            	return hasChanged;
+            }
+            
+    	}
+        
     }
 
     class CardMatrix{
@@ -361,7 +435,7 @@ public class Sigurd implements BotAPI {
     		String temp = "";
     		
     		for(CardRow cr : cardRow.values()) {
-    			temp += cr.name + "| ";
+    			temp += cr.name + " " + cr.isFound +"| ";
     			for(int i = 0; i < playerCol.size(); i++)
     				temp += cr.players.get(i).crossedout + " ";
     			temp += "\n";
@@ -371,7 +445,7 @@ public class Sigurd implements BotAPI {
     	}
     	
     	
-    	class CardRow{
+    	public class CardRow{
     		String name;
     		List<Position> players = new ArrayList<Position>();
     		boolean isFound = false;
@@ -420,11 +494,16 @@ public class Sigurd implements BotAPI {
         		
         		public boolean crossedout = false;
         		
-        		Position(int plyaer, String card){}
+        		Position(int player, String card){
+        			this.player = player;
+        			this.card = card;
+        		}
         	}
     }
 
     class Question {
+    	Collection<Question> questionList;
+    	
     	int asker;
     	int ressponder;
     	String characterCard;
@@ -432,7 +511,22 @@ public class Sigurd implements BotAPI {
     	String roomCard;
     	boolean cardWasShowen;
     	String cardShowen;
-    	    	
+
+    	boolean tagAllCardsChecked;
+    	boolean tagForDeletion; 
+   
+    	Question(Collection<Question> questionList){
+    		tagForDeletion = false;
+    		this.questionList = questionList;
+    	}
+    	
+    	public void Delete() {
+    		if(questionList.contains(this))
+    			tagForDeletion = true;
+    		else 
+    			throw new RuntimeException("Tryed to delete a question that is not in the list");
+    	}
+    	
     	public String toString() {
     		String temp = asker + " asked " + ressponder + " if they have " +  characterCard  
     				+ ", " + weaponCard + ", " + roomCard;
@@ -440,53 +534,8 @@ public class Sigurd implements BotAPI {
     			temp += ", they showed " + cardShowen;
     		return temp;
     	}
+    
     }
 
-	class QuestionParser{
-		CardMatrix ourCardMatrix;
-		
-		QuestionParser(CardMatrix ourCardMatrix){
-			this.ourCardMatrix = ourCardMatrix;
-		}
-		
-		boolean InishalLogMessageCheck(Question currQ){//returns weither the question should be stored for further checks
-			if(currQ.cardShowen != null)
-				ourCardMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
-			else if(currQ.cardWasShowen)
-				return true;
-			else {
-				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
-				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
-				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
-			}
-			return false;
-		}
-		
-        boolean ParseQuestion(Question currQ) {//returns true if it changed the card matrix and all Qs need re-checking
-    		//TODO : implement card parser
-    		
-    		
-    		
-    		return false;
-    	}
-        
-	}
-    
 	
-}
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+} 
