@@ -9,6 +9,7 @@ import gameengine.*;
 import gameengine.Map;
 import gameengine.LogParser.CardMatrix;
 import gameengine.LogParser.Question;
+import gameengine.LogParser.QuestionParser;
 
 public class Sigurd implements BotAPI {
 
@@ -224,6 +225,7 @@ public class Sigurd implements BotAPI {
     class CardAgent {
     	CardMatrix ourCardMatrix;
     	List<Question> questionList;
+    	QuestionParser Qparser;
     	Log log;
     	int currlogPos;
     	java.util.Map<String,Integer> playerIndexMap;
@@ -231,6 +233,7 @@ public class Sigurd implements BotAPI {
         CardAgent(Log log, Collection<String> cards, int numOfPlayers ) {
         	ourCardMatrix = new CardMatrix(cards, numOfPlayers);
         	questionList = new ArrayList<Question>();
+        	Qparser = new QuestionParser(ourCardMatrix);
         	this.log = log;
         	playerIndexMap = new HashMap<String,Integer>();
         	currlogPos = 1;
@@ -248,37 +251,29 @@ public class Sigurd implements BotAPI {
             ParseTheQuestions();
         }
         
-        void ParseTheLog() {//TODO : parsethelog method dose alot
+        void ParseTheLog() {
         	Iterator<String> logIterator = log.iterator();
-        	boolean alternator = true;
+        	String logMessage;
         	Question currQ = null;
-        	java.util.Map<String, String> map = null;
         	int i = 0;
         	
+        	//skip to the where we left off
         	while(logIterator.hasNext() && i++ < currlogPos)
         		logIterator.next();
         		
+        	//iterate over what we have not seen yet
         	while(logIterator.hasNext()) {
-        		String s = logIterator.next();
-        		currlogPos++;
+        		currQ = new Question();
+        		currlogPos += 2;
         		
-        		if(alternator) {
-        			currQ = new Question();
-        			ParseAnouncment(s, currQ);
-        		}else {
-        			ParseResponce(s, currQ);
-        			if(currQ.cardWasShowen)
-        				questionList.add(currQ);
-        			else {
-        				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
-        				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
-        				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
-        			}
-        			if(currQ.cardShowen != null)
-        				ourCardMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
+        		logMessage = logIterator.next();
+    			ParseAnouncment(logMessage, currQ);
+    			logMessage = logIterator.next();
+    			ParseResponce(logMessage, currQ);
+    			
+    			if(Qparser.InishalLogMessageCheck(currQ))
+    				questionList.add(currQ);
         				
-        		}
-        		alternator=!alternator;
             }
         }
 
@@ -286,22 +281,13 @@ public class Sigurd implements BotAPI {
         	boolean loop = true;
         	while(loop) {
         		loop = false;
-        		for(Question q : questionList)
-        			if(ParseQuestion(ourCardMatrix, q))
+        		for(Question currQ : questionList)
+        			if(Qparser.ParseQuestion(currQ))
         				loop = true;
         	}
         				
         }
-        
-        boolean ParseQuestion(CardMatrix matrix, Question q) {//returns true if it changed the card matrix and all Qs need re-checking
-    		//TODO : implement card parser
-    		
-    		
-    		
-    		return false;
-    	}
-        
-        
+                
     	void ParseAnouncment(String logMessage, Question q){
     		String[] part = logMessage.split(" ");
     		
@@ -456,6 +442,36 @@ public class Sigurd implements BotAPI {
     	}
     }
 
+	class QuestionParser{
+		CardMatrix ourCardMatrix;
+		
+		QuestionParser(CardMatrix ourCardMatrix){
+			this.ourCardMatrix = ourCardMatrix;
+		}
+		
+		boolean InishalLogMessageCheck(Question currQ){//returns weither the question should be stored for further checks
+			if(currQ.cardShowen != null)
+				ourCardMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
+			else if(currQ.cardWasShowen)
+				return true;
+			else {
+				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
+				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
+				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
+			}
+			return false;
+		}
+		
+        boolean ParseQuestion(Question currQ) {//returns true if it changed the card matrix and all Qs need re-checking
+    		//TODO : implement card parser
+    		
+    		
+    		
+    		return false;
+    	}
+        
+	}
+    
 	
 }
     
