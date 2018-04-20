@@ -1,7 +1,13 @@
 package gameengine;
 
 import javax.swing.*;
+import javax.swing.event.MouseInputListener;
+
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 class UI {
 
@@ -15,6 +21,7 @@ class UI {
     private int door;
     private boolean inputIsDone, cardFound;
     private Card selectedCard;
+    private boolean paused;
 
     UI(Tokens characters, Weapons weapons) {
         JFrame frame = new JFrame();
@@ -27,6 +34,27 @@ class UI {
         frame.add(commandPanel,BorderLayout.PAGE_END);
         frame.setResizable(false);
         frame.setVisible(true);
+        paused = true;
+        frame.addMouseListener(new MouseListener() {
+            
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            
+            @Override
+            public void mousePressed(MouseEvent e) {}
+            
+            @Override
+            public void mouseExited(MouseEvent e) {}
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println(paused?"Unpausing":"Pausing");
+                paused = !paused;
+            }
+        });
     }
 
     /* Display Methods */
@@ -149,7 +177,9 @@ class UI {
     /* Display Error Messages */
 
     private void displayError(String message) {
-        displayString("Error: " + message + ".");
+        paused = true;
+        displayString("ERROR: " + message + ".\n pausing");
+        System.out.println("Paused due to error: " + message);
     }
 
     void displayErrorNotADoor() {
@@ -192,7 +222,7 @@ class UI {
 
     void displayName(Player player) {
         displayString("Enter new player name:");
-        displayString("> " + player.getName());
+        displayString("> " + player.getName() + " " + player.getBot().getVersion());
     }
 
     void displayToken(Player player) {
@@ -203,7 +233,7 @@ class UI {
     void inputCommand(Player player) {
         boolean valid = false;
         do {
-            displayString(player + " type your command:");
+            displayString(player + " type your command:");while(paused){try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}}
             input = player.getBot().getCommand();
             displayString("> " + input);
             command = input.trim().toLowerCase();
@@ -223,7 +253,7 @@ class UI {
     void inputSuspect(Player player) {
         boolean valid = false;
         do {
-            displayString(player + " enter suspect name:");
+            displayString(player + " enter suspect name:");while(paused){try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}}
             input = player.getBot().getSuspect();
             displayString("> " + input);
             input = input.toLowerCase().trim();
@@ -239,7 +269,7 @@ class UI {
     void inputWeapon(Player player) {
         boolean valid = false;
         do {
-            displayString(player + " enter weapon name:");
+            displayString(player + " enter weapon name:");while(paused){try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}}
             input = player.getBot().getWeapon();
             displayString("> " + input);
             input = input.toLowerCase().trim();
@@ -255,7 +285,7 @@ class UI {
     void inputRoom(Player player) {
         boolean valid = false;
         do {
-            displayString(player + " enter room name:");
+            displayString(player + " enter room name:");while(paused){try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}}
             input = player.getBot().getRoom();
             displayString("> " + input);
             input = input.toLowerCase().trim();
@@ -279,7 +309,7 @@ class UI {
     void inputMove(Player player, int moveNumber, int movesAvailable) {
         boolean valid = false;
         do {
-            displayString(player + " enter move " + moveNumber + " of " + movesAvailable + ":");
+            displayString(player + " enter move " + moveNumber + " of " + movesAvailable + ":");while(paused){try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}}
             input = player.getBot().getMove();
             displayString("> " + input);
             move = input.trim().toLowerCase();
@@ -298,7 +328,7 @@ class UI {
     void inputDoor(Player player) {
         boolean valid = false;
         do {
-            displayString(player + " enter door number:");
+            displayString(player + " enter door number:");while(paused){try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}}
             input = player.getBot().getDoor();
             displayString("> " + input);
             input = input.trim();
@@ -333,6 +363,13 @@ class UI {
                 valid = true;
             } else {
                 displayString(playerQueried + " choose from: " + matchingCards);
+                while (paused) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 input = playerQueried.getBot().getCard(matchingCards);
                 displayString("> " + input);
                 input = input.toLowerCase().trim();
@@ -342,6 +379,7 @@ class UI {
                         cardFound = true;
                         valid = true;
                         break;
+                        
                     }
                 }
                 if (!valid) {

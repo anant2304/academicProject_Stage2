@@ -2,11 +2,11 @@ package bots;
 
 import java.util.*;
 
-import bots.Sigurd.PathfinderAgent.MovePlan;
+import bots.SigurdBadSearchNoCardAgent.PathfinderAgent.*;
 import gameengine.*;
 import gameengine.Map;
 
-public class Sigurd implements BotAPI {
+public class SigurdBadSearchNoCardAgent implements BotAPI {
 
     // The public API of Bot must not change
     // This is ONLY class that you can edit in the program
@@ -22,7 +22,7 @@ public class Sigurd implements BotAPI {
     Deck deck;
     ControllerAgent controller;
 
-    public Sigurd(Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
+    public SigurdBadSearchNoCardAgent(Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
         this.player = player;
         this.playersInfo = playersInfo;
         this.map = map;
@@ -78,37 +78,7 @@ public class Sigurd implements BotAPI {
 
     public void notifyResponse(Log response) {
         controller.ParseResponse(response);
-    }
 
-
-    @Override
-    public String getVersion() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void notifyPlayerName(String playerName) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void notifyTurnOver(String playerName, String position) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void notifyQuery(String playerName, String query) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void notifyReply(String playerName, boolean cardShown) {
-        // TODO Auto-generated method stub
-        
     }
 
     class ControllerAgent {
@@ -126,6 +96,7 @@ public class Sigurd implements BotAPI {
         boolean turnStarted;
 
         ControllerAgent() {
+            cardAgent  = new CardAgent();
             pathfinder = new PathfinderAgent();
 
             turnCommands = new LinkedList<>();
@@ -160,17 +131,6 @@ public class Sigurd implements BotAPI {
         
         void TurnStart() {
             PlanMovement();
-            
-            if(turnNumber == 1)
-            {
-                List<String> l = new LinkedList<>();
-                l.addAll(Arrays.asList(Names.ROOM_CARD_NAMES));
-                l.addAll(Arrays.asList(Names.SUSPECT_NAMES));
-                l.addAll(Arrays.asList(Names.WEAPON_NAMES));
-                cardAgent  = new CardAgent(log, l, playersInfo.numPlayers());
-            }
-            
-            cardAgent.UpdateCards();
 
             if (movePlan.IsNextPassage()) {
                 movePlan.TakePassage();
@@ -213,7 +173,6 @@ public class Sigurd implements BotAPI {
         {
 
             if (IsInRoom()) {
-                
                 if(GetCurrentRoom().hasName("Cellar"))
                     MakeAccusation();
                 
@@ -408,6 +367,7 @@ public class Sigurd implements BotAPI {
                     path.add(p);
             }
 
+            System.out.println("Going to same room " + path.peek().length);
             return path;
         }
 
@@ -734,8 +694,9 @@ public class Sigurd implements BotAPI {
                     
                 }
                 String step = currentSteps.remove();
-
+                
                 if(currentPosition == null) {
+                    System.out.println("step:" +  step);
                     currentPosition = new MapCoordinates(map.getNewPosition(currentRoom.getDoorCoordinates(0),step));
                     currentRoom = null;
                 
@@ -820,326 +781,40 @@ public class Sigurd implements BotAPI {
             }
         }
     }
-    
+
     class CardAgent {
-    	final CardMatrix ourCardMatrix;
-    	final List<Question> questionList;
-    	final QuestionParser Qparser;
-    	final Log log;
-    	int currlogPos;
-    	final java.util.Map<String,Integer> playerIndexMap;
-    	
-        CardAgent(Log log, Collection<String> cards, int numOfPlayers ) {
-        	ourCardMatrix = new CardMatrix(cards, numOfPlayers);
-        	questionList = new ArrayList<Question>();
-        	Qparser = new QuestionParser(ourCardMatrix);
-        	this.log = log;
-        	playerIndexMap = new HashMap<String,Integer>();
-        	currlogPos = 1;
-        	FillPlayerIndexMap();
-        }
-        
-        void FillPlayerIndexMap() {
-        	int i = 0;
-        	for(String s : playersInfo.getPlayersNames()) 
-        		playerIndexMap.put(s, i++);
-        }
-        
-        void UpdateCards() {
-            ParseTheLog();
-            ParseTheQuestions();
-            System.out.println(ourCardMatrix);
-        }
-        
-        void ParseTheLog() {
-        	Iterator<String> logIterator = log.iterator();
-        	String logMessage;
-        	Question currQ = null;
-        	int i = 0;
-        	
-        	//skip to the where we left off
-        	while(logIterator.hasNext() && i++ < currlogPos)
-        		logIterator.next();
-        		
-        	//iterate over what we have not seen yet
-        	while(logIterator.hasNext()) {
-        		currQ = new Question(questionList);
-        		currlogPos += 2;
-        		
-        		logMessage = logIterator.next();
-    			ParseAnouncment(logMessage, currQ);
-    			logMessage = logIterator.next();
-    			ParseResponce(logMessage, currQ);
-    			
-    			if(Qparser.InishalLogMessageCheck(currQ))
-    				questionList.add(currQ);
-        				
-            }
-        }
 
-        void ParseTheQuestions() {
-        	boolean loop = true;
-        	while(loop) {
-        		System.out.println("quesiton list loop");
-        		loop = false;
-        		for(Question currQ : questionList)
-        			if(Qparser.ParseQuestion(currQ))
-        				loop = true;
-        		DeleteTagedQuestions();
-        	}
-        				
-        }
-        
-        void DeleteTagedQuestions() {
-        	List<Question> temp = new ArrayList<Question>();
-        	temp.addAll(questionList);
-        	for(Question q : temp)
-        		if(q.tagForDeletion == true)
-        			questionList.remove(q);
-        }
-                
-    	void ParseAnouncment(String logMessage, Question q){
-    		String[] part = logMessage.split(" the ");
-    		String[] playerParts = part[0].split("\\s+");
-    		
-    		System.out.println(logMessage);
-    		
-    		q.asker = playerIndexMap.get(playerParts[0]);
-    		q.ressponder = playerIndexMap.get(playerParts[3]);
-    		q.characterCard = playerParts[6];
-    		q.weaponCard = part[1].substring(0, part[1].length() - 3);
-    		q.roomCard = part[2].substring(0, part[2].length() - 1);
-    		
-    		
-    	}
+    }
 
-        void ParseResponce(String logMessage, Question q){
-    		String[] part = logMessage.split("\\s+.");
-    		
-    		System.out.println(logMessage);
-    		
-		if(q.ressponder != playerIndexMap.get(part[0]))
-			throw new RuntimeException("tryed to parse the responce to the wrong quetion");
-    		
-		if(part[1].equals("showed"))
-			q.cardWasShowen = true;
-    	if(part[3].equals("card:"))
-    		q.cardShowen = part[4].substring(0, part[4].length()-1);//remoeing full stop
-    	}
-    	
-        
-        class QuestionParser{
-    		CardMatrix ourCardMatrix;
-    		
-    		QuestionParser(CardMatrix ourCardMatrix){
-    			this.ourCardMatrix = ourCardMatrix;
-    		}
-    		
-    		boolean InishalLogMessageCheck(Question currQ){//returns weither the question should be stored for further checks
-    			if(currQ.cardShowen != null)
-    				ourCardMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
-    			else if(currQ.cardWasShowen)
-    				return true;
-    			else {
-    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
-    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
-    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
-    			}
-    			return false;
-    		}
-    		
-            boolean ParseQuestion(Question currQ) {//returns true if it changed the card matrix and all Qs need re-checking
-            	boolean hasChanged = false;
-            	
-            	if(AskerLogic(currQ))
-            		hasChanged = true;
-            	if(ResponderLogic(currQ))
-            		hasChanged = true;
+    @Override
+    public String getVersion() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-        		return hasChanged;
-        	}
-            
-            boolean AskerLogic(Question currQ) {
-            	boolean hasChanged = false;
-            	
-            	return hasChanged;
-            }
-            
-            boolean ResponderLogic(Question currQ) {
-            	boolean hasChanged = false;
-            	
-            	boolean HasCharacter = !ourCardMatrix.cardRow.get(currQ.characterCard).players.get(currQ.ressponder).crossedout;
-            	boolean HasWeapon  = !ourCardMatrix.cardRow.get(currQ.weaponCard).players.get(currQ.ressponder).crossedout;
-            	boolean HasRoom  = !ourCardMatrix.cardRow.get(currQ.roomCard).players.get(currQ.ressponder).crossedout;
-            	
-            	if(currQ.tagAllCardsChecked == false) {
-    	    		if(!HasCharacter && !HasRoom) {
-    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.weaponCard);
-    	    			hasChanged = true;
-    	    			currQ.tagAllCardsChecked = true;
-    	    		}
-    	    		else if(!HasRoom && !HasWeapon) {
-    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.characterCard);
-    	    			hasChanged = true;
-    	    			currQ.tagAllCardsChecked = true;
-    	    		}
-    	    		else if(!HasCharacter && !HasWeapon) {
-    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.roomCard);
-    	    			hasChanged = true;
-    	    			currQ.tagAllCardsChecked = true;
-    	    		}
-            	}
-        		
-            	return hasChanged;
-            }
-            
-    	}
+    @Override
+    public void notifyPlayerName(String playerName) {
+        // TODO Auto-generated method stub
         
     }
 
-    class CardMatrix{
-        java.util.Map<String,CardRow> cardRow;
-        java.util.Map<Integer,PlayerColum> playerCol;
+    @Override
+    public void notifyTurnOver(String playerName, String position) {
+        // TODO Auto-generated method stub
         
-     	CardMatrix(Collection<String> cards, int numPlayers){
-     		cardRow = new HashMap<String, CardRow>();
-     		playerCol = new HashMap<Integer,PlayerColum>();
-     		
-     		for(String s : cards) 
-     			cardRow.put(s, new CardRow(s));
-     		
-    		for(int i = 0; i < numPlayers; i++) {
-    			playerCol.put(i, new PlayerColum(i));
-    			PlayerColum tempPlay = playerCol.get(i);
-    			
-    			for(String s : cards) {
-        			CardRow tempCard = cardRow.get(s);
-        			
-        			Position tempPos = new Position(tempPlay.index,tempCard.name);
-        			tempCard.players.add(tempPos);
-        			tempPlay.cards.add(tempPos);
-    			}
-    		}
-    	}
-    	
-    	void CardFound(int p, String c) {
-    		cardRow.get(c).crossoutAllBarOne(p);
-    	}
-    	
-    	void PlayerDoseNotHave(int p, String c) {
-    		cardRow.get(c).crossout(p);
-    	}
-    	
-    	CardRow getCardRow(String s) {
-    		for(CardRow cr : cardRow.values())
-    			if(cr.name.equals(s) == true)
-    				return cr;
-    		return null;
-    	}
-    	
-    	public String toString() {
-    		String temp = "";
-    		
-    		for(CardRow cr : cardRow.values()) {
-    			temp += cr.name + " " + cr.isFound +"| ";
-    			for(int i = 0; i < playerCol.size(); i++)
-    				temp += cr.players.get(i).crossedout + " ";
-    			temp += "\n";
-    		}
-    		
-    		return temp;
-    	}
-    	
-    	
-    	public class CardRow{
-    		String name;
-    		List<Position> players = new ArrayList<Position>();
-    		boolean isFound = false;
-    		int owner;
-    		
-     		CardRow(String name){
-    			this.name = name;
-    		}
-    		
-    		void crossout(int p){
-    			players.get(p).crossedout = true;
-    			
-    			int count = 0;
-    			for(Position q : players)
-    				if(q.crossedout == false) count++;
-    			if(count == 1) Found();
-    		}
-    		
-    		void crossoutAllBarOne(int p) {
-    			for(int i = 0; i < players.size();i++)
-    				if(i != p) crossout(i);
-    			Found();
-    		}
-    		
-    		void Found() {
-    			isFound = true;
-    			for(Position q : players)
-    				if(q.crossedout == false)
-    					owner = q.player;
-    		}
-    		
-    	}
-    	
-    	class PlayerColum{
-    		int index;    		
-    		List<Position> cards= new ArrayList<Position>();;
-    		
-    		PlayerColum(int index){
-    			this.index = index;
-    		}
-    	}
-    	
-    	class Position{
-        		int player;
-        		String card;
-        		
-        		public boolean crossedout = false;
-        		
-        		Position(int player, String card){
-        			this.player = player;
-        			this.card = card;
-        		}
-        	}
     }
 
-    class Question {
-    	Collection<Question> questionList;
-    	
-    	int asker;
-    	int ressponder;
-    	String characterCard;
-    	String weaponCard;
-    	String roomCard;
-    	boolean cardWasShowen;
-    	String cardShowen;
+    @Override
+    public void notifyQuery(String playerName, String query) {
+        // TODO Auto-generated method stub
+        
+    }
 
-    	boolean tagAllCardsChecked;
-    	boolean tagForDeletion; 
-   
-    	Question(Collection<Question> questionList){
-    		tagForDeletion = false;
-    		this.questionList = questionList;
-    	}
-    	
-    	public void Delete() {
-    		if(questionList.contains(this))
-    			tagForDeletion = true;
-    		else 
-    			throw new RuntimeException("Tryed to delete a question that is not in the list");
-    	}
-    	
-    	public String toString() {
-    		String temp = asker + " asked " + ressponder + " if they have " +  characterCard  
-    				+ ", " + weaponCard + ", " + roomCard;
-    		if(cardShowen != null)
-    			temp += ", they showed " + cardShowen;
-    		return temp;
-    	}
+    @Override
+    public void notifyReply(String playerName, boolean cardShown) {
+        // TODO Auto-generated method stub
+        
+    }
+
     
-    }
-} 
+}

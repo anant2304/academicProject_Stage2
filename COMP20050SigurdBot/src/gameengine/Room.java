@@ -16,9 +16,6 @@ public class Room {
         this.name = name;
         this.tokenArea = tokenArea;
         this.doors = doors;
-        for (boolean squareOccupied : squaresOccupied) {
-            squareOccupied = false;
-        }
     }
 
     Room(String name, Coordinates tokenArea, Coordinates[] doors, boolean accusationAllowed) {

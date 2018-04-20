@@ -2,11 +2,11 @@ package bots;
 
 import java.util.*;
 
-import bots.Sigurd.PathfinderAgent.MovePlan;
+import bots.Sigurd2.PathfinderAgent.MovePlan;
 import gameengine.*;
 import gameengine.Map;
 
-public class Sigurd implements BotAPI {
+public class Sigurd2 implements BotAPI {
 
     // The public API of Bot must not change
     // This is ONLY class that you can edit in the program
@@ -22,7 +22,7 @@ public class Sigurd implements BotAPI {
     Deck deck;
     ControllerAgent controller;
 
-    public Sigurd(Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
+    public Sigurd2(Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
         this.player = player;
         this.playersInfo = playersInfo;
         this.map = map;
@@ -78,37 +78,7 @@ public class Sigurd implements BotAPI {
 
     public void notifyResponse(Log response) {
         controller.ParseResponse(response);
-    }
 
-
-    @Override
-    public String getVersion() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void notifyPlayerName(String playerName) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void notifyTurnOver(String playerName, String position) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void notifyQuery(String playerName, String query) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void notifyReply(String playerName, boolean cardShown) {
-        // TODO Auto-generated method stub
-        
     }
 
     class ControllerAgent {
@@ -126,6 +96,11 @@ public class Sigurd implements BotAPI {
         boolean turnStarted;
 
         ControllerAgent() {
+            List<String> l = new LinkedList<>();
+            l.addAll(Arrays.asList(Names.ROOM_CARD_NAMES));
+            l.addAll(Arrays.asList(Names.SUSPECT_NAMES));
+            l.addAll(Arrays.asList(Names.WEAPON_NAMES));
+            cardAgent  = new CardAgent(log, l, playersInfo.numPlayers());
             pathfinder = new PathfinderAgent();
 
             turnCommands = new LinkedList<>();
@@ -160,17 +135,6 @@ public class Sigurd implements BotAPI {
         
         void TurnStart() {
             PlanMovement();
-            
-            if(turnNumber == 1)
-            {
-                List<String> l = new LinkedList<>();
-                l.addAll(Arrays.asList(Names.ROOM_CARD_NAMES));
-                l.addAll(Arrays.asList(Names.SUSPECT_NAMES));
-                l.addAll(Arrays.asList(Names.WEAPON_NAMES));
-                cardAgent  = new CardAgent(log, l, playersInfo.numPlayers());
-            }
-            
-            cardAgent.UpdateCards();
 
             if (movePlan.IsNextPassage()) {
                 movePlan.TakePassage();
@@ -213,7 +177,6 @@ public class Sigurd implements BotAPI {
         {
 
             if (IsInRoom()) {
-                
                 if(GetCurrentRoom().hasName("Cellar"))
                     MakeAccusation();
                 
@@ -408,6 +371,7 @@ public class Sigurd implements BotAPI {
                     path.add(p);
             }
 
+            System.out.println("Going to same room " + path.peek().length);
             return path;
         }
 
@@ -736,6 +700,7 @@ public class Sigurd implements BotAPI {
                 String step = currentSteps.remove();
 
                 if(currentPosition == null) {
+                    System.out.println("step:" +  step);
                     currentPosition = new MapCoordinates(map.getNewPosition(currentRoom.getDoorCoordinates(0),step));
                     currentRoom = null;
                 
@@ -802,8 +767,8 @@ public class Sigurd implements BotAPI {
             
             private void SetSteps(String steps) {
                 currentSteps.clear();
-
-                if (steps.equals("p")) {
+                
+                if(steps.equals("p")) {
                     nextIsPassage = true;
                     return;
                 }
@@ -841,14 +806,13 @@ public class Sigurd implements BotAPI {
         
         void FillPlayerIndexMap() {
         	int i = 0;
-        	for(String s : playersInfo.getPlayersNames()) 
+        	for(String s : playersInfo.getPlayersNames())
         		playerIndexMap.put(s, i++);
         }
         
         void UpdateCards() {
             ParseTheLog();
             ParseTheQuestions();
-            System.out.println(ourCardMatrix);
         }
         
         void ParseTheLog() {
@@ -899,22 +863,20 @@ public class Sigurd implements BotAPI {
         }
                 
     	void ParseAnouncment(String logMessage, Question q){
-    		String[] part = logMessage.split(" the ");
-    		String[] playerParts = part[0].split("\\s+");
+    		String[] part = logMessage.split(" ");
     		
     		System.out.println(logMessage);
     		
-    		q.asker = playerIndexMap.get(playerParts[0]);
-    		q.ressponder = playerIndexMap.get(playerParts[3]);
-    		q.characterCard = playerParts[6];
-    		q.weaponCard = part[1].substring(0, part[1].length() - 3);
-    		q.roomCard = part[2].substring(0, part[2].length() - 1);
-    		
+    		q.asker = playerIndexMap.get(part[0]);
+    		q.ressponder = playerIndexMap.get(part[2]);
+    		q.characterCard = part[4];
+    		q.weaponCard = part[7];
+    		q.roomCard = part[10].substring(0, part[10].length()-1);//removes full stop
     		
     	}
 
         void ParseResponce(String logMessage, Question q){
-    		String[] part = logMessage.split("\\s+.");
+    		String[] part = logMessage.split(" ");
     		
     		System.out.println(logMessage);
     		
@@ -1142,4 +1104,36 @@ public class Sigurd implements BotAPI {
     	}
     
     }
+
+    @Override
+    public String getVersion() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void notifyPlayerName(String playerName) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void notifyTurnOver(String playerName, String position) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void notifyQuery(String playerName, String query) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void notifyReply(String playerName, boolean cardShown) {
+        // TODO Auto-generated method stub
+        
+    }
+
+	
 } 

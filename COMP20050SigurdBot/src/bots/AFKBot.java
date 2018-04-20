@@ -2,7 +2,7 @@ package bots;
 
 import gameengine.*;
 
-public class Bot2 implements BotAPI {
+public class AFKBot implements BotAPI {
 
     // The public API of Bot must not change
     // This is ONLY class that you can edit in the program
@@ -10,20 +10,8 @@ public class Bot2 implements BotAPI {
     // Bot may not alter the state of the board or the player objects
     // It may only inspect the state of the board and the player objects
 
-    private Player player;
-    private PlayersInfo playersInfo;
-    private Map map;
-    private Dice dice;
-    private Log log;
-    private Deck deck;
 
-    public Bot2 (Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
-        this.player = player;
-        this.playersInfo = playersInfo;
-        this.map = map;
-        this.dice = dice;
-        this.log = log;
-        this.deck = deck;
+    public AFKBot (Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
     }
 
     public String getName() {
@@ -67,5 +55,35 @@ public class Bot2 implements BotAPI {
 
     public void notifyResponse(Log response) {
         // Add your code here
+    }
+
+    @Override
+    public String getVersion() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void notifyPlayerName(String playerName) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void notifyTurnOver(String playerName, String position) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void notifyQuery(String playerName, String query) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void notifyReply(String playerName, boolean cardShown) {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -2,11 +2,11 @@ package bots;
 
 import java.util.*;
 
-import bots.Sigurd.PathfinderAgent.MovePlan;
+import bots.SigurdNoPassageSolo.PathfinderAgent.*;
 import gameengine.*;
 import gameengine.Map;
 
-public class Sigurd implements BotAPI {
+public class SigurdNoPassageSolo implements BotAPI {
 
     // The public API of Bot must not change
     // This is ONLY class that you can edit in the program
@@ -22,7 +22,7 @@ public class Sigurd implements BotAPI {
     Deck deck;
     ControllerAgent controller;
 
-    public Sigurd(Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
+    public SigurdNoPassageSolo(Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
         this.player = player;
         this.playersInfo = playersInfo;
         this.map = map;
@@ -33,42 +33,67 @@ public class Sigurd implements BotAPI {
     }
 
     public String getName() {
-        return "Sigurd";
+        return "SigurdNoPassageSolo";
     }
 
     public String getCommand() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return controller.GetCommand();
     }
 
     public String getMove() {
         try {
-            Thread.sleep(10);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return controller.GetMove(false);
     }
 
     public String getSuspect() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if(controller.hasSolution)
             return controller.solution[0];
         return controller.GetCommand();
     }
 
     public String getWeapon() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if(controller.hasSolution)
             return controller.solution[1];
         return controller.GetCommand();
     }
 
     public String getRoom() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if(controller.hasSolution)
             return controller.solution[2];
         return controller.GetCommand();
     }
 
     public String getDoor() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return controller.GetMove(true);
     }
 
@@ -78,37 +103,7 @@ public class Sigurd implements BotAPI {
 
     public void notifyResponse(Log response) {
         controller.ParseResponse(response);
-    }
 
-
-    @Override
-    public String getVersion() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void notifyPlayerName(String playerName) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void notifyTurnOver(String playerName, String position) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void notifyQuery(String playerName, String query) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void notifyReply(String playerName, boolean cardShown) {
-        // TODO Auto-generated method stub
-        
     }
 
     class ControllerAgent {
@@ -126,6 +121,7 @@ public class Sigurd implements BotAPI {
         boolean turnStarted;
 
         ControllerAgent() {
+            cardAgent  = new CardAgent();
             pathfinder = new PathfinderAgent();
 
             turnCommands = new LinkedList<>();
@@ -160,17 +156,6 @@ public class Sigurd implements BotAPI {
         
         void TurnStart() {
             PlanMovement();
-            
-            if(turnNumber == 1)
-            {
-                List<String> l = new LinkedList<>();
-                l.addAll(Arrays.asList(Names.ROOM_CARD_NAMES));
-                l.addAll(Arrays.asList(Names.SUSPECT_NAMES));
-                l.addAll(Arrays.asList(Names.WEAPON_NAMES));
-                cardAgent  = new CardAgent(log, l, playersInfo.numPlayers());
-            }
-            
-            cardAgent.UpdateCards();
 
             if (movePlan.IsNextPassage()) {
                 movePlan.TakePassage();
@@ -197,22 +182,24 @@ public class Sigurd implements BotAPI {
         }
 
         void PlanMovement() {
+            Display("Planing movement");
             if (movePlan.IsDone() == false && movePlan.IsStillValid())
-                return;
+                movePlan.ContinueMove();
 
-            
-            if(hasSolution)
+            else if(hasSolution)
                 movePlan = pathfinder.new MovePlan(Names.ROOM_NAMES[Names.ROOM_NAMES.length - 1]);
             
             else
                 movePlan = pathfinder.MoveToNearest(GetInterestingRooms());
-            
+
         }
         
         void PlanTurnEnd()
         {
 
             if (IsInRoom()) {
+                
+                System.out.println(dice.getTotal() + " >=" + movePlan.StepsLeftToRoom());
                 
                 if(GetCurrentRoom().hasName("Cellar"))
                     MakeAccusation();
@@ -331,18 +318,7 @@ public class Sigurd implements BotAPI {
         }
 
         public MovePlan MoveToNearest(Set<Room> interestingRooms) {
-            List<MovePlan> plans = new LinkedList<>(); 
-            for (Room r : interestingRooms) {
-                plans.add(new MovePlan(FindPathTo(r)));
-            }
-            MovePlan bestPlan = plans.get(0);
-            float minCost = bestPlan.GetCost();
-            for (MovePlan movePlan : plans) {
-                if(movePlan.GetCost() < minCost)
-                    bestPlan = movePlan;
-            }
-   
-            return bestPlan;
+            return new MovePlan(FindPathTo(interestingRooms.iterator().next()));
         }
 
         private Deque<RoomPath> FindPathTo(Room destination) {
@@ -350,6 +326,7 @@ public class Sigurd implements BotAPI {
                 return PathToSameRoom(destination);
             
             
+            System.out.println(player + " Finding path to " + destination);
             HashMap<Room, RoomPath> shortestPaths = new HashMap<>();
             HashMap<Room, Integer> shortestDistance = new HashMap<>();
             Queue<Room> searching = new LinkedList<>();
@@ -360,6 +337,7 @@ public class Sigurd implements BotAPI {
             shortestDistance.put(player.getToken().getRoom(), 0);
 
             while (foundPath == false && searching.isEmpty() == false) {
+                System.out.println(player + " Searching from " + searching.peek());
                 for (RoomPath pathsFrom : GetRoomPaths(searching.peek())) {
                     if (shortestDistance.containsKey(pathsFrom.endRoom) == false || shortestDistance
                             .get(pathsFrom.endRoom) > shortestDistance.get(searching.peek()) + pathsFrom.length) {
@@ -407,10 +385,10 @@ public class Sigurd implements BotAPI {
                 if(p.endRoom.equals(room))
                     path.add(p);
             }
-
             return path;
         }
 
+        @SuppressWarnings("unchecked")
         private void GenerateRoomPaths() {
             for (int i = 0; i < 10; i++)
                 roomPaths[i] = new LinkedList<>();
@@ -418,7 +396,6 @@ public class Sigurd implements BotAPI {
             roomPaths[5].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[5]), map.getRoom(Names.ROOM_NAMES[0])));
             roomPaths[2].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[2]), map.getRoom(Names.ROOM_NAMES[7])));
             roomPaths[7].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[7]), map.getRoom(Names.ROOM_NAMES[2])));
-            
             roomPaths[0].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[0]), map.getRoom(Names.ROOM_NAMES[0]), 2, "du"));
             roomPaths[0].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[0]), map.getRoom(Names.ROOM_NAMES[1]), 7, "drrruur"));
             roomPaths[0].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[0]), map.getRoom(Names.ROOM_NAMES[2]), 20, "ddrrrrrrrrrrrrruruuu"));
@@ -480,7 +457,7 @@ public class Sigurd implements BotAPI {
             roomPaths[5].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[5]), map.getRoom(Names.ROOM_NAMES[8]), 17, "ulluuullllllllluu"));
             roomPaths[5].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[5]), map.getRoom(Names.ROOM_NAMES[9]), 10, "uuullulllu"));
             roomPaths[6].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[6]), map.getRoom(Names.ROOM_NAMES[0]), 19, "1ullluuuuuuuuulllluu"));
-            roomPaths[6].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[6]), map.getRoom(Names.ROOM_NAMES[1]), 13, "1ulluuuuuuuuuu"));
+            roomPaths[6].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[6]), map.getRoom(Names.ROOM_NAMES[1]), 13, "1urruuuuuuuuuu"));
             roomPaths[6].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[6]), map.getRoom(Names.ROOM_NAMES[2]), 20, "2urrrruuuuuuuuuuuurru"));
             roomPaths[6].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[6]), map.getRoom(Names.ROOM_NAMES[3]), 15, "2urrruuuuuuuurrr"));
             roomPaths[6].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[6]), map.getRoom(Names.ROOM_NAMES[4]), 7, "3ruuuurr"));
@@ -504,7 +481,7 @@ public class Sigurd implements BotAPI {
             roomPaths[8].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[8]), map.getRoom(Names.ROOM_NAMES[2]), 19, "2ruuurrrrrrrruuuurru"));
             roomPaths[8].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[8]), map.getRoom(Names.ROOM_NAMES[3]), 14, "2ruuurrrrrrrrrr"));
             roomPaths[8].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[8]), map.getRoom(Names.ROOM_NAMES[4]), 14, "1ddrrrrrrrrrurr"));
-            roomPaths[8].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[8]), map.getRoom(Names.ROOM_NAMES[5]), 17, "1ddrrrrrrrrrrdddrd"));
+            roomPaths[8].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[8]), map.getRoom(Names.ROOM_NAMES[5]), 17, "1ddrrrrrrrrrrdddrr"));
             roomPaths[8].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[8]), map.getRoom(Names.ROOM_NAMES[6]), 8, "1ddrrrrrd"));
             roomPaths[8].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[8]), map.getRoom(Names.ROOM_NAMES[7]), 4, "1dddd"));
             roomPaths[8].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[8]), map.getRoom(Names.ROOM_NAMES[8]), 2, "1du"));
@@ -522,16 +499,15 @@ public class Sigurd implements BotAPI {
         }
 
         private void GenerateStartPaths() {
-            startPaths.put(new MapCoordinates(9, 0), new MovePlan("dllddddr", map.getRoom(Names.ROOM_NAMES[1]),new MapCoordinates(9, 0)));
-            startPaths.put(new MapCoordinates(14, 0), new MovePlan("drrddddl", map.getRoom(Names.ROOM_NAMES[1]),new MapCoordinates(14, 0)));
-            startPaths.put(new MapCoordinates(23, 6), new MovePlan("llllluu", map.getRoom(Names.ROOM_NAMES[2]),new MapCoordinates(23, 6)));
-            startPaths.put(new MapCoordinates(23, 19), new MovePlan("lllllldd", map.getRoom(Names.ROOM_NAMES[5]),new MapCoordinates(23, 19)));
-            startPaths.put(new MapCoordinates(7, 24), new MovePlan("uuuuuuld", map.getRoom(Names.ROOM_NAMES[7]),new MapCoordinates(7, 24)));
-            startPaths.put(new MapCoordinates(0, 17), new MovePlan("rrrrrruu", map.getRoom(Names.ROOM_NAMES[8]),new MapCoordinates(0, 17)));
+            startPaths.put(new MapCoordinates(9, 0), new MovePlan("dllddddr", map.getRoom(Names.ROOM_NAMES[1])));
+            startPaths.put(new MapCoordinates(14, 0), new MovePlan("drrddddl", map.getRoom(Names.ROOM_NAMES[1])));
+            startPaths.put(new MapCoordinates(23, 6), new MovePlan("llllluu", map.getRoom(Names.ROOM_NAMES[2])));
+            startPaths.put(new MapCoordinates(23, 19), new MovePlan("lllllldd", map.getRoom(Names.ROOM_NAMES[5])));
+            startPaths.put(new MapCoordinates(7, 24), new MovePlan("uuuuuuld", map.getRoom(Names.ROOM_NAMES[7])));
+            startPaths.put(new MapCoordinates(0, 17), new MovePlan("rrrrrruu", map.getRoom(Names.ROOM_NAMES[8])));
         }
 
         private void GenerateLengthCosts() {
-            lengthsCosts.put(1, 1.0f);
             lengthsCosts.put(2, 1.0f);
             lengthsCosts.put(3, 1.02748f);
             lengthsCosts.put(4, 1.0813f);
@@ -639,7 +615,7 @@ public class Sigurd implements BotAPI {
             {
                 this.startRoom = startRoom;
                 this.endRoom = endRoom;
-                this.length = 1;
+                this.length = 0;
                 this.steps = "p";
                 this.cost = 1;
             }
@@ -661,51 +637,30 @@ public class Sigurd implements BotAPI {
     
         class MovePlan {
             private final Deque<RoomPath> paths;
-            private final Room destination;
-            private final Queue<String> currentSteps;
-
             private String exitDoor;
-            private MapCoordinates currentPosition;
-            private Room currentRoom;
-            private Room currentDestination;
-            boolean nextIsPassage;
+            private Queue<String> currentSteps;
+            private final Room destination;
+            private final float cost;
             
             MovePlan(Deque<RoomPath> pathsQueue){
-                if(pathsQueue.isEmpty())
-                    throw new IllegalStateException("No paths given");
-                
                 paths = pathsQueue;
-
-                currentRoom = paths.peek().startRoom;
-                currentDestination = paths.peek().endRoom;
                 destination = paths.getLast().endRoom;
+                float c = 0;
+                for (RoomPath roomPath : pathsQueue) {
+                    c += roomPath.cost;
+                }
+                cost = c;
 
-                currentSteps = new LinkedList<>();
                 SetSteps(paths.peek().steps); 
-                
-                paths.remove();
             }
             
-            public float GetCost() {              
- 
-                float cost = 0;
-                if(currentSteps.isEmpty() == false)
-                    cost += GetPathCost(currentSteps.size());
-
-                for (RoomPath p : paths) {
-                    cost += p.cost;
-                }
-                        
-                return cost;
-            }
-
-            MovePlan(String steps, Room room, MapCoordinates startPos) {
+            MovePlan(String steps, Room room) {
+                RoomPath p = new RoomPath(room, steps);
                 paths = new LinkedList<>();
-                currentSteps = new LinkedList<>();
-                destination = room;
-                currentDestination = room;
-                currentPosition = startPos;
-                SetSteps(steps);
+                paths.add(p);
+                cost = p.cost;
+                destination = p.endRoom;
+                SetSteps(p.steps);
             }
             
             MovePlan(String destinationRoom) {
@@ -714,49 +669,27 @@ public class Sigurd implements BotAPI {
 
             boolean IsNextPassage()
             {
-                return nextIsPassage;
+                return paths.peek().IsPassage();
             }
             
             boolean IsDone()
             {
-                return paths.isEmpty() && currentSteps.isEmpty() && nextIsPassage == false;
+                return paths.size() == 1 && currentSteps.isEmpty();
             }
             
             String TakeStep()
             {
-                if(IsNextPassage())
-                    throw new IllegalStateException("Taking steps on passage");
-                if(currentSteps.isEmpty()) {
-                    System.out.println(paths);
-                    System.out.println(currentDestination);
-                    System.out.println(destination);
+                if(currentSteps.isEmpty())
                     throw new IllegalStateException("No more steps to take");
-                    
-                }
                 String step = currentSteps.remove();
-
-                if(currentPosition == null) {
-                    currentPosition = new MapCoordinates(map.getNewPosition(currentRoom.getDoorCoordinates(0),step));
-                    currentRoom = null;
-                
-                }else {
-                    Coordinates newPos = map.getNewPosition(currentPosition, step);
-                    
-                    if(StepsLeftToRoom() == 0)
-                        ReachedRoom();
-                    else
-                        currentPosition = new MapCoordinates(newPos);
-                }
                 
                 return step;
             }
-
+            
             String GetExitDoor()
             {
                 String door = exitDoor;
-                currentPosition = new MapCoordinates(currentRoom.getDoorCoordinates(Integer.parseInt(exitDoor) - 1));
                 exitDoor = "-1";
-                currentRoom = null;
                 return door;
             }
             
@@ -773,373 +706,72 @@ public class Sigurd implements BotAPI {
                 return currentSteps.size();
             }
             
-            private void ReachedRoom() {
+            public void ContinueMove() {
                 if(IsDone())
-                    return;
+                    throw new IllegalStateException("Move is done");
                 if(currentSteps.isEmpty()){
-                    currentRoom = paths.peek().endRoom;
-                    currentPosition = null;
                     paths.remove();
-                    if(paths.isEmpty() == false) {
-                        currentDestination = paths.peek().endRoom;
-                        SetSteps(paths.peek().steps);
-                    }
+                    SetSteps(paths.peek().steps);
                 }
             }
 
             public boolean IsStillValid() {
-                return (currentPosition != null && currentPosition.equals(player.getToken().getPosition()))
-                    || (currentRoom != null && currentRoom.equals(player.getToken().getRoom()));
+                return IsDone() == false;
             }
 
             public void TakePassage() {
-                if(IsNextPassage() == false)
+                if(paths.peek().IsPassage() == false)
                     throw new IllegalStateException("Taking a passage at the wrong time.");
-                nextIsPassage = false;
-                ReachedRoom();
-                
             }
             
             private void SetSteps(String steps) {
-                currentSteps.clear();
-
-                if (steps.equals("p")) {
-                    nextIsPassage = true;
-                    return;
-                }
-                
+                System.out.println("Steps set " + steps);
                 if(steps.matches("\\d.*")) {
                     exitDoor = steps.substring(0, 1);
                     steps = steps.substring(1);
                 }
                 else
                     exitDoor = "-1";
-                
+                currentSteps = new LinkedList<>();
                 for (char c : steps.toCharArray())
                     currentSteps.add(c + "");
             }
         }
     }
-    
+
     class CardAgent {
-    	final CardMatrix ourCardMatrix;
-    	final List<Question> questionList;
-    	final QuestionParser Qparser;
-    	final Log log;
-    	int currlogPos;
-    	final java.util.Map<String,Integer> playerIndexMap;
-    	
-        CardAgent(Log log, Collection<String> cards, int numOfPlayers ) {
-        	ourCardMatrix = new CardMatrix(cards, numOfPlayers);
-        	questionList = new ArrayList<Question>();
-        	Qparser = new QuestionParser(ourCardMatrix);
-        	this.log = log;
-        	playerIndexMap = new HashMap<String,Integer>();
-        	currlogPos = 1;
-        	FillPlayerIndexMap();
-        }
-        
-        void FillPlayerIndexMap() {
-        	int i = 0;
-        	for(String s : playersInfo.getPlayersNames()) 
-        		playerIndexMap.put(s, i++);
-        }
-        
-        void UpdateCards() {
-            ParseTheLog();
-            ParseTheQuestions();
-            System.out.println(ourCardMatrix);
-        }
-        
-        void ParseTheLog() {
-        	Iterator<String> logIterator = log.iterator();
-        	String logMessage;
-        	Question currQ = null;
-        	int i = 0;
-        	
-        	//skip to the where we left off
-        	while(logIterator.hasNext() && i++ < currlogPos)
-        		logIterator.next();
-        		
-        	//iterate over what we have not seen yet
-        	while(logIterator.hasNext()) {
-        		currQ = new Question(questionList);
-        		currlogPos += 2;
-        		
-        		logMessage = logIterator.next();
-    			ParseAnouncment(logMessage, currQ);
-    			logMessage = logIterator.next();
-    			ParseResponce(logMessage, currQ);
-    			
-    			if(Qparser.InishalLogMessageCheck(currQ))
-    				questionList.add(currQ);
-        				
-            }
-        }
 
-        void ParseTheQuestions() {
-        	boolean loop = true;
-        	while(loop) {
-        		System.out.println("quesiton list loop");
-        		loop = false;
-        		for(Question currQ : questionList)
-        			if(Qparser.ParseQuestion(currQ))
-        				loop = true;
-        		DeleteTagedQuestions();
-        	}
-        				
-        }
-        
-        void DeleteTagedQuestions() {
-        	List<Question> temp = new ArrayList<Question>();
-        	temp.addAll(questionList);
-        	for(Question q : temp)
-        		if(q.tagForDeletion == true)
-        			questionList.remove(q);
-        }
-                
-    	void ParseAnouncment(String logMessage, Question q){
-    		String[] part = logMessage.split(" the ");
-    		String[] playerParts = part[0].split("\\s+");
-    		
-    		System.out.println(logMessage);
-    		
-    		q.asker = playerIndexMap.get(playerParts[0]);
-    		q.ressponder = playerIndexMap.get(playerParts[3]);
-    		q.characterCard = playerParts[6];
-    		q.weaponCard = part[1].substring(0, part[1].length() - 3);
-    		q.roomCard = part[2].substring(0, part[2].length() - 1);
-    		
-    		
-    	}
+    }
 
-        void ParseResponce(String logMessage, Question q){
-    		String[] part = logMessage.split("\\s+.");
-    		
-    		System.out.println(logMessage);
-    		
-		if(q.ressponder != playerIndexMap.get(part[0]))
-			throw new RuntimeException("tryed to parse the responce to the wrong quetion");
-    		
-		if(part[1].equals("showed"))
-			q.cardWasShowen = true;
-    	if(part[3].equals("card:"))
-    		q.cardShowen = part[4].substring(0, part[4].length()-1);//remoeing full stop
-    	}
-    	
-        
-        class QuestionParser{
-    		CardMatrix ourCardMatrix;
-    		
-    		QuestionParser(CardMatrix ourCardMatrix){
-    			this.ourCardMatrix = ourCardMatrix;
-    		}
-    		
-    		boolean InishalLogMessageCheck(Question currQ){//returns weither the question should be stored for further checks
-    			if(currQ.cardShowen != null)
-    				ourCardMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
-    			else if(currQ.cardWasShowen)
-    				return true;
-    			else {
-    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
-    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
-    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
-    			}
-    			return false;
-    		}
-    		
-            boolean ParseQuestion(Question currQ) {//returns true if it changed the card matrix and all Qs need re-checking
-            	boolean hasChanged = false;
-            	
-            	if(AskerLogic(currQ))
-            		hasChanged = true;
-            	if(ResponderLogic(currQ))
-            		hasChanged = true;
+    @Override
+    public String getVersion() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-        		return hasChanged;
-        	}
-            
-            boolean AskerLogic(Question currQ) {
-            	boolean hasChanged = false;
-            	
-            	return hasChanged;
-            }
-            
-            boolean ResponderLogic(Question currQ) {
-            	boolean hasChanged = false;
-            	
-            	boolean HasCharacter = !ourCardMatrix.cardRow.get(currQ.characterCard).players.get(currQ.ressponder).crossedout;
-            	boolean HasWeapon  = !ourCardMatrix.cardRow.get(currQ.weaponCard).players.get(currQ.ressponder).crossedout;
-            	boolean HasRoom  = !ourCardMatrix.cardRow.get(currQ.roomCard).players.get(currQ.ressponder).crossedout;
-            	
-            	if(currQ.tagAllCardsChecked == false) {
-    	    		if(!HasCharacter && !HasRoom) {
-    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.weaponCard);
-    	    			hasChanged = true;
-    	    			currQ.tagAllCardsChecked = true;
-    	    		}
-    	    		else if(!HasRoom && !HasWeapon) {
-    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.characterCard);
-    	    			hasChanged = true;
-    	    			currQ.tagAllCardsChecked = true;
-    	    		}
-    	    		else if(!HasCharacter && !HasWeapon) {
-    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.roomCard);
-    	    			hasChanged = true;
-    	    			currQ.tagAllCardsChecked = true;
-    	    		}
-            	}
-        		
-            	return hasChanged;
-            }
-            
-    	}
+    @Override
+    public void notifyPlayerName(String playerName) {
+        // TODO Auto-generated method stub
         
     }
 
-    class CardMatrix{
-        java.util.Map<String,CardRow> cardRow;
-        java.util.Map<Integer,PlayerColum> playerCol;
+    @Override
+    public void notifyTurnOver(String playerName, String position) {
+        // TODO Auto-generated method stub
         
-     	CardMatrix(Collection<String> cards, int numPlayers){
-     		cardRow = new HashMap<String, CardRow>();
-     		playerCol = new HashMap<Integer,PlayerColum>();
-     		
-     		for(String s : cards) 
-     			cardRow.put(s, new CardRow(s));
-     		
-    		for(int i = 0; i < numPlayers; i++) {
-    			playerCol.put(i, new PlayerColum(i));
-    			PlayerColum tempPlay = playerCol.get(i);
-    			
-    			for(String s : cards) {
-        			CardRow tempCard = cardRow.get(s);
-        			
-        			Position tempPos = new Position(tempPlay.index,tempCard.name);
-        			tempCard.players.add(tempPos);
-        			tempPlay.cards.add(tempPos);
-    			}
-    		}
-    	}
-    	
-    	void CardFound(int p, String c) {
-    		cardRow.get(c).crossoutAllBarOne(p);
-    	}
-    	
-    	void PlayerDoseNotHave(int p, String c) {
-    		cardRow.get(c).crossout(p);
-    	}
-    	
-    	CardRow getCardRow(String s) {
-    		for(CardRow cr : cardRow.values())
-    			if(cr.name.equals(s) == true)
-    				return cr;
-    		return null;
-    	}
-    	
-    	public String toString() {
-    		String temp = "";
-    		
-    		for(CardRow cr : cardRow.values()) {
-    			temp += cr.name + " " + cr.isFound +"| ";
-    			for(int i = 0; i < playerCol.size(); i++)
-    				temp += cr.players.get(i).crossedout + " ";
-    			temp += "\n";
-    		}
-    		
-    		return temp;
-    	}
-    	
-    	
-    	public class CardRow{
-    		String name;
-    		List<Position> players = new ArrayList<Position>();
-    		boolean isFound = false;
-    		int owner;
-    		
-     		CardRow(String name){
-    			this.name = name;
-    		}
-    		
-    		void crossout(int p){
-    			players.get(p).crossedout = true;
-    			
-    			int count = 0;
-    			for(Position q : players)
-    				if(q.crossedout == false) count++;
-    			if(count == 1) Found();
-    		}
-    		
-    		void crossoutAllBarOne(int p) {
-    			for(int i = 0; i < players.size();i++)
-    				if(i != p) crossout(i);
-    			Found();
-    		}
-    		
-    		void Found() {
-    			isFound = true;
-    			for(Position q : players)
-    				if(q.crossedout == false)
-    					owner = q.player;
-    		}
-    		
-    	}
-    	
-    	class PlayerColum{
-    		int index;    		
-    		List<Position> cards= new ArrayList<Position>();;
-    		
-    		PlayerColum(int index){
-    			this.index = index;
-    		}
-    	}
-    	
-    	class Position{
-        		int player;
-        		String card;
-        		
-        		public boolean crossedout = false;
-        		
-        		Position(int player, String card){
-        			this.player = player;
-        			this.card = card;
-        		}
-        	}
     }
 
-    class Question {
-    	Collection<Question> questionList;
-    	
-    	int asker;
-    	int ressponder;
-    	String characterCard;
-    	String weaponCard;
-    	String roomCard;
-    	boolean cardWasShowen;
-    	String cardShowen;
+    @Override
+    public void notifyQuery(String playerName, String query) {
+        // TODO Auto-generated method stub
+        
+    }
 
-    	boolean tagAllCardsChecked;
-    	boolean tagForDeletion; 
-   
-    	Question(Collection<Question> questionList){
-    		tagForDeletion = false;
-    		this.questionList = questionList;
-    	}
-    	
-    	public void Delete() {
-    		if(questionList.contains(this))
-    			tagForDeletion = true;
-    		else 
-    			throw new RuntimeException("Tryed to delete a question that is not in the list");
-    	}
-    	
-    	public String toString() {
-    		String temp = asker + " asked " + ressponder + " if they have " +  characterCard  
-    				+ ", " + weaponCard + ", " + roomCard;
-    		if(cardShowen != null)
-    			temp += ", they showed " + cardShowen;
-    		return temp;
-    	}
+    @Override
+    public void notifyReply(String playerName, boolean cardShown) {
+        // TODO Auto-generated method stub
+        
+    }
+
     
-    }
-} 
+}
