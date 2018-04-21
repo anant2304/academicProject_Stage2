@@ -1,5 +1,6 @@
 package bots;
 
+import java.time.temporal.IsoFields;
 import java.util.*;
 
 import bots.Sigurd.PathfinderAgent.MovePlan;
@@ -21,6 +22,9 @@ public class Sigurd implements BotAPI {
     Log log;
     Deck deck;
     ControllerAgent controller;
+    
+	final java.util.Map<String,Integer> playerIndexMap;
+	final java.util.Map<Integer,String> indexPlayerMap;
 
     public Sigurd(Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
         this.player = player;
@@ -30,6 +34,9 @@ public class Sigurd implements BotAPI {
         this.log = log;
         this.deck = deck;
         controller = new ControllerAgent();
+        
+        playerIndexMap = new HashMap<String,Integer>();
+        indexPlayerMap = new HashMap<Integer,String>();
     }
 
     public String getName() {
@@ -107,10 +114,21 @@ public class Sigurd implements BotAPI {
 
     @Override
     public void notifyReply(String playerName, boolean cardShown) {
-        // TODO Auto-generated method stub
         
     }
 
+    
+    void FillPlayerIndexMap() {
+    	int i = 0;
+    	for(String s : playersInfo.getPlayersNames()) {
+    		playerIndexMap.put(s, i++);
+    	}
+    	playerIndexMap.put("Envelope", i);
+    	
+    	for(String s : playerIndexMap.keySet())
+    		indexPlayerMap.put(playerIndexMap.get(s), s);
+    }
+    
     class ControllerAgent {
         PathfinderAgent pathfinder;
         CardAgent cardAgent;
@@ -163,11 +181,7 @@ public class Sigurd implements BotAPI {
             
             if(turnNumber == 1)
             {
-                List<String> l = new LinkedList<>();
-                l.addAll(Arrays.asList(Names.ROOM_CARD_NAMES));
-                l.addAll(Arrays.asList(Names.SUSPECT_NAMES));
-                l.addAll(Arrays.asList(Names.WEAPON_NAMES));
-                cardAgent  = new CardAgent(log, l, playersInfo.numPlayers());
+                cardAgent  = new CardAgent();
             }
             
             cardAgent.UpdateCards();
@@ -822,33 +836,62 @@ public class Sigurd implements BotAPI {
     }
     
     class CardAgent {
-    	final CardMatrix ourCardMatrix;
+    	final CardMatrix CharacterMatrix;
+    	final CardMatrix WeaponMatrix;
+    	final CardMatrix RoomMatrix;
     	final List<Question> questionList;
-    	final QuestionParser Qparser;
-    	final Log log;
+    	final InfranceEngin iEngin;
     	int currlogPos;
-    	final java.util.Map<String,Integer> playerIndexMap;
     	
-        CardAgent(Log log, Collection<String> cards, int numOfPlayers ) {
-        	ourCardMatrix = new CardMatrix(cards, numOfPlayers);
+        CardAgent() {
+        	CharacterMatrix= new CardMatrix(Arrays.asList(Names.SUSPECT_NAMES), playersInfo.numPlayers());
+        	WeaponMatrix= new CardMatrix(Arrays.asList(Names.WEAPON_NAMES), playersInfo.numPlayers());
+        	RoomMatrix= new CardMatrix(Arrays.asList(Names.ROOM_CARD_NAMES), playersInfo.numPlayers());
         	questionList = new ArrayList<Question>();
-        	Qparser = new QuestionParser(ourCardMatrix);
-        	this.log = log;
-        	playerIndexMap = new HashMap<String,Integer>();
+        	iEngin = new InfranceEngin();
         	currlogPos = 1;
         	FillPlayerIndexMap();
+        	
+        	GetStartingCards();
+        	System.out.println("character:\n" + CharacterMatrix.toString());
+        	System.out.println("weapon:\n" + WeaponMatrix.toString());
+        	System.out.println("room:\n" + RoomMatrix.toString());
+        	
         }
         
-        void FillPlayerIndexMap() {
-        	int i = 0;
-        	for(String s : playersInfo.getPlayersNames()) 
-        		playerIndexMap.put(s, i++);
+       
+        
+        void GetStartingCards() {
+        	for(Card c : player.getCards()) {
+        		System.out.println("startCard: " + c);
+        		CharacterMatrix.CardFound(playerIndexMap.get("Sigurd"), c.toString());
+        		WeaponMatrix.CardFound(playerIndexMap.get("Sigurd"), c.toString());
+        		RoomMatrix.CardFound(playerIndexMap.get("Sigurd"), c.toString());
+        	}
+        	
+    		for(Card c : deck.getSharedCards()){
+        		System.out.println("shated card: " + c);
+        		CharacterMatrix.CardFound(playerIndexMap.get("Sigurd"), c.toString());
+        		WeaponMatrix.CardFound(playerIndexMap.get("Sigurd"), c.toString());
+        		RoomMatrix.CardFound(playerIndexMap.get("Sigurd"), c.toString());
+        	}
+    		for(String card : Names.SUSPECT_NAMES)
+    			if(player.hasCard(card) == false)
+    				CharacterMatrix.cardRow.get(card).DoseNotHave(playerIndexMap.get("Sigurd"));
+    		for(String card : Names.WEAPON_NAMES)
+    			if(player.hasCard(card) == false)
+    				WeaponMatrix.cardRow.get(card).DoseNotHave(playerIndexMap.get("Sigurd"));
+    		for(String card : Names.ROOM_CARD_NAMES)
+    			if(player.hasCard(card) == false)
+    				RoomMatrix.cardRow.get(card).DoseNotHave(playerIndexMap.get("Sigurd"));
         }
         
         void UpdateCards() {
             ParseTheLog();
             ParseTheQuestions();
-            System.out.println(ourCardMatrix);
+            System.out.println("characters:\n" + CharacterMatrix);
+            System.out.println("weapons:\n" + WeaponMatrix);
+            System.out.println("rooms:\n" + RoomMatrix);
         }
         
         void ParseTheLog() {
@@ -871,7 +914,7 @@ public class Sigurd implements BotAPI {
     			logMessage = logIterator.next();
     			ParseResponce(logMessage, currQ);
     			
-    			if(Qparser.InishalLogMessageCheck(currQ))
+    			if(iEngin.InishalLogMessageCheck(currQ))
     				questionList.add(currQ);
         				
             }
@@ -883,7 +926,7 @@ public class Sigurd implements BotAPI {
         		System.out.println("quesiton list loop");
         		loop = false;
         		for(Question currQ : questionList)
-        			if(Qparser.ParseQuestion(currQ))
+        			if(iEngin.ParseQuestion(currQ))
         				loop = true;
         		DeleteTagedQuestions();
         	}
@@ -914,36 +957,39 @@ public class Sigurd implements BotAPI {
     	}
 
         void ParseResponce(String logMessage, Question q){
-    		String[] part = logMessage.split("\\s+.");
+    		String[] part = logMessage.split("\\s++");
     		
     		System.out.println(logMessage);
     		
 		if(q.ressponder != playerIndexMap.get(part[0]))
 			throw new RuntimeException("tryed to parse the responce to the wrong quetion");
     		
-		if(part[1].equals("showed"))
-			q.cardWasShowen = true;
-    	if(part[3].equals("card:"))
-    		q.cardShowen = part[4].substring(0, part[4].length()-1);//remoeing full stop
+		if(part[2].equals("showed")) 
+			q.wasCardShowen = true;
+		
+    	if(part[4].equals("card:"))
+    		q.cardShowen = part[5].substring(0, part[4].length()-1);//remoeing full stop
     	}
     	
         
-        class QuestionParser{
-    		CardMatrix ourCardMatrix;
-    		
-    		QuestionParser(CardMatrix ourCardMatrix){
-    			this.ourCardMatrix = ourCardMatrix;
+        class InfranceEngin{
+    		InfranceEngin(){
     		}
     		
     		boolean InishalLogMessageCheck(Question currQ){//returns weither the question should be stored for further checks
-    			if(currQ.cardShowen != null)
-    				ourCardMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
-    			else if(currQ.cardWasShowen)
+    			System.out.println("C:" + currQ.characterCard +" W:"+ currQ.weaponCard + " R:" +currQ.roomCard);
+    			
+    			if(currQ.cardShowen != null) {
+    				CharacterMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
+    				CharacterMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
+    				CharacterMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
+    				}
+    			else if(currQ.wasCardShowen)
     				return true;
     			else {
-    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
-    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
-    				ourCardMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
+    				CharacterMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
+    				WeaponMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
+    				RoomMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
     			}
     			return false;
     		}
@@ -968,23 +1014,26 @@ public class Sigurd implements BotAPI {
             boolean ResponderLogic(Question currQ) {
             	boolean hasChanged = false;
             	
-            	boolean HasCharacter = !ourCardMatrix.cardRow.get(currQ.characterCard).players.get(currQ.ressponder).crossedout;
-            	boolean HasWeapon  = !ourCardMatrix.cardRow.get(currQ.weaponCard).players.get(currQ.ressponder).crossedout;
-            	boolean HasRoom  = !ourCardMatrix.cardRow.get(currQ.roomCard).players.get(currQ.ressponder).crossedout;
+            	boolean HasCharacter = CharacterMatrix.cardRow.get(currQ.characterCard).players.get(currQ.ressponder).mightHave;
+            	boolean HasWeapon  = WeaponMatrix.cardRow.get(currQ.weaponCard).players.get(currQ.ressponder).mightHave;
+            	boolean HasRoom  = RoomMatrix.cardRow.get(currQ.roomCard).players.get(currQ.ressponder).mightHave;
             	
             	if(currQ.tagAllCardsChecked == false) {
     	    		if(!HasCharacter && !HasRoom) {
-    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.weaponCard);
+    	    			System.out.println("\n\n\nNotCharOrRoom\n\n\n");
+    	    			WeaponMatrix.CardFound(currQ.ressponder, currQ.weaponCard);
     	    			hasChanged = true;
     	    			currQ.tagAllCardsChecked = true;
     	    		}
     	    		else if(!HasRoom && !HasWeapon) {
-    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.characterCard);
+    	    			System.out.println("\n\n\nNotWeaponOrRoom\n\n\n");
+    	    			CharacterMatrix.CardFound(currQ.ressponder, currQ.characterCard);
     	    			hasChanged = true;
     	    			currQ.tagAllCardsChecked = true;
     	    		}
     	    		else if(!HasCharacter && !HasWeapon) {
-    	    			ourCardMatrix.CardFound(currQ.ressponder, currQ.roomCard);
+    	    			System.out.println("\n\n\nNotCharOrWeapon\n\n\n");
+    	    			RoomMatrix.CardFound(currQ.ressponder, currQ.roomCard);
     	    			hasChanged = true;
     	    			currQ.tagAllCardsChecked = true;
     	    		}
@@ -1001,9 +1050,14 @@ public class Sigurd implements BotAPI {
         java.util.Map<String,CardRow> cardRow;
         java.util.Map<Integer,PlayerColum> playerCol;
         
-     	CardMatrix(Collection<String> cards, int numPlayers){
+        boolean isSolved;
+        String solutionCard;
+        
+        CardMatrix(Collection<String> cards, int numPlayers){
      		cardRow = new HashMap<String, CardRow>();
      		playerCol = new HashMap<Integer,PlayerColum>();
+     		
+     		isSolved = false;
      		
      		for(String s : cards) 
      			cardRow.put(s, new CardRow(s));
@@ -1023,27 +1077,60 @@ public class Sigurd implements BotAPI {
     	}
     	
     	void CardFound(int p, String c) {
-    		cardRow.get(c).crossoutAllBarOne(p);
+    		if(isSolved == false && cardRow.containsKey(c) && cardRow.get(c).isFound == false) {
+    			cardRow.get(c).Found(p);
+				for(Position pos : 
+					cardRow.get(c).players)
+					if(pos.player != p) pos.mightHave = false;
+    		}
+    		CheckForSolution();
     	}
     	
     	void PlayerDoseNotHave(int p, String c) {
-    		cardRow.get(c).crossout(p);
+    		if(isSolved == false && cardRow.containsKey(c) && cardRow.get(c).isFound == false)
+    			cardRow.get(c).DoseNotHave(p);
+    		CheckForSolution();
     	}
-    	
-    	CardRow getCardRow(String s) {
-    		for(CardRow cr : cardRow.values())
-    			if(cr.name.equals(s) == true)
-    				return cr;
-    		return null;
+   	
+    	void CheckForSolution() {
+    		int numToFind = 0;
+    		CardRow lastToFind = null;
+    		
+    		for(CardRow cr : cardRow.values()) {
+    			boolean noOneHas = true;
+    			for(Position p : cr.players)
+    				if(p.mightHave == true)
+    					noOneHas = false;
+    			if(noOneHas == true) {
+    				cr.isFound = true;
+    				cr.owner = playerIndexMap.get("Envelope");
+    				}
+    			
+    			if(cr.isFound && cr.owner == playerIndexMap.get("Envelope")) {
+    				isSolved = true;
+    				solutionCard = cr.name;
+    			}
+    			
+    			if(cr.isFound == false) {
+    				lastToFind = cr;
+    				numToFind++;
+    				}
+    		}
+    		if(numToFind == 1) {
+    			isSolved = true;
+    			solutionCard = lastToFind.name;
+    		}
+    			
     	}
     	
     	public String toString() {
     		String temp = "";
-    		
+    		temp += "   " + indexPlayerMap.get(0) +" "
+    		+ indexPlayerMap.get(1) +" "+ indexPlayerMap.get(2) + "\n";
     		for(CardRow cr : cardRow.values()) {
-    			temp += cr.name + " " + cr.isFound +"| ";
+    			temp += String.format("%-13s %-30s |", cr.name, indexPlayerMap.get(cr.owner));
     			for(int i = 0; i < playerCol.size(); i++)
-    				temp += cr.players.get(i).crossedout + " ";
+    				temp += cr.players.get(i).mightHave + " ";
     			temp += "\n";
     		}
     		
@@ -1055,34 +1142,20 @@ public class Sigurd implements BotAPI {
     		String name;
     		List<Position> players = new ArrayList<Position>();
     		boolean isFound = false;
-    		int owner;
+    		int owner = -1;
     		
      		CardRow(String name){
     			this.name = name;
     		}
     		
-    		void crossout(int p){
-    			players.get(p).crossedout = true;
-    			
-    			int count = 0;
-    			for(Position q : players)
-    				if(q.crossedout == false) count++;
-    			if(count == 1) Found();
+    		void DoseNotHave(int p){
+    			players.get(p).mightHave = false;
     		}
     		
-    		void crossoutAllBarOne(int p) {
-    			for(int i = 0; i < players.size();i++)
-    				if(i != p) crossout(i);
-    			Found();
-    		}
-    		
-    		void Found() {
+    		void Found(int p) {
     			isFound = true;
-    			for(Position q : players)
-    				if(q.crossedout == false)
-    					owner = q.player;
+    			owner = p;
     		}
-    		
     	}
     	
     	class PlayerColum{
@@ -1098,7 +1171,7 @@ public class Sigurd implements BotAPI {
         		int player;
         		String card;
         		
-        		public boolean crossedout = false;
+        		public boolean mightHave = true;
         		
         		Position(int player, String card){
         			this.player = player;
@@ -1115,7 +1188,7 @@ public class Sigurd implements BotAPI {
     	String characterCard;
     	String weaponCard;
     	String roomCard;
-    	boolean cardWasShowen;
+    	boolean wasCardShowen;
     	String cardShowen;
 
     	boolean tagAllCardsChecked;
