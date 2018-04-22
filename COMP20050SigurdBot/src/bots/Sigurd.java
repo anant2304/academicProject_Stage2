@@ -264,9 +264,16 @@ public class Sigurd implements BotAPI {
             for (String string : response) {
                 last = string;
             }
+
+        	System.out.println("Responce:\n" + last);
+        	String[] lastSplit = last.split(": ");
+            if( lastSplit.length > 1 )
+            	cardAgent.AllMatriciesCardFound(last.split("\\s+")[0],lastSplit[1].substring(0, lastSplit[1].length() -1));
+            
             if (last.length() > 23
-                    && last.substring(last.length() - 6, last.length()).equals("cards."))
+                    && last.substring(last.length() - 6, last.length()).equals("cards.")) {
                 PossibleAnswer();
+            }
         }
 
         void PossibleAnswer() {
@@ -892,6 +899,19 @@ public class Sigurd implements BotAPI {
             System.out.println("characters:\n" + CharacterMatrix);
             System.out.println("weapons:\n" + WeaponMatrix);
             System.out.println("rooms:\n" + RoomMatrix);
+        }
+        
+        void AllMatricesPlayerDoseNotHave(int playerIndex, String cardName) {
+        	CharacterMatrix.PlayerDoseNotHave(playerIndex, cardName);
+        	WeaponMatrix.PlayerDoseNotHave(playerIndex, cardName);
+        	RoomMatrix.PlayerDoseNotHave(playerIndex, cardName);
+        }
+        
+        void AllMatriciesCardFound(String player, String cardName ) {
+        	int playerIndex = playerIndexMap.get(player);
+        	CharacterMatrix.CardFound(playerIndex, cardName);
+        	WeaponMatrix.CardFound(playerIndex, cardName);
+        	RoomMatrix.CardFound(playerIndex, cardName);
         }
         
         void ParseTheLog() {
