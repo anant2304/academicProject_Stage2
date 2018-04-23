@@ -2,12 +2,12 @@ package bots;
 
 import java.util.*;
 
-import bots.Sigurd.CardMatrix.CardRow;
-import bots.Sigurd.PathfinderAgent.MovePlan;
+import bots.Sigurd1.CardMatrix.CardRow;
+import bots.Sigurd1.PathfinderAgent.MovePlan;
 import gameengine.*;
 import gameengine.Map;
 
-public class Sigurd implements BotAPI {
+public class Sigurd1 implements BotAPI {
 
     // The public API of Bot must not change
     // This is ONLY class that you can edit in the program
@@ -27,7 +27,7 @@ public class Sigurd implements BotAPI {
     final java.util.Map<Integer,String> indexPlayerMap;
     public final Random random;
 
-    public Sigurd(Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
+    public Sigurd1(Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
         this.player = player;
         this.playersInfo = playersInfo;
         this.map = map;

@@ -16,9 +16,6 @@ public class TestBot1 implements BotAPI {
 
     private Player player;
     private Map map;
-    private Dice dice;
-    private Log log;
-    private Deck deck;
     
     Random r = new Random();
     boolean turnOver; 
@@ -27,9 +24,6 @@ public class TestBot1 implements BotAPI {
     public TestBot1 (Player player, PlayersInfo playersInfo, Map map, Dice dice, Log log, Deck deck) {
         this.player = player;
         this.map = map;
-        this.dice = dice;
-        this.log = log;
-        this.deck = deck;
         turnOver = true;
         hasAsked = false;
     }
@@ -92,32 +86,23 @@ public class TestBot1 implements BotAPI {
 
     @Override
     public String getVersion() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void notifyPlayerName(String playerName) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyTurnOver(String playerName, String position) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyQuery(String playerName, String query) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyReply(String playerName, boolean cardShown) {
-        // TODO Auto-generated method stub
-        
     }
 
 }

@@ -44,7 +44,6 @@ public class SigurdBadSearchNoCardAgent implements BotAPI {
         try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return controller.GetMove(false);
@@ -366,8 +365,7 @@ public class SigurdBadSearchNoCardAgent implements BotAPI {
                 if(p.endRoom.equals(room))
                     path.add(p);
             }
-
-            System.out.println("Going to same room " + path.peek().length);
+ 
             return path;
         }
 
@@ -696,7 +694,6 @@ public class SigurdBadSearchNoCardAgent implements BotAPI {
                 String step = currentSteps.remove();
                 
                 if(currentPosition == null) {
-                    System.out.println("step:" +  step);
                     currentPosition = new MapCoordinates(map.getNewPosition(currentRoom.getDoorCoordinates(0),step));
                     currentRoom = null;
                 
@@ -788,32 +785,23 @@ public class SigurdBadSearchNoCardAgent implements BotAPI {
 
     @Override
     public String getVersion() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void notifyPlayerName(String playerName) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyTurnOver(String playerName, String position) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyQuery(String playerName, String query) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyReply(String playerName, boolean cardShown) {
-        // TODO Auto-generated method stub
-        
     }
 
     

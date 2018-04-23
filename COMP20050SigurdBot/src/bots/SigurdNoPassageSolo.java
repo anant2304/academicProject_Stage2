@@ -388,7 +388,6 @@ public class SigurdNoPassageSolo implements BotAPI {
             return path;
         }
 
-        @SuppressWarnings("unchecked")
         private void GenerateRoomPaths() {
             for (int i = 0; i < 10; i++)
                 roomPaths[i] = new LinkedList<>();
@@ -640,7 +639,7 @@ public class SigurdNoPassageSolo implements BotAPI {
             private String exitDoor;
             private Queue<String> currentSteps;
             private final Room destination;
-            private final float cost;
+            final float cost;
             
             MovePlan(Deque<RoomPath> pathsQueue){
                 paths = pathsQueue;
@@ -745,32 +744,23 @@ public class SigurdNoPassageSolo implements BotAPI {
 
     @Override
     public String getVersion() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void notifyPlayerName(String playerName) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyTurnOver(String playerName, String position) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyQuery(String playerName, String query) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyReply(String playerName, boolean cardShown) {
-        // TODO Auto-generated method stub
-        
     }
 
     

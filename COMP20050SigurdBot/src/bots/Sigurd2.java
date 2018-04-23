@@ -44,7 +44,6 @@ public class Sigurd2 implements BotAPI {
         try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return controller.GetMove(false);
@@ -1107,32 +1106,23 @@ public class Sigurd2 implements BotAPI {
 
     @Override
     public String getVersion() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void notifyPlayerName(String playerName) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyTurnOver(String playerName, String position) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyQuery(String playerName, String query) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void notifyReply(String playerName, boolean cardShown) {
-        // TODO Auto-generated method stub
-        
     }
 
 	
