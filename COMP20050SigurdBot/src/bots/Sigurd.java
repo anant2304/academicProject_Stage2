@@ -1040,19 +1040,16 @@ public class Sigurd implements BotAPI {
             	
             	if(currQ.tagAllCardsChecked == false) {
     	    		if(!HasCharacter && !HasRoom) {
-    	    			System.out.println("\n\n\nNotCharOrRoom\n\n\n");
     	    			WeaponMatrix.CardFound(currQ.ressponder, currQ.weaponCard);
     	    			hasChanged = true;
     	    			currQ.tagAllCardsChecked = true;
     	    		}
     	    		else if(!HasRoom && !HasWeapon) {
-    	    			System.out.println("\n\n\nNotWeaponOrRoom\n\n\n");
     	    			CharacterMatrix.CardFound(currQ.ressponder, currQ.characterCard);
     	    			hasChanged = true;
     	    			currQ.tagAllCardsChecked = true;
     	    		}
     	    		else if(!HasCharacter && !HasWeapon) {
-    	    			System.out.println("\n\n\nNotCharOrWeapon\n\n\n");
     	    			RoomMatrix.CardFound(currQ.ressponder, currQ.roomCard);
     	    			hasChanged = true;
     	    			currQ.tagAllCardsChecked = true;
@@ -1097,7 +1094,7 @@ public class Sigurd implements BotAPI {
     	}
     	
     	void CardFound(int p, String c) {
-    		if(isSolved == false && cardRow.containsKey(c) && cardRow.get(c).isFound == false) {
+    		if(cardRow.containsKey(c) && cardRow.get(c).isFound == false) {
     			cardRow.get(c).Found(p);
 				for(Position pos : 
 					cardRow.get(c).players)
@@ -1107,7 +1104,7 @@ public class Sigurd implements BotAPI {
     	}
     	
     	void PlayerDoseNotHave(int p, String c) {
-    		if(isSolved == false && cardRow.containsKey(c) && cardRow.get(c).isFound == false)
+    		if(cardRow.containsKey(c) && cardRow.get(c).isFound == false)
     			cardRow.get(c).DoseNotHave(p);
     		CheckForSolution();
     	}
