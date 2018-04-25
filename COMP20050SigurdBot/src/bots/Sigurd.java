@@ -8,12 +8,12 @@ import gameengine.*;
 import gameengine.Map;
 
 public class Sigurd implements BotAPI {
+    // Team Sigurd
+    // Adrian Wennberg, Peter Major, Anant Shaw
+    // 16751195, 16375246, 16202907
+    
+    // Bot written by Adrian Wennberg and Peter Major
 
-    // The public API of Bot must not change
-    // This is ONLY class that you can edit in the program
-    // Rename Bot to the name of your team. Use camel case.
-    // Bot may not alter the state of the board or the player objects
-    // It may only inspect the state of the board and the player objects
 
     Player player;
     PlayersInfo playersInfo;
@@ -50,32 +50,27 @@ public class Sigurd implements BotAPI {
     }
 
     public String getMove() {
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return controller.GetMove(false);
+        return controller.movePlan.TakeStep();
     }
 
     public String getSuspect() {
         if(controller.cardAgent.HasSolution())
-            return controller.cardAgent.CharacterMatrix.solutionCard;
+            return controller.cardAgent.characterMatrix.solutionCard;
         return controller.questionCards[0];
     }
 
     public String getWeapon() {
         if(controller.cardAgent.HasSolution())
-            return controller.cardAgent.WeaponMatrix.solutionCard;
+            return controller.cardAgent.weaponMatrix.solutionCard;
         return controller.questionCards[1];
     }
 
     public String getRoom() {
-        return controller.cardAgent.RoomMatrix.solutionCard;
+        return controller.cardAgent.roomMatrix.solutionCard;
     }
 
     public String getDoor() {
-        return controller.GetMove(true);
+        return controller.movePlan.TakeExit();
     }
 
     public String getCard(Cards matchingCards) {
@@ -85,7 +80,6 @@ public class Sigurd implements BotAPI {
     public void notifyResponse(Log response) {
         controller.ParseResponse(response);
     }
-
 
     @Override
     public String getVersion() {
@@ -112,7 +106,6 @@ public class Sigurd implements BotAPI {
         
     }
 
-    
     void FillPlayerIndexMap() {
         int i = 0;
         for(String s : playersInfo.getPlayersNames()) {
@@ -123,6 +116,7 @@ public class Sigurd implements BotAPI {
         for(String s : playerIndexMap.keySet())
             indexPlayerMap.put(playerIndexMap.get(s), s);
     }
+    
     
     class ControllerAgent {
         PathfinderAgent pathfinder;
@@ -137,12 +131,10 @@ public class Sigurd implements BotAPI {
 
         ControllerAgent() {
             pathfinder = new PathfinderAgent();
-
             turnCommands = new LinkedList<>();
             questionCards = new String[3];
             
             turnNumber = 1;
-
             turnStarted = false;
             
             movePlan = pathfinder.GetStartPath(player.getToken().getPosition());
@@ -150,32 +142,26 @@ public class Sigurd implements BotAPI {
         
         String GetCommand() {
             if (turnCommands.isEmpty()) {
-                if(turnStarted == false) {
+                if(turnStarted == false)
                     TurnStart();
-                }
-                else {
+                    
+                else 
                     PlanTurnEnd();
-                }
+
                 turnStarted = !turnStarted;
             }
-
             return turnCommands.remove();
         }
 
-        private void Display(String string) {
-            System.out.println(player + " Turn: " + turnNumber + "\n " + string);
-        }
-        
         void TurnStart() {
             if(turnNumber == 1)
-            {
                 cardAgent  = new CardAgent();
-            }
+            
             cardAgent.UpdateCards();
             
             PlanMovement();
 
-            if (movePlan.IsNextPassage()) {
+            if (movePlan.nextIsPassage) {
                 movePlan.TakePassage();
                 turnCommands.add("passage");
             }
@@ -186,45 +172,48 @@ public class Sigurd implements BotAPI {
         private HashMap<Room, Float> GetRoomPriorities() {
             HashMap<Room, Float> unknownRooms = new HashMap<>();
             for (String s : Names.ROOM_CARD_NAMES) {
-                CardRow cardRow = cardAgent.RoomMatrix.cardRow.get(s);
+                CardRow cardRow = cardAgent.roomMatrix.cardRow.get(s);
                 
                 float priority = 1.0f;
-                if(player.hasCard(s) || deck.isSharedCard(s))
+                if(player.hasCard(s) || deck.isSharedCard(s) || 
+                        (cardAgent.roomMatrix.isSolved && cardAgent.roomMatrix.solutionCard.equals(s)))
                     priority *= 0.2f;
-                else if (cardRow.isFound != cardAgent.RoomMatrix.isSolved)
+                
+                else if (cardRow.isFound || cardAgent.roomMatrix.isSolved)
                     priority *= 0.01f;
                 
-                for(int i = 0; i < playersInfo.numPlayers(); i++) 
-                {
-                    if(cardRow.players.get(i).mightHave == false)
-                        priority *= 2;
+                else {
+                    for(int i = 0; i < playersInfo.numPlayers(); i++){
+                        if(cardRow.players.get(i).mightHave == false)
+                            priority *= 2;
+                    }
                 }
                 
                 switch(s)
                 {
                 case"Hall":
                     priority *= 1 + 0.1 * turnNumber;
-                    if(cardAgent.RoomMatrix.isSolved)
+                    if(cardAgent.roomMatrix.isSolved)
                         priority *= 2;
                     break;
                 case"Study":
                     priority *= 1 + 0.05 * turnNumber;
-                    if(cardAgent.RoomMatrix.isSolved)
+                    if(cardAgent.roomMatrix.isSolved)
                         priority *= 2;
                     break;
                 case"Library":
                     priority *= 1 + 0.07 * turnNumber;
-                    if(cardAgent.RoomMatrix.isSolved)
+                    if(cardAgent.roomMatrix.isSolved)
                         priority *= 2;
                     break;
                 case"Lounge":
                     priority *= 1 + 0.05 * turnNumber;
-                    if(cardAgent.RoomMatrix.isSolved)
+                    if(cardAgent.roomMatrix.isSolved)
                         priority *= 2;
                     break;
                 case"Dining Room":
                     priority *= 1 + 0.05 * turnNumber;
-                    if(cardAgent.RoomMatrix.isSolved)
+                    if(cardAgent.roomMatrix.isSolved)
                         priority *= 2;
                     break;
                 }
@@ -234,25 +223,15 @@ public class Sigurd implements BotAPI {
             return unknownRooms;
         }
 
-        String GetMove(boolean door) {
-            if(door)
-                return movePlan.GetExitDoor();
-            else
-                return movePlan.TakeStep();
-        }
-
         void PlanMovement() {
-            
             if (IsInRoom() == false)
                 return;
 
-            
             if(cardAgent.HasSolution())
                 movePlan = pathfinder.new MovePlan(Names.ROOM_NAMES[Names.ROOM_NAMES.length - 1]);
             
             else
                 movePlan = pathfinder.MoveToNearest(GetRoomPriorities());
-            
         }
         
         void PlanTurnEnd()
@@ -260,7 +239,7 @@ public class Sigurd implements BotAPI {
             if (IsInRoom()) {
                 
                 if(GetCurrentRoom().hasName("Cellar"))
-                    MakeAccusation();
+                    turnCommands.add("accuse");
                 
                 else if(cardAgent.HasSolution() == false)
                     AskQuestion();
@@ -270,22 +249,16 @@ public class Sigurd implements BotAPI {
             turnNumber++;
         }
 
-        void MakeAccusation() {
-            Display("Making accusation on turn: " + turnNumber);
-            turnCommands.add("accuse");
-        }
-
         void AskQuestion() {
             turnCommands.add("question");
-            if(cardAgent.WeaponMatrix.isSolved || cardAgent.CharacterMatrix.isSolved) {
-                questionCards[0] = FindInterestingCard(cardAgent.CharacterMatrix, !cardAgent.CharacterMatrix.isSolved);
-                questionCards[1] = FindInterestingCard(cardAgent.WeaponMatrix,    !cardAgent.WeaponMatrix.isSolved);
+            if(cardAgent.weaponMatrix.isSolved || cardAgent.characterMatrix.isSolved) {
+                questionCards[0] = FindInterestingCard(cardAgent.characterMatrix, !cardAgent.characterMatrix.isSolved);
+                questionCards[1] = FindInterestingCard(cardAgent.weaponMatrix,    !cardAgent.weaponMatrix.isSolved);
             }
-            else
-            {
+            else {
                 boolean guessWeapon = random.nextFloat() > 0.5f;
-                questionCards[0] = FindInterestingCard(cardAgent.CharacterMatrix, !guessWeapon);
-                questionCards[1] = FindInterestingCard(cardAgent.WeaponMatrix,     guessWeapon);
+                questionCards[0] = FindInterestingCard(cardAgent.characterMatrix, !guessWeapon);
+                questionCards[1] = FindInterestingCard(cardAgent.weaponMatrix,     guessWeapon);
                 
             }
             questionCards[2] = GetCurrentRoom().toString();
@@ -294,55 +267,47 @@ public class Sigurd implements BotAPI {
         void ParseResponse(Log response) {
             String last = "";
             for (String string : response) {
-                    last = string;
-                }
-        
-                System.out.println("Responce:\n" + last);
-                String[] lastSplit = last.split(": ");
-                if( lastSplit.length > 1 ) {
-                    cardAgent.AllMatriciesCardFound(last.split("\\s+")[0],lastSplit[1].substring(0, lastSplit[1].length() -1));
-                }
+                last = string;
+            }
+    
+            String[] lastSplit = last.split(": ");
+            if( lastSplit.length > 1 ) {
+                cardAgent.AllMatriciesCardFound(last.split("\\s+")[0],lastSplit[1].substring(0, lastSplit[1].length() -1));
+            }
         }
 
         String FindInterestingCard(CardMatrix cardMatrix, boolean unknownCard) {
             List<String> topCards = new LinkedList<>();
             float value = 0;
+            
             for (String s : cardMatrix.cardRow.keySet()) {
                 CardRow row = cardMatrix.cardRow.get(s);
                 float thisValue = 1.0f;
-                if(unknownCard)
-                {
-                    if(row.isFound)
-                        thisValue *= 0;
-
-                    for(int i = 0; i < playersInfo.numPlayers(); i++)
-                    {
+                
+                if(row.isFound && (unknownCard ||
+                  (row.owner != playerIndexMap.get(getName())
+                  && row.owner != playerIndexMap.get("Envelope") )))
+                    thisValue *= 0;
+                
+                if(unknownCard) {
+                    for(int i = 0; i < playersInfo.numPlayers(); i++) {
                         if(row.players.get(i).mightHave == false)
                             thisValue *= 1.1;
                     }
                 }
-                else
-                {
-                    if(row.isFound == false
-                    || (row.owner != playerIndexMap.get(getName())
-                    && row.owner != playerIndexMap.get("Envelope")))
-                        thisValue *= 0.1f;
-                }
                 
-                if(thisValue > value)
-                {
-                    topCards.clear();
+                if(thisValue >= value) {
+                    if(value != thisValue) {
+                        topCards.clear();
+                        value = thisValue;
+                    }
                     topCards.add(s);
-                    value = thisValue;
                 }
-                else if(value == thisValue)
-                    topCards.add(s);
             }
             if(value == 0)
                 throw new IllegalStateException("no interesting cards: " + unknownCard);
-            String card = topCards.get(random.nextInt(topCards.size()));
-            System.out.println("Found card " + value + " " + card + ": " + unknownCard);
-            return card;
+            
+            return topCards.get(random.nextInt(topCards.size()));
         }
     
         boolean IsInRoom() {
@@ -361,7 +326,6 @@ public class Sigurd implements BotAPI {
     }
 
     class PathfinderAgent {
-        int[] totalPossibleOutcomes = {36, 35, 33, 30, 26, 21, 15, 10, 6, 3, 1};
         private final List<RoomPath>[] roomPaths;
         private final HashMap<MapCoordinates, MovePlan> startPaths;
         private final HashMap<Integer, Float> lengthsCosts;
@@ -378,18 +342,18 @@ public class Sigurd implements BotAPI {
 
         public MovePlan MoveToNearest(HashMap<Room, Float> hashMap) {
             List<MovePlan> plans = new LinkedList<>(); 
-            for (Room r : hashMap.keySet()) {
+            for (Room r : hashMap.keySet()) 
                 plans.add(new MovePlan(FindPathTo(r)));
-            }
+
             MovePlan bestPlan = plans.get(0);
             float minValue = bestPlan.GetCost() / hashMap.get(bestPlan.destination);
+            
             for (MovePlan movePlan : plans) {
                 if(movePlan.GetCost() / hashMap.get(movePlan.destination) < minValue) {
                     bestPlan = movePlan;
                     minValue = bestPlan.GetCost() / hashMap.get(bestPlan.destination);
                 }
             }
-            
             return bestPlan;
         }                 
 
@@ -431,27 +395,10 @@ public class Sigurd implements BotAPI {
             }
 
             Deque<RoomPath> path = new LinkedList<>();
-            while (reversePath.isEmpty() == false) {
+            while (reversePath.isEmpty() == false)
                 path.add(reversePath.pop());
-            }
             
             return path;
-        }
-        
-        class Entry implements Comparable<Entry>
-        {
-            final float cost;
-            final Room room;
-            
-            public Entry(float c, Room r) {
-                cost = c;
-                room = r;
-            }
-            
-            @Override
-            public int compareTo(Entry o) {
-                return  ((Float)cost).compareTo(o.cost);
-            }
         }
         
         List<RoomPath> GetRoomPaths(Room startRoom) {
@@ -476,6 +423,7 @@ public class Sigurd implements BotAPI {
         private void GenerateRoomPaths() {
             for (int i = 0; i < 10; i++)
                 roomPaths[i] = new LinkedList<>();
+            
             roomPaths[0].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[0]), map.getRoom(Names.ROOM_NAMES[5])));
             roomPaths[5].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[5]), map.getRoom(Names.ROOM_NAMES[0])));
             roomPaths[2].add(new RoomPath(map.getRoom(Names.ROOM_NAMES[2]), map.getRoom(Names.ROOM_NAMES[7])));
@@ -658,6 +606,22 @@ public class Sigurd implements BotAPI {
             return lengthsCosts.get(length);
         }
         
+        class Entry implements Comparable<Entry>
+        {
+            final float cost;
+            final Room room;
+            
+            public Entry(float c, Room r) {
+                cost = c;
+                room = r;
+            }
+            
+            @Override
+            public int compareTo(Entry o) {
+                return  ((Float)cost).compareTo(o.cost);
+            }
+        }
+        
         class MapCoordinates extends Coordinates {
             MapCoordinates(int col, int row) {
                 super(col, row);
@@ -682,7 +646,7 @@ public class Sigurd implements BotAPI {
             }
         }
 
-        public class RoomPath {
+        class RoomPath {
             final Room startRoom;
             final Room endRoom;
             final int length;
@@ -721,7 +685,7 @@ public class Sigurd implements BotAPI {
             }
         }
     
-        public class MovePlan {
+        class MovePlan {
             private final Deque<RoomPath> paths;
             private final Room destination;
             private final Queue<String> currentSteps;
@@ -748,21 +712,6 @@ public class Sigurd implements BotAPI {
                 paths.remove();
             }
             
-            public float GetCost() {              
- 
-                float cost = 0;
-                if(currentSteps.isEmpty() == false)
-                    cost += GetPathCost(currentSteps.size());
-                else if(IsNextPassage())
-                    cost += 1.0f;
-
-                for (RoomPath p : paths) {
-                    cost += p.cost;
-                }
-                        
-                return cost;
-            }
-
             MovePlan(String steps, Room room, MapCoordinates startPos) {
                 paths = new LinkedList<>();
                 currentSteps = new LinkedList<>();
@@ -776,49 +725,24 @@ public class Sigurd implements BotAPI {
                 this(FindPathTo(map.getRoom(destinationRoom)));
             }
 
-            boolean IsNextPassage()
-            {
-                return nextIsPassage;
+            public float GetCost() {              
+                
+                float cost = 0;
+                if(currentSteps.isEmpty() == false)
+                    cost += GetPathCost(currentSteps.size());
+                    
+                else if(nextIsPassage)
+                    cost += 1.0f;
+
+                for (RoomPath p : paths)
+                    cost += p.cost;
+                        
+                return cost;
             }
-            
+
             boolean IsDone()
             {
                 return paths.isEmpty() && currentSteps.isEmpty() && nextIsPassage == false;
-            }
-            
-            String TakeStep()
-            {
-                if(IsNextPassage())
-                    throw new IllegalStateException("Taking steps on passage");
-                if(currentSteps.isEmpty()) {
-                    throw new IllegalStateException("No more steps to take");
-                    
-                }
-                String step = currentSteps.remove();
-
-                if(currentPosition == null) {
-                    currentPosition = new MapCoordinates(map.getNewPosition(currentRoom.getDoorCoordinates(0),step));
-                    currentRoom = null;
-                
-                }else {
-                    Coordinates newPos = map.getNewPosition(currentPosition, step);
-                    
-                    if(StepsLeftToRoom() == 0)
-                        ReachedRoom();
-                    else
-                        currentPosition = new MapCoordinates(newPos);
-                }
-                
-                return step;
-            }
-
-            String GetExitDoor()
-            {
-                String door = exitDoor;
-                currentPosition = new MapCoordinates(currentRoom.getDoorCoordinates(Integer.parseInt(exitDoor) - 1));
-                exitDoor = "-1";
-                currentRoom = null;
-                return door;
             }
             
             Room GetDestiantion() {
@@ -853,8 +777,43 @@ public class Sigurd implements BotAPI {
                     || (currentRoom != null && currentRoom.equals(player.getToken().getRoom()));
             }
 
+            String TakeStep()
+            {
+                if(nextIsPassage)
+                    throw new IllegalStateException("Taking steps on passage");
+                
+                if(currentSteps.isEmpty())
+                    throw new IllegalStateException("No more steps to take");
+                    
+                String step = currentSteps.remove();
+
+                if(currentPosition == null) {
+                    currentPosition = new MapCoordinates(map.getNewPosition(currentRoom.getDoorCoordinates(0),step));
+                    currentRoom = null;
+                
+                } else if(StepsLeftToRoom() == 0)
+                    ReachedRoom();
+                
+                else
+                    currentPosition = new MapCoordinates(map.getNewPosition(currentPosition, step));
+                
+                return step;
+            }
+
+            String TakeExit()
+            {
+                if(exitDoor.equals("-1"))
+                    throw new IllegalStateException("Plan has no door");
+                
+                String door = exitDoor;
+                currentPosition = new MapCoordinates(currentRoom.getDoorCoordinates(Integer.parseInt(exitDoor) - 1));
+                exitDoor = "-1";
+                currentRoom = null;
+                return door;
+            }
+            
             public void TakePassage() {
-                if(IsNextPassage() == false)
+                if(nextIsPassage == false)
                     throw new IllegalStateException("Taking a passage at the wrong time.");
                 nextIsPassage = false;
                 ReachedRoom();
@@ -882,87 +841,77 @@ public class Sigurd implements BotAPI {
         }
     }
     
-    
     class CardAgent {
-        final CardMatrix CharacterMatrix;
-        final CardMatrix WeaponMatrix;
-        final CardMatrix RoomMatrix;
+        final CardMatrix characterMatrix;
+        final CardMatrix weaponMatrix;
+        final CardMatrix roomMatrix;
         final List<Question> questionList;
-        final InfranceEngin iEngin;
+        final InferenceEngine iEngine;
         int currlogPos;
         
         CardAgent() {
-            CharacterMatrix= new CardMatrix(Arrays.asList(Names.SUSPECT_NAMES), playersInfo.numPlayers());
-            WeaponMatrix= new CardMatrix(Arrays.asList(Names.WEAPON_NAMES), playersInfo.numPlayers());
-            RoomMatrix= new CardMatrix(Arrays.asList(Names.ROOM_CARD_NAMES), playersInfo.numPlayers());
+            characterMatrix= new CardMatrix(Arrays.asList(Names.SUSPECT_NAMES), playersInfo.numPlayers());
+            weaponMatrix= new CardMatrix(Arrays.asList(Names.WEAPON_NAMES), playersInfo.numPlayers());
+            roomMatrix= new CardMatrix(Arrays.asList(Names.ROOM_CARD_NAMES), playersInfo.numPlayers());
             questionList = new ArrayList<Question>();
-            iEngin = new InfranceEngin();
+            iEngine = new InferenceEngine();
             currlogPos = 0;
             FillPlayerIndexMap();
             
             GetStartingCards();
-            System.out.println("character:\n" + CharacterMatrix.toString());
-            System.out.println("weapon:\n" + WeaponMatrix.toString());
-            System.out.println("room:\n" + RoomMatrix.toString());
-            
         }
         
         boolean HasSolution()
         {
-            return CharacterMatrix.isSolved && RoomMatrix.isSolved && WeaponMatrix.isSolved;
+            return characterMatrix.isSolved && roomMatrix.isSolved && weaponMatrix.isSolved;
         }
         
         void GetStartingCards() {
             for(Card c : player.getCards()) {
-                System.out.println("startCard: " + c);
-                CharacterMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
-                WeaponMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
-                RoomMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
+                characterMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
+                weaponMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
+                roomMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
             }
             
             for(Card c : deck.getSharedCards()){
-                System.out.println("shated card: " + c);
-                CharacterMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
-                WeaponMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
-                RoomMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
+                characterMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
+                weaponMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
+                roomMatrix.CardFound(playerIndexMap.get(getName()), c.toString());
             }
             for(String card : Names.SUSPECT_NAMES)
                 if(player.hasCard(card) == false)
-                    CharacterMatrix.cardRow.get(card).DoseNotHave(playerIndexMap.get(getName()));
+                    characterMatrix.cardRow.get(card).DoseNotHave(playerIndexMap.get(getName()));
+            
             for(String card : Names.WEAPON_NAMES)
                 if(player.hasCard(card) == false)
-                    WeaponMatrix.cardRow.get(card).DoseNotHave(playerIndexMap.get(getName()));
+                    weaponMatrix.cardRow.get(card).DoseNotHave(playerIndexMap.get(getName()));
+            
             for(String card : Names.ROOM_CARD_NAMES)
                 if(player.hasCard(card) == false)
-                    RoomMatrix.cardRow.get(card).DoseNotHave(playerIndexMap.get("Sigurd"));
+                    roomMatrix.cardRow.get(card).DoseNotHave(playerIndexMap.get(getName()));
         }
         
         void UpdateCards() {
             ParseTheLog();
             ParseTheQuestions();
-            System.out.println("characters:\n" + CharacterMatrix);
-            System.out.println("weapons:\n" + WeaponMatrix);
-            System.out.println("rooms:\n" + RoomMatrix);
         }
         
         void AllMatricesPlayerDoseNotHave(int playerIndex, String cardName) {
-            CharacterMatrix.PlayerDoseNotHave(playerIndex, cardName);
-            WeaponMatrix.PlayerDoseNotHave(playerIndex, cardName);
-            RoomMatrix.PlayerDoseNotHave(playerIndex, cardName);
+            characterMatrix.PlayerDoseNotHave(playerIndex, cardName);
+            weaponMatrix.PlayerDoseNotHave(playerIndex, cardName);
+            roomMatrix.PlayerDoseNotHave(playerIndex, cardName);
         }
         
         void AllMatriciesCardFound(String player, String cardName ) {
             int playerIndex = playerIndexMap.get(player);
             
-            CharacterMatrix.CardFound(playerIndex, cardName);
-            WeaponMatrix.CardFound(playerIndex, cardName);
-            RoomMatrix.CardFound(playerIndex, cardName);
+            characterMatrix.CardFound(playerIndex, cardName);
+            weaponMatrix.CardFound(playerIndex, cardName);
+            roomMatrix.CardFound(playerIndex, cardName);
         }
         
         void ParseTheLog() {
             Iterator<String> logIterator = log.iterator();
-            String logMessage;
-            Question currQ = null;
             int i = 0;
             
             //skip to the where we left off
@@ -971,27 +920,23 @@ public class Sigurd implements BotAPI {
                 
             //iterate over what we have not seen yet
             while(logIterator.hasNext()) {
-                currQ = new Question(questionList);
+                Question currQ = new Question(questionList);
                 currlogPos += 2;
                 
-                logMessage = logIterator.next();
-                ParseAnouncment(logMessage, currQ);
-                logMessage = logIterator.next();
-                ParseResponce(logMessage, currQ);
+                ParseAnouncment(logIterator.next(), currQ);
+                ParseResponce(logIterator.next(), currQ);
                 
-                if(iEngin.InishalLogMessageCheck(currQ))
+                if(iEngine.InishalLogMessageCheck(currQ))
                     questionList.add(currQ);
-                        
             }
         }
 
         void ParseTheQuestions() {
             boolean loop = true;
             while(loop) {
-                System.out.println("quesiton list loop");
                 loop = false;
                 for(Question currQ : questionList)
-                    if(iEngin.ParseQuestion(currQ))
+                    if(iEngine.ParseQuestion(currQ))
                         loop = true;
                 DeleteTagedQuestions();
             }
@@ -1010,105 +955,75 @@ public class Sigurd implements BotAPI {
             String[] part = logMessage.split(" the ");
             String[] playerParts = part[0].split("\\s+");
             
-            System.out.println(logMessage);
-            
             q.asker = playerIndexMap.get(playerParts[0]);
             q.ressponder = playerIndexMap.get(playerParts[3]);
             q.characterCard = playerParts[6];
             q.weaponCard = part[1].substring(0, part[1].length() - 3);
             q.roomCard = part[2].substring(0, part[2].length() - 1);
-            
-            
         }
 
         void ParseResponce(String logMessage, Question q){
             String[] part = logMessage.split("\\s++");
             
-            System.out.println(logMessage);
+            if(q.ressponder != playerIndexMap.get(part[0]))
+                throw new RuntimeException("tryed to parse the responce to the wrong quetion");
+                
+            if(part[2].equals("showed")) 
+                q.wasCardShowen = true;
             
-        if(q.ressponder != playerIndexMap.get(part[0]))
-            throw new RuntimeException("tryed to parse the responce to the wrong quetion");
-            
-        if(part[2].equals("showed")) 
-            q.wasCardShowen = true;
-        
-        if(part[4].equals("card:"))
-            q.cardShowen = part[5].substring(0, part[4].length()-1);
+            if(part[4].equals("card:"))
+                q.cardShowen = part[5].substring(0, part[4].length()-1);
         }
         
-        
-        class InfranceEngin{
-            InfranceEngin(){
-            }
-            
+        class InferenceEngine{
             boolean InishalLogMessageCheck(Question currQ){
                 if(currQ.cardShowen != null) {
-                    CharacterMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
-                    CharacterMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
-                    CharacterMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
-                    }
-                else if(currQ.wasCardShowen)
+                    characterMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
+                    characterMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
+                    characterMatrix.CardFound(currQ.ressponder, currQ.cardShowen);
+                } else if(currQ.wasCardShowen)
                     return true;
+                
                 else {
-                    CharacterMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
-                    WeaponMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
-                    RoomMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
+                    characterMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.characterCard);
+                    weaponMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.weaponCard);
+                    roomMatrix.PlayerDoseNotHave(currQ.ressponder,currQ.roomCard);
                 }
                 return false;
             }
             
-            boolean ParseQuestion(Question currQ) {//returns true if it changed the card matrix and all Qs need re-checking
-                boolean hasChanged = false;
-                
-                if(AskerLogic(currQ))
-                    hasChanged = true;
-                if(ResponderLogic(currQ))
-                    hasChanged = true;
-
-                return hasChanged;
-            }
-            
-            boolean AskerLogic(Question currQ) {
-                boolean hasChanged = false;
-                
-                return hasChanged;
-            }
-            
-            boolean ResponderLogic(Question currQ) {
-                boolean hasChanged = false;
-                
-                boolean HasCharacter = CharacterMatrix.cardRow.get(currQ.characterCard).players.get(currQ.ressponder).mightHave;
-                boolean HasWeapon  = WeaponMatrix.cardRow.get(currQ.weaponCard).players.get(currQ.ressponder).mightHave;
-                boolean HasRoom  = RoomMatrix.cardRow.get(currQ.roomCard).players.get(currQ.ressponder).mightHave;
+            boolean ParseQuestion(Question currQ) {
+                boolean HasCharacter = characterMatrix.cardRow.get(currQ.characterCard).players.get(currQ.ressponder).mightHave;
+                boolean HasWeapon  = weaponMatrix.cardRow.get(currQ.weaponCard).players.get(currQ.ressponder).mightHave;
+                boolean HasRoom  = roomMatrix.cardRow.get(currQ.roomCard).players.get(currQ.ressponder).mightHave;
                 
                 if(currQ.tagAllCardsChecked == false) {
                     if(!HasCharacter && !HasRoom) {
-                        WeaponMatrix.CardFound(currQ.ressponder, currQ.weaponCard);
-                        hasChanged = true;
+                        weaponMatrix.CardFound(currQ.ressponder, currQ.weaponCard);
                         currQ.tagAllCardsChecked = true;
+                        return true;
                     }
                     else if(!HasRoom && !HasWeapon) {
-                        CharacterMatrix.CardFound(currQ.ressponder, currQ.characterCard);
-                        hasChanged = true;
+                        characterMatrix.CardFound(currQ.ressponder, currQ.characterCard);
                         currQ.tagAllCardsChecked = true;
+                        return true;
                     }
                     else if(!HasCharacter && !HasWeapon) {
-                        RoomMatrix.CardFound(currQ.ressponder, currQ.roomCard);
-                        hasChanged = true;
+                        roomMatrix.CardFound(currQ.ressponder, currQ.roomCard);
                         currQ.tagAllCardsChecked = true;
+                        return true;
                     }
                 }
                 
-                return hasChanged;
+                return false;
             }
-            
         }
         
     }
 
     class CardMatrix{
-        java.util.Map<String,CardRow> cardRow;
-        java.util.Map<Integer,PlayerColum> playerCol;
+        final java.util.Map<String,CardRow> cardRow;
+        final java.util.Map<Integer,PlayerColum> playerCol;
         
         boolean isSolved;
         String solutionCard;
@@ -1166,65 +1081,65 @@ public class Sigurd implements BotAPI {
                             numMightHave++;
                             lastFound = p;
                         }
-                        
                     }
-                    
                     if(numMightHave == 1)
                         cr.Found(lastFound.player);
                 }
-                return;
-            }
-            int numToFind = 0;
-            CardRow lastToFind = null;
-            
-            for(CardRow cr : cardRow.values()) {
-                boolean noOneHas = true;
-                for(Position p : cr.players)
-                    if(p.mightHave == true)
-                        noOneHas = false;
-                if(noOneHas == true) {
-                    cr.Found(playerIndexMap.get("Envelope"));
-                    isSolved = true;
-                    solutionCard = cr.name;
-                    return;
-                }
+            }else {
+                int numToFind = 0;
+                CardRow lastToFind = null;
                 
-                if(cr.isFound == false) {
-                    lastToFind = cr;
-                    numToFind++;
+                for(CardRow cr : cardRow.values()) {
+                    boolean noOneHas = true;
+                    for(Position p : cr.players)
+                        if(p.mightHave == true)
+                            noOneHas = false;
+                    if(noOneHas == true) {
+                        cr.Found(playerIndexMap.get("Envelope"));
+                        isSolved = true;
+                        solutionCard = cr.name;
+                        return;
                     }
-            }
-            if(numToFind == 1) {
-                lastToFind.Found(playerIndexMap.get("Envelope"));
-                isSolved = true;
-                solutionCard = lastToFind.name;
+                    
+                    if(cr.isFound == false) {
+                        lastToFind = cr;
+                        numToFind++;
+                        }
+                }
+                if(numToFind == 1) {
+                    lastToFind.Found(playerIndexMap.get("Envelope"));
+                    isSolved = true;
+                    solutionCard = lastToFind.name;
+                }
             }
                 
         }
         
         public String toString() {
-            String temp = "";
-            temp += "   " + indexPlayerMap.get(0) +" "
+            String temp = "   " + indexPlayerMap.get(0) +" "
             + indexPlayerMap.get(1) +" "+ indexPlayerMap.get(2) + "\n";
+            
             for(CardRow cr : cardRow.values()) {
                 temp += String.format("%-13s %-30s |", cr.name, indexPlayerMap.get(cr.owner));
+                
                 for(int i = 0; i < playerCol.size(); i++)
                     temp += cr.players.get(i).mightHave + " ";
+                
                 temp += "\n";
             }
             
             return temp;
         }
         
-        
         public class CardRow{
-            String name;
-            List<Position> players = new ArrayList<Position>();
+            final String name;
+            final List<Position> players ;
             boolean isFound = false;
             int owner = -1;
             
             CardRow(String name){
                 this.name = name;
+                players = new ArrayList<Position>();
             }
             
             void DoseNotHave(int p){
@@ -1247,8 +1162,8 @@ public class Sigurd implements BotAPI {
         }
         
         class Position{
-                int player;
-                String card;
+                final int player;
+                final String card;
                 
                 public boolean mightHave = true;
                 

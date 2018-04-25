@@ -1,11 +1,8 @@
 package gameengine;
 
 import javax.swing.*;
-import javax.swing.event.MouseInputListener;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -17,9 +14,9 @@ class UI {
     private final BoardPanel boardPanel;
     private final InfoPanel infoPanel = new InfoPanel();
     private final CommandPanel commandPanel = new CommandPanel();
-    private String input, playerName, tokenName, command, move, suspect, weapon, room;
+    private String input, command, move, suspect, weapon, room;
     private int door;
-    private boolean inputIsDone, cardFound;
+    private boolean cardFound;
     private Card selectedCard;
     private boolean paused;
 
@@ -34,7 +31,7 @@ class UI {
         frame.add(commandPanel,BorderLayout.PAGE_END);
         frame.setResizable(false);
         frame.setVisible(true);
-        paused = true;
+        paused = false;
         frame.addMouseListener(new MouseListener() {
             
             @Override
@@ -212,12 +209,6 @@ class UI {
 
     void displayErrorInCellar() {
         displayError("In the cellar");
-    }
-
-    /* User Input Methods */
-
-    private void inputString() {
-        input = commandPanel.getCommand();
     }
 
     void displayName(Player player) {
